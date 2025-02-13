@@ -1,0 +1,6 @@
+2025-02-12 13:21:13.137 -03:00 [ERR] An error occurred using the connection to database 'meubanco' on server 'tcp://meu_postgres:5432'.
+2025-02-12 13:23:07.352 -03:00 [ERR] An error occurred using the connection to database 'meubanco' on server 'tcp://meu_postgres:5432'.
+2025-02-12 13:26:57.887 -03:00 [ERR] An error occurred using the connection to database 'meubanco' on server 'tcp://meu_postgres:5432'.
+2025-02-12 13:29:32.961 -03:00 [ERR] An error occurred using the connection to database 'meubanco' on server 'tcp://localhost:5432'.
+2025-02-12 13:30:54.750 -03:00 [ERR] An error occurred using the connection to database 'meubanco' on server 'tcp://localhost:5432'.
+2025-02-12 13:32:39.777 -03:00 [ERR] An error occurred using the connection to database 'meubanco' on server 'tcp://localhost:5432'.

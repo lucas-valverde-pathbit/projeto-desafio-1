@@ -1,0 +1,38 @@
+# Usar a imagem base do .NET SDK 9.0
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+
+# Definir o diretório de trabalho
+WORKDIR /src
+
+# Copiar os arquivos de projeto para dentro do contêiner
+COPY ["src/Api/Api.csproj", "src/Api/"]
+
+# Restaurar as dependências do projeto
+RUN dotnet restore "src/Api/Api.csproj"
+
+# Copiar o restante dos arquivos para dentro do contêiner
+COPY . .
+
+# Publicar o aplicativo
+RUN dotnet publish "src/Api/Api.csproj" -c Release -o /app/publish
+
+# Usar a imagem base para o runtime
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+
+# Definir o diretório de trabalho no contêiner final
+WORKDIR /app
+
+# Copiar a aplicação publicada para dentro do contêiner final
+COPY --from=build /app/publish .
+
+# Copiar o script de espera para dentro do contêiner
+COPY wait-for-postgres.sh /app/wait-for-postgres.sh
+
+# Instalar o cliente do PostgreSQL
+RUN apt-get update && apt-get install -y postgresql-client
+
+# Expor a porta
+EXPOSE 5064
+
+# Definir o comando de execução
+CMD ["bash", "/app/wait-for-postgres.sh", "db", "dotnet", "Api.dll"]
