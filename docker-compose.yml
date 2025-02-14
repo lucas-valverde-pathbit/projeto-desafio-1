@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   api:
     build:
@@ -23,19 +21,8 @@ services:
       POSTGRES_USER: meuusuario
       POSTGRES_PASSWORD: minhasenha
       POSTGRES_DB: meubanco
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - app-network
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.frontend
-    ports:
-      - "8080:80"
     networks:
       - app-network
 

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging; // Para adicionar o log
 using Domain.Services;
 using Domain.Models;
 using System.Collections.Generic;
@@ -10,7 +11,12 @@ namespace Api.Controllers
     [ApiController]
     public class CustomerController : BaseController<Customer, ICustomerService>
     {
-        public CustomerController(ICustomerService service) : base(service) { }
+        private readonly ILogger<CustomerController> _logger; // Adicionando o logger
+
+        public CustomerController(ICustomerService service, ILogger<CustomerController> logger) : base(service)
+        {
+            _logger = logger; // Injetando o logger
+        }
 
         // Método para obter todos os clientes
         [HttpGet]
@@ -40,11 +46,20 @@ namespace Api.Controllers
             {
                 return BadRequest("Customer cannot be null.");
             }
-            var createdCustomer = await _service.Add(customer);
-            var allCustomers = await _service.GetAll(); // Log all customers after creation
-            Console.WriteLine("All customers after creation: " + (allCustomers != null ? allCustomers.Count() : 0)); // Log all customers after creation
+            try
+            {
+                var createdCustomer = await _service.Add(customer);
+                var allCustomers = await _service.GetAll(); // Log all customers after creation
+                Console.WriteLine("All customers after creation: " + (allCustomers != null ? allCustomers.Count() : 0)); // Log all customers after creation
+                _logger.LogInformation("Criando um novo cliente com o nome: {CustomerName}", customer.CustomerName); // Log de criação
 
-            return CreatedAtAction(nameof(GetById), new { id = createdCustomer.Id }, createdCustomer);
+                return CreatedAtAction(nameof(GetById), new { id = createdCustomer.Id }, createdCustomer);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Erro ao criar cliente: {ErrorMessage}", ex.Message); // Logando o erro
+                return StatusCode(500, $"Erro ao criar o cliente: {ex.Message}");
+            }
         }
 
         // Método para atualizar um cliente existente

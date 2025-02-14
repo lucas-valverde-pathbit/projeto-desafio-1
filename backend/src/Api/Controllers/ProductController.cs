@@ -3,6 +3,7 @@ using Domain.Services;
 using Domain.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging; // Para adicionar o log
 
 namespace Api.Controllers
 {
@@ -10,7 +11,12 @@ namespace Api.Controllers
     [ApiController]
     public class ProductController : BaseController<Product, IProductService>
     {
-        public ProductController(IProductService service) : base(service) { }
+        private readonly ILogger<ProductController> _logger; // Adicionando o logger
+
+        public ProductController(IProductService service, ILogger<ProductController> logger) : base(service)
+        {
+            _logger = logger; // Injetando o logger
+        }
 
         [HttpPost]
         public async Task<ActionResult<Product>> Create([FromBody] Product product)
@@ -19,11 +25,28 @@ namespace Api.Controllers
             {
                 return BadRequest("Produto não pode ser nulo.");
             }
-            var createdProduct = await _service.Add(product);
-            var allProducts = await _service.GetAll(); // Log all products after creation
-            Console.WriteLine("All products after creation: " + (allProducts != null ? allProducts.Count() : 0)); // Log all products after creation
 
-            return CreatedAtAction(nameof(GetById), new { id = createdProduct.Id }, createdProduct);
+            try
+            {
+                // Adicionando um log para saber quando um produto está sendo criado
+                _logger.LogInformation("Criando um novo produto com o nome: {ProductName}", product.ProductName);
+                
+                var createdProduct = await _service.Add(product);
+
+                // Log de todos os produtos após a criação para confirmar a adição
+                var allProducts = await _service.GetAll();
+                _logger.LogInformation("Total de produtos após criação: {TotalProducts}", allProducts?.Count() ?? 0);
+
+                return CreatedAtAction(nameof(GetById), new { id = createdProduct.Id }, createdProduct);
+            }
+            catch (Exception ex)
+            {
+                // Logando o erro real
+                _logger.LogError("Erro ao criar produto: {ErrorMessage}", ex.Message);
+
+                // Retorna uma resposta com código 500 e a mensagem do erro
+                return StatusCode(500, $"Erro ao criar o produto: {ex.Message}");
+            }
         }
 
         [HttpGet("test-connection")]

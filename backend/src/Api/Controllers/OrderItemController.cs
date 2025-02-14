@@ -4,7 +4,7 @@ using Domain.Models;
 
 namespace Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/orderitems")]
     [ApiController]
     public class OrderItemController : BaseController<OrderItem, IOrderItemService>
     {
