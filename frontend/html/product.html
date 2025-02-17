@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Produto</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+     <!-- Botão de Voltar -->
+     <div class="back-button">
+        <a href="index.html">
+            <button class="back-btn">Voltar para Seleção</button>
+        </a>
+    </div>
+    
+    <div class="container">
+        <h1>Cadastro de Produto</h1>
+
+        <form id="productForm">
+            <label for="productName">Nome do Produto:</label>
+            <input type="text" id="productName" required>
+
+            <label for="productDescription">Descrição:</label>
+            <input type="text" id="productDescription" required>
+
+            <label for="productPrice">Preço:</label>
+            <input type="number" id="productPrice" required>
+
+            <label for="productStockQuantity">Quantidade em Estoque:</label>
+            <input type="number" id="productStockQuantity" required>
+
+            <button type="submit">Cadastrar Produto</button>
+        </form>
+
+        <div id="productsList">
+            <!-- Produtos cadastrados serão exibidos aqui -->
+        </div>
+    </div>
+
+    <script src="js/product.js"></script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+/* Configuração básica */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f3f3f3;
+    padding: 20px;
+    color: #333;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Cabeçalho */
+h1 {
+    text-align: center;
+    color: #6a0dad; /* Roxo */
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Estilo dos formulários */
+form {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+    color: #6a0dad; /* Roxo */
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+input:focus {
+    border-color: #6a0dad; /* Roxo claro ao focar */
+    outline: none;
+}
+
+/* Botões */
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #6a0dad; /* Roxo */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #5c0b8e; /* Roxo escuro */
+}
+
+/* Lista de itens */
+#productsList, #ordersList, #usersList {
+    margin-top: 20px;
+}
+
+.product, .order, .user {
+    background-color: #fafafa;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+.product h3, .order h3, .user h3 {
+    color: #6a0dad; /* Roxo */
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.product p, .order p, .user p {
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* Botões para editar e excluir */
+button {
+    margin: 5px;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #5c0b8e;
+}
+/* Estilo para o botão de voltar */
+.back-button {
+    margin: 20px 0;
+    text-align: left;
+}
+
+.back-btn {
+    background-color: #6a1b9a;  /* Cor roxa escura */
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+}
+
+.back-btn:hover {
+    background-color: #4a148c;  /* Cor roxa mais escura ao passar o mouse */
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    input {
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 14px;
+    }
+}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Pedido</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+     <!-- Botão de Voltar -->
+     <div class="back-button">
+        <a href="index.html">
+            <button class="back-btn">Voltar para Seleção</button>
+        </a>
+    </div>
+    
+    <div class="container">
+        <h1>Cadastro de Pedido</h1>
+
+        <form id="orderForm">
+            <label for="orderCustomerId">Cliente (ID):</label>
+            <input type="text" id="orderCustomerId" required>
+
+            <label for="orderUserId">Usuário (ID):</label>
+            <input type="text" id="orderUserId" required>
+
+            <label for="orderDate">Data do Pedido:</label>
+            <input type="datetime-local" id="orderDate" required>
+
+            <label for="orderDeliveryAddress">Endereço de Entrega:</label>
+            <input type="text" id="orderDeliveryAddress" required>
+
+            <button type="submit">Cadastrar Pedido</button>
+        </form>
+
+        <div id="ordersList">
+            <!-- Lista de pedidos cadastrados será exibida aqui -->
+        </div>
+    </div>
+
+    <script src="/js/order.js"></script>
+</body>
+</html>
