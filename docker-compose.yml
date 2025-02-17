@@ -26,6 +26,19 @@ services:
     networks:
       - app-network
 
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    ports: 
+     - 8080:80
+    depends_on: 
+    - api
+    networks:
+      - app-network
+
+ 
 networks:
   app-network:
     driver: bridge

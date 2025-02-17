@@ -9,8 +9,8 @@ namespace Domain.Models
     public class Product: IEntity
     {
         public Guid Id { get; set; }
-        public string ProductName { get; set; } = string.Empty;
-        public string ProductDescription { get; set; } = string.Empty;
+        public string ProductName { get; set; }
+        public string ProductDescription { get; set; }
         public decimal ProductPrice { get; set; }
         public int ProductStockQuantity { get; set; }
     }

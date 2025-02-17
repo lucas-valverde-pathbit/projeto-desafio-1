@@ -37,8 +37,8 @@ namespace Infrastructure.Services
             {
                 var products = new[]
                 {
-                    new Product { ProductName = "Product One", ProductPrice = 10.99M },
-                    new Product { ProductName = "Product Two", ProductPrice = 20.99M }
+                    new Product { ProductName = "Product One", ProductPrice = 10.99M, ProductDescription = "Product One description", ProductStockQuantity = 10},
+                    new Product { ProductName = "Product Two", ProductPrice = 20.99M, ProductDescription = "Product Two description", ProductStockQuantity = 20}
                 };
 
                 await context.Products.AddRangeAsync(products);

@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Domain.Models; // Add this for models
-using Infrastructure.Repositories; // Add this for repositories
-
-using Domain.Models; // Add this for models
-using Infrastructure.Repositories; // Add this for repositories
-
+using Domain.Models;
+using Infrastructure.Repositories;
+using Domain.Models;
+using Infrastructure.Repositories;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +26,19 @@ Log.Logger = new LoggerConfiguration()
 // Usar o Serilog para o logging global
 builder.Host.UseSerilog();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddApplicationPart(typeof(Api.Controllers.CustomerController).Assembly)
+    .AddControllersAsServices()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
+
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
+
+
 
 // Registro dos serviços
 builder.Services.AddScoped<IProductService, ProductService>();
@@ -36,7 +46,9 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IRepository<Customer>, CustomerRepository>(); // Add this line
+builder.Services.AddScoped<IRepository<Customer>, CustomerRepository>();
+builder.Services.AddScoped<Api.Controllers.CustomerController>();
+
 
 
 // Registro dos repositórios

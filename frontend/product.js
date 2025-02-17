@@ -1,15 +1,16 @@
-const apiUrl = "http://api:5064/api/products";  // URL corrigida
+const apiProductUrl = window.location.hostname === "localhost" 
+               ? "http://localhost:5064/api/products" 
+               : "http://api:5064/api/products"; 
 
-// Enviar o formulário para cadastrar um produto
 document.getElementById("productForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Impede o envio padrão do formulário
 
     const productName = document.getElementById("productName").value;
     const productDescription = document.getElementById("productDescription").value;
     const productPrice = parseFloat(document.getElementById("productPrice").value);
     const productStockQuantity = parseInt(document.getElementById("productStockQuantity").value);
 
-    const ProductData = {
+    const productData = {
         productName,
         productDescription,
         productPrice,
@@ -17,12 +18,10 @@ document.getElementById("productForm").addEventListener("submit", async (e) => {
     };
 
     try {
-        const response = await fetch(apiUrl, {
+        const response = await fetch(apiProductUrl, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(ProductData),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(productData),
         });
 
         const result = await response.json();
@@ -52,7 +51,7 @@ document.getElementById("showProductsBtn").addEventListener("click", async () =>
 
         if (response.ok) {
             const productsListDiv = document.getElementById("productsList");
-            productsListDiv.innerHTML = "";  // Limpa a lista antes de mostrar os produtos
+            productsListDiv.innerHTML = ""; 
 
             if (products.length === 0) {
                 productsListDiv.innerHTML = "<p>Nenhum produto cadastrado.</p>";
@@ -66,9 +65,9 @@ document.getElementById("showProductsBtn").addEventListener("click", async () =>
                             <p>Quantidade em Estoque: ${product.productStockQuantity}</p>
                         </div>
                     `;
-                }).join("");  // Junta os produtos na forma de HTML
+                }).join("");  
 
-                productsListDiv.innerHTML = listHtml;  // Exibe os produtos na página
+                productsListDiv.innerHTML = listHtml;  
             }
         } else {
             alert("Erro ao carregar os produtos.");
