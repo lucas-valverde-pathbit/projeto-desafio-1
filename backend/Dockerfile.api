@@ -17,13 +17,11 @@ WORKDIR "/src/src/Api"
 
 
 
+RUN dotnet build "Api.csproj" -c Release -o /app/build
+
 # Install EF Core tools and add to PATH
 RUN dotnet tool install --global dotnet-ef
 ENV PATH="$PATH:/root/.dotnet/tools"
-RUN dotnet build "Api.csproj" -c Release -o /app/build
-
-
-
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 ENV ASPNETCORE_URLS=http://+:5064
@@ -31,8 +29,9 @@ ENV ASPNETCORE_URLS=http://+:5064
 WORKDIR /app
 EXPOSE 5064
 COPY --from=build /app/build .
-COPY --from=build /root/.dotnet/tools /root/.dotnet/tools
-ENV PATH="$PATH:/root/.dotnet/tools"
+
+
+
 
 # Install PostgreSQL client
 RUN apt-get update && \
