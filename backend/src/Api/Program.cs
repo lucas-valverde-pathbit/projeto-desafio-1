@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +12,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Infrastructure.Data;
-using Microsoft.AspNetCore.Mvc;
+using Infrastructure.Services;
 
 namespace Api
 {
@@ -29,6 +28,10 @@ namespace Api
 
             // Serviços de aplicação
             builder.Services.AddScoped<Domain.Services.IUserService, Infrastructure.Services.UserService>();
+            builder.Services.AddScoped<Domain.Services.IProductService, Infrastructure.Services.ProductService>();
+            builder.Services.AddScoped<Domain.Services.ICustomerService, Infrastructure.Services.CustomerService>();
+            builder.Services.AddScoped<Domain.Services.IOrderService, Infrastructure.Services.OrderService>();
+            builder.Services.AddScoped<Domain.Services.IOrderItemService, Infrastructure.Services.OrderItemService>();
 
             // Configuração de autenticação JWT
             builder.Services.AddAuthentication(options =>
@@ -55,9 +58,11 @@ namespace Api
                     policy.WithOrigins("http://localhost:8080")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
-                          .AllowCredentials();
+                          .AllowCredentials()
+                          .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
                 });
             });
+
 
             // Adicionando o controlador e outros serviços
             builder.Services.AddControllers();
@@ -68,7 +73,7 @@ namespace Api
 
             var app = builder.Build();
 
-            // Migração do banco de dados se solicitado
+            // Migração e seed do banco de dados se solicitado
             if (args.Contains("--migrate"))
             {
                 using (var scope = app.Services.CreateScope())
@@ -79,17 +84,20 @@ namespace Api
                         var context = services.GetRequiredService<AppDbContext>();
                         await context.Database.MigrateAsync();
                         Console.WriteLine("Migrations applied successfully.");
+
+                        // Executar o seeder
+                        var seeder = new DatabaseSeeder();
+                        await seeder.SeedAsync(context);
+                        Console.WriteLine("Database seeded successfully.");
                     }
                     catch (Exception ex)
                     {
                         var logger = services.GetRequiredService<ILogger<Program>>();
-                        logger.LogError(ex, "An error occurred while migrating the database.");
+                        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
                         throw;
                     }
                 }
             }
-
-            // Configuração do pipeline de requisição
 
             if (app.Environment.IsDevelopment())
             {
@@ -99,7 +107,19 @@ namespace Api
             }
 
             app.UseRouting();
+            
+            // CORS deve vir antes de autenticação e autorização
             app.UseCors("CorsPolicy");
+            
+            // Add explicit CORS headers
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:8080");
+                context.Response.Headers.Append("Access-Control-Allow-Credentials", "true");
+                await next();
+            });
+
+            
             app.UseAuthentication();
             app.UseAuthorization();
 

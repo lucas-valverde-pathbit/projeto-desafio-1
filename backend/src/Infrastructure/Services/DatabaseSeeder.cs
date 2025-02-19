@@ -1,70 +1,55 @@
 using Domain.Models;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-
-using System;
+using System.Security.Cryptography;
+using System.Text;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Services
 {
     public class DatabaseSeeder
     {
-        public async Task SeedAsync(Data.AppDbContext context)
-
+        public async Task SeedAsync(AppDbContext context)
         {
-            // Verifica se a tabela Customers existe
-            if (await context.Database.CanConnectAsync() && 
-                await context.Database.ExecuteSqlRawAsync("SELECT 1 FROM \"Customers\" LIMIT 1") == 1)
+            // Verifica se o banco existe e cria se necessário
+            await context.Database.EnsureCreatedAsync();
+
+            // Seed Users
+            if (!await context.Users.AnyAsync())
             {
-                // Seed Customers
-                if (!await context.Customers.AnyAsync())
-                {
-                    await context.Customers.AddRangeAsync(GetPreconfiguredCustomers());
-                    await context.SaveChangesAsync();
-                }
+                var users = GetPreconfiguredUsers();
+                await context.Users.AddRangeAsync(users);
+                await context.SaveChangesAsync();
             }
 
-            // Verifica se a tabela Products existe
-            if (await context.Database.CanConnectAsync() && 
-                await context.Database.ExecuteSqlRawAsync("SELECT 1 FROM \"Products\" LIMIT 1") == 1)
+            // Seed Customers
+            List<Customer> customers = new();
+            if (!await context.Customers.AnyAsync())
             {
-                // Seed Products
-                if (!await context.Products.AnyAsync())
-                {
-                    await context.Products.AddRangeAsync(GetPreconfiguredProducts());
-                    await context.SaveChangesAsync();
-                }
+                customers = GetPreconfiguredCustomers();
+                await context.Customers.AddRangeAsync(customers);
+                await context.SaveChangesAsync();
             }
 
-            // Verifica se a tabela Orders existe
-            if (await context.Database.CanConnectAsync() && 
-                await context.Database.ExecuteSqlRawAsync("SELECT 1 FROM \"Orders\" LIMIT 1") == 1)
+            // Seed Products
+            if (!await context.Products.AnyAsync())
             {
-                // Seed Orders
-                if (!await context.Orders.AnyAsync())
-                {
-                    await context.Orders.AddRangeAsync(GetPreconfiguredOrders());
-                    await context.SaveChangesAsync();
-                }
+                var products = GetPreconfiguredProducts();
+                await context.Products.AddRangeAsync(products);
+                await context.SaveChangesAsync();
             }
 
-            // Verifica se a tabela Users existe
-            if (await context.Database.CanConnectAsync() && 
-                await context.Database.ExecuteSqlRawAsync("SELECT 1 FROM \"Users\" LIMIT 1") == 1)
+            // Seed Orders
+            if (!await context.Orders.AnyAsync() && customers.Count > 0)
             {
-                // Seed Users
-                if (!await context.Users.AnyAsync())
-                {
-                    await context.Users.AddRangeAsync(GetPreconfiguredUsers());
-                    await context.SaveChangesAsync();
-                }
+                var orders = GetPreconfiguredOrders(customers[0].Id);
+                await context.Orders.AddRangeAsync(orders);
+                await context.SaveChangesAsync();
             }
-
         }
 
-        private static IEnumerable<Customer> GetPreconfiguredCustomers()
+        private static List<Customer> GetPreconfiguredCustomers()
         {
             return new List<Customer>
             {
@@ -74,22 +59,33 @@ namespace Infrastructure.Services
                     CustomerName = "Cliente Exemplo",
                     CustomerEmail = "cliente@exemplo.com"
                 }
-
             };
-
         }
 
-        private static IEnumerable<Product> GetPreconfiguredProducts()
+        private static List<Product> GetPreconfiguredProducts()
         {
             return new List<Product>
             {
-                new Product { Id = Guid.NewGuid(), ProductName = "Produto 1", ProductPrice = 10.0m },
-                new Product { Id = Guid.NewGuid(), ProductName = "Produto 2", ProductPrice = 20.0m }
-
+                new Product 
+                { 
+                    Id = Guid.NewGuid(), 
+                    ProductName = "Produto 1", 
+                    ProductDescription = "Descrição do Produto 1",
+                    ProductPrice = 10.0m,
+                    ProductStockQuantity = 3
+                },
+                new Product 
+                { 
+                    Id = Guid.NewGuid(), 
+                    ProductName = "Produto 2", 
+                    ProductDescription = "Descrição do Produto 2",
+                    ProductPrice = 20.0m,
+                    ProductStockQuantity = 6
+                }
             };
         }
 
-        private static IEnumerable<Order> GetPreconfiguredOrders()
+        private static List<Order> GetPreconfiguredOrders(Guid customerId)
         {
             return new List<Order>
             {
@@ -97,14 +93,12 @@ namespace Infrastructure.Services
                 {
                     Id = Guid.NewGuid(),
                     OrderDate = DateTime.UtcNow,
-                    CustomerId = Guid.NewGuid()
+                    CustomerId = customerId
                 }
-
             };
-
         }
 
-        private static IEnumerable<User> GetPreconfiguredUsers()
+        private static List<User> GetPreconfiguredUsers()
         {
             return new List<User>
             {
@@ -113,13 +107,24 @@ namespace Infrastructure.Services
                     Id = Guid.NewGuid(),
                     UserName = "UsuarioExemplo",
                     UserEmail = "usuario@exemplo.com",
-                    UserPassword = "senhaSegura123",
+                    UserPassword = ComputeSha256Hash("senhaSegura123"),
                     Role = UserRole.CLIENTE
                 }
-
             };
-
         }
 
+        private static string ComputeSha256Hash(string rawData)
+        {
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+                StringBuilder builder = new StringBuilder();
+                foreach (byte b in bytes)
+                {
+                    builder.Append(b.ToString("x2"));
+                }
+                return builder.ToString();
+            }
+        }
     }
 }

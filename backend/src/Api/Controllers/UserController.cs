@@ -11,14 +11,17 @@ using Microsoft.Extensions.Logging;
 
 namespace Api.Controllers
 {
-    [Route("api/users")]
-    public class UserController : BaseController<User, IUserService>
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UserController : ControllerBase
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<UserController> _logger;
+        private readonly IUserService _service;
 
-        public UserController(IUserService service, IConfiguration configuration, ILogger<UserController> logger) : base(service)
+        public UserController(IUserService service, IConfiguration configuration, ILogger<UserController> logger)
         {
+            _service = service;
             _configuration = configuration;
             _logger = logger;
         }
@@ -40,7 +43,6 @@ namespace Api.Controllers
                 _logger.LogWarning("Tipo de usuário inválido recebido: {Role}", request.SignupRole);
                 return BadRequest($"Tipo de usuário inválido. Valores aceitos: {string.Join(", ", Enum.GetNames(typeof(UserRole)))}");
             }
-
 
             // Criação do novo usuário
             var user = new User
@@ -103,10 +105,14 @@ namespace Api.Controllers
             }
         }
 
-        // Método para pegar usuário por ID (Exemplo de ação adicional)
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        [HttpGet("status")]
+        public IActionResult Status()
+        {
+            return Ok(new { status = "API is running" });
+        }
 
+        [HttpGet("by-id/{id}")]
+        public async Task<IActionResult> GetById(Guid id)
         {
             var user = await _service.GetById(id);
             if (user == null)
@@ -123,7 +129,6 @@ namespace Api.Controllers
         public string SignupPassword { get; set; }
         public string SignupRole { get; set; }
     }
-
 
     // Modelo de Requisição para Login
     public class UserLoginRequest
