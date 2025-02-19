@@ -1,3 +1,4 @@
+# Usar a imagem oficial do PostgreSQL
 FROM postgres:latest
 
 # Definir variáveis de ambiente para o PostgreSQL
@@ -5,7 +6,8 @@ ENV POSTGRES_USER=meuusuario
 ENV POSTGRES_PASSWORD=minhasenha
 ENV POSTGRES_DB=meubanco
 
-# Copiar scripts de inicialização (se houver)
+# Copiar scripts de inicialização (caso tenha algum script SQL para inicializar o banco)
+# Se você tiver um arquivo SQL de inicialização, descomente a linha abaixo
 # COPY init.sql /docker-entrypoint-initdb.d/
 
 EXPOSE 5432

@@ -1,38 +1,47 @@
-# Usar a imagem base do .NET SDK 9.0
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+ENV ASPNETCORE_URLS=http://+:5064
 
-# Definir o diretório de trabalho
 WORKDIR /src
-
-# Copiar os arquivos de projeto para dentro do contêiner
 COPY ["src/Api/Api.csproj", "src/Api/"]
-
-# Restaurar as dependências do projeto
+COPY ["src/Application/Application.csproj", "src/Application/"]
+COPY ["src/Domain/Domain.csproj", "src/Domain/"]
+COPY ["src/Infrastructure/Infrastructure.csproj", "src/Infrastructure/"]
 RUN dotnet restore "src/Api/Api.csproj"
+RUN dotnet add "src/Api/Api.csproj" package Npgsql.EntityFrameworkCore.PostgreSQL --version 9.0.3
+RUN dotnet add "src/Api/Api.csproj" package Microsoft.AspNetCore.Authentication.JwtBearer --version 7.0.0
 
-# Copiar o restante dos arquivos para dentro do contêiner
+RUN dotnet add "src/Api/Api.csproj" package IdentityModel --version 7.0.0
 COPY . .
+COPY wait-for-postgres.sh /wait-for-postgres.sh
+WORKDIR "/src/src/Api"
 
-# Publicar o aplicativo
-RUN dotnet publish "src/Api/Api.csproj" -c Release -o /app/publish
 
-# Usar a imagem base para o runtime
+
+# Install EF Core tools and add to PATH
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/root/.dotnet/tools"
+RUN dotnet build "Api.csproj" -c Release -o /app/build
+
+
+
+
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+ENV ASPNETCORE_URLS=http://+:5064
 
-# Definir o diretório de trabalho no contêiner final
 WORKDIR /app
-
-# Copiar a aplicação publicada para dentro do contêiner final
-COPY --from=build /app/publish .
-
-# Copiar o script de espera para dentro do contêiner
-COPY wait-for-postgres.sh /app/wait-for-postgres.sh
-
-# Instalar o cliente do PostgreSQL
-RUN apt-get update && apt-get install -y postgresql-client
-
-# Expor a porta
 EXPOSE 5064
+COPY --from=build /app/build .
+COPY --from=build /root/.dotnet/tools /root/.dotnet/tools
+ENV PATH="$PATH:/root/.dotnet/tools"
 
-# Definir o comando de execução
-CMD ["bash", "/app/wait-for-postgres.sh", "db", "dotnet", "Api.dll"]
+# Install PostgreSQL client
+RUN apt-get update && \
+    apt-get install -y postgresql-client && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy scripts
+COPY wait-for-postgres.sh /wait-for-postgres.sh
+COPY startup.sh /startup.sh
+RUN chmod +x /wait-for-postgres.sh /startup.sh
+
+ENTRYPOINT ["/startup.sh"]

@@ -5,11 +5,15 @@ using Domain.Models;
 using Domain.Services;
 using Infrastructure.Data;
 
+
+
 namespace Infrastructure.Services
 {
     public class UserService : BaseService<User>, IUserService
     {
         public UserService(AppDbContext context) : base(context) {}
+
+
 
         public async Task<User?> Authenticate(string username, string password)
         {

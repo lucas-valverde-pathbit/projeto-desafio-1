@@ -1,9 +1,15 @@
-#!/bin/bash
-# Aguardar até que o PostgreSQL esteja disponível
-until pg_isready -h "$1" -p 5432; do
-  echo "Postgres is unavailable - sleeping"
+#!/bin/sh
+
+set -e
+
+host="$1"
+shift
+cmd="$@"
+
+until PGPASSWORD=$POSTGRES_PASSWORD psql -h "$host" -U "meuusuario" -d "meubanco" -c '\q'; do
+  >&2 echo "Postgres is unavailable - sleeping"
   sleep 1
 done
 
-echo "Postgres is up - executing command"
-exec "$2" "$3" "$4"
+>&2 echo "Postgres is up - executing command"
+exec $cmd

@@ -3,50 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Controle</title>
-    <link rel="stylesheet" href="css/index.css">
+    <title>Login</title>
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-
-    <!-- Cabeçalho -->
-    <header>
-        <div class="container">
-            <h1>Sistema de Gestão</h1>
-            <p>Escolha uma das opções abaixo para gerenciar os dados.</p>
-        </div>
-    </header>
-
-    <!-- Conteúdo principal -->
-    <div class="container">
-        <div class="button-container">
-            <div class="button-box">
-                <a href="product.html" class="button-link">
-                    <div class="button-box-content">
-                        <h2>Produtos</h2>
-                        <p>Cadastrar, editar ou listar produtos</p>
-                    </div>
-                </a>
+    <div class="login-container">
+        <h1>Login</h1>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" required>
             </div>
-
-            <div class="button-box">
-                <a href="order.html" class="button-link">
-                    <div class="button-box-content">
-                        <h2>Pedidos</h2>
-                        <p>Cadastrar, editar ou listar pedidos</p>
-                    </div>
-                </a>
+            <div class="form-group">
+                <label for="loginPassword">Senha:</label>
+                <input type="password" id="loginPassword" required>
             </div>
-
-            <div class="button-box">
-                <a href="user.html" class="button-link">
-                    <div class="button-box-content">
-                        <h2>Usuários</h2>
-                        <p>Cadastrar, editar ou listar usuários</p>
-                    </div>
-                </a>
-            </div>
-        </div>
+            <button type="submit">Entrar</button>
+        </form>
+        <div id="loginMessage" class="message"></div>
+        <p>Não tem uma conta? <a href="user.html">Cadastre-se</a></p>
     </div>
-    <script src="js/index.js"></script>
+    <script src="../js/user.js"></script>
 </body>
 </html>

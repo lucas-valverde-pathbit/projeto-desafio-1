@@ -1,47 +1,44 @@
 services:
+  db:
+    image: postgres:17.3
+    container_name: projeto-final-db
+    environment:
+      POSTGRES_DB: meubanco
+      POSTGRES_USER: meuusuario
+      POSTGRES_PASSWORD: minhasenha
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
   api:
     build:
       context: ./backend
       dockerfile: Dockerfile.api
-    ports:
-      - "5064:5064"
+    container_name: projeto-final-api
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Host=db;Database=meubanco;Username=meuusuario;Password=minhasenha
+      POSTGRES_PASSWORD: minhasenha
     depends_on:
       - db
-    command: ["bash", "/app/wait-for-postgres.sh", "db", "dotnet", "Api.dll"]
+    ports:
+      - "5064:5064"
     networks:
       - app-network
-
-  db:
-    image: postgres:latest
-    restart: always
-    environment:
-      POSTGRES_USER: meuusuario
-      POSTGRES_PASSWORD: minhasenha
-      POSTGRES_DB: meubanco
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - app-network
-
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.frontend
-    ports: 
-     - 8080:80
-    depends_on: 
-    - api
+    container_name: projeto-final-frontend
+    ports:
+      - "8080:80"
     networks:
       - app-network
 
- 
-networks:
-  app-network:
-    driver: bridge
-
 volumes:
   postgres_data:
+
+networks:
+  app-network:

@@ -352,3 +352,4 @@ C:\Users\Lucas\Desktop\projeto-final\backend\src\Api\obj\Debug\net9.0\staticweba
 C:\Users\Lucas\Desktop\projeto-final\backend\src\Api\obj\Debug\net9.0\Api.csproj.Up2Date
 C:\Users\Lucas\Desktop\projeto-final\backend\src\Api\obj\Debug\net9.0\Api.genruntimeconfig.cache
 C:\Users\Lucas\Desktop\projeto-final\backend\src\Api\obj\Debug\net9.0\ref\Api.dll
+c:\Users\Lucas\Desktop\projeto-final\backend\src\Api\obj\Debug\net9.0\Api.sourcelink.json

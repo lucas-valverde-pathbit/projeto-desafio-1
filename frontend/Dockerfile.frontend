@@ -1,16 +1,14 @@
 # Usar a imagem base do Nginx
 FROM nginx:alpine
 
-# Definir o diretório de trabalho no container (opcional, mas ajuda a organizar)
-WORKDIR /usr/share/nginx/html
-
-# Copiar os arquivos do frontend para o diretório do Nginx
+# Copiar os arquivos HTML para o diretório padrão do Nginx
 COPY ./html /usr/share/nginx/html
+
+# Copiar os arquivos CSS para o diretório correto no Nginx
 COPY ./css /usr/share/nginx/html/css
+
+# Copiar os arquivos JS para o diretório correto no Nginx
 COPY ./js /usr/share/nginx/html/js
 
 # Expor a porta 80
 EXPOSE 80
-
-# Iniciar o Nginx em primeiro plano
-CMD ["nginx", "-g", "daemon off;"]

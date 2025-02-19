@@ -1,80 +1,125 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore; // Adicionando o namespace para ToListAsync
-
 using Domain.Models;
 using Infrastructure.Data;
-using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Services
 {
     public class DatabaseSeeder
     {
-        private readonly ILogger<DatabaseSeeder> _logger;
+        public async Task SeedAsync(Data.AppDbContext context)
 
-        public DatabaseSeeder(ILogger<DatabaseSeeder> logger)
         {
-            _logger = logger;
-        }
-
-        public async Task SeedAsync(AppDbContext context)
-        {
-            if (!context.Customers.Any())
+            // Verifica se a tabela Customers existe
+            if (await context.Database.CanConnectAsync() && 
+                await context.Database.ExecuteSqlRawAsync("SELECT 1 FROM \"Customers\" LIMIT 1") == 1)
             {
-                var customers = new[]
+                // Seed Customers
+                if (!await context.Customers.AnyAsync())
                 {
-                    new Customer { CustomerEmail = "customer1@example.com", CustomerName = "Customer One" },
-                    new Customer { CustomerEmail = "customer2@example.com", CustomerName = "Customer Two" }
-                };
-
-                await context.Customers.AddRangeAsync(customers);
-                await context.SaveChangesAsync();
-                _logger.LogInformation("Customers seeded successfully.");
+                    await context.Customers.AddRangeAsync(GetPreconfiguredCustomers());
+                    await context.SaveChangesAsync();
+                }
             }
 
-            if (!context.Products.Any())
+            // Verifica se a tabela Products existe
+            if (await context.Database.CanConnectAsync() && 
+                await context.Database.ExecuteSqlRawAsync("SELECT 1 FROM \"Products\" LIMIT 1") == 1)
             {
-                var products = new[]
+                // Seed Products
+                if (!await context.Products.AnyAsync())
                 {
-                    new Product { ProductName = "Product One", ProductPrice = 10.99M, ProductDescription = "Product One description", ProductStockQuantity = 10},
-                    new Product { ProductName = "Product Two", ProductPrice = 20.99M, ProductDescription = "Product Two description", ProductStockQuantity = 20}
-                };
-
-                await context.Products.AddRangeAsync(products);
-                await context.SaveChangesAsync();
-                _logger.LogInformation("Products seeded successfully. Total products: " + products.Length);
+                    await context.Products.AddRangeAsync(GetPreconfiguredProducts());
+                    await context.SaveChangesAsync();
+                }
             }
 
-            if (!context.Users.Any())
+            // Verifica se a tabela Orders existe
+            if (await context.Database.CanConnectAsync() && 
+                await context.Database.ExecuteSqlRawAsync("SELECT 1 FROM \"Orders\" LIMIT 1") == 1)
             {
-                var users = new[]
+                // Seed Orders
+                if (!await context.Orders.AnyAsync())
                 {
-                    new User { UserEmail = "example1@email.com", UserPassword = "password1"},
-                    new User { UserEmail = "example2@email.com", UserPassword = "password2"}
-                };
-
-                await context.Users.AddRangeAsync(users);
-                await context.SaveChangesAsync();
-                _logger.LogInformation("Users seeded successfully.");
+                    await context.Orders.AddRangeAsync(GetPreconfiguredOrders());
+                    await context.SaveChangesAsync();
+                }
             }
 
-            if (!context.Orders.Any())
+            // Verifica se a tabela Users existe
+            if (await context.Database.CanConnectAsync() && 
+                await context.Database.ExecuteSqlRawAsync("SELECT 1 FROM \"Users\" LIMIT 1") == 1)
             {
-                var customers = await context.Customers.ToListAsync(); // Obter os clientes existentes
-                var users = await context.Users.ToListAsync(); // Obter os usuários existentes
-                
-                var orders = new[]
+                // Seed Users
+                if (!await context.Users.AnyAsync())
                 {
-                    new Order { CustomerId = customers[0].Id, DeliveryAddress = "Address One", OrderDate = DateTime.UtcNow, Status = OrderStatus.Pendente, UserId = users[0].Id },
-                    new Order { CustomerId = customers[1].Id, DeliveryAddress = "Address Two", OrderDate = DateTime.UtcNow, Status = OrderStatus.Pendente, UserId = users[1].Id }
-                };
-
-                await context.Orders.AddRangeAsync(orders);
-                await context.SaveChangesAsync();
-                _logger.LogInformation("Orders seeded successfully.");
+                    await context.Users.AddRangeAsync(GetPreconfiguredUsers());
+                    await context.SaveChangesAsync();
+                }
             }
 
         }
+
+        private static IEnumerable<Customer> GetPreconfiguredCustomers()
+        {
+            return new List<Customer>
+            {
+                new Customer
+                {
+                    Id = Guid.NewGuid(),
+                    CustomerName = "Cliente Exemplo",
+                    CustomerEmail = "cliente@exemplo.com"
+                }
+
+            };
+
+        }
+
+        private static IEnumerable<Product> GetPreconfiguredProducts()
+        {
+            return new List<Product>
+            {
+                new Product { Id = Guid.NewGuid(), ProductName = "Produto 1", ProductPrice = 10.0m },
+                new Product { Id = Guid.NewGuid(), ProductName = "Produto 2", ProductPrice = 20.0m }
+
+            };
+        }
+
+        private static IEnumerable<Order> GetPreconfiguredOrders()
+        {
+            return new List<Order>
+            {
+                new Order
+                {
+                    Id = Guid.NewGuid(),
+                    OrderDate = DateTime.UtcNow,
+                    CustomerId = Guid.NewGuid()
+                }
+
+            };
+
+        }
+
+        private static IEnumerable<User> GetPreconfiguredUsers()
+        {
+            return new List<User>
+            {
+                new User
+                {
+                    Id = Guid.NewGuid(),
+                    UserName = "UsuarioExemplo",
+                    UserEmail = "usuario@exemplo.com",
+                    UserPassword = "senhaSegura123",
+                    Role = UserRole.CLIENTE
+                }
+
+            };
+
+        }
+
     }
 }

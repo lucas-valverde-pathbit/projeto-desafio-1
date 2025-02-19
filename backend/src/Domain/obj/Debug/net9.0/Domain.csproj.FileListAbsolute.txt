@@ -20,3 +20,4 @@ C:\Users\lucas\Desktop\projeto-final\backend\src\Domain\obj\Debug\net9.0\Domain.
 C:\Users\lucas\Desktop\projeto-final\backend\src\Domain\obj\Debug\net9.0\refint\Domain.dll
 C:\Users\lucas\Desktop\projeto-final\backend\src\Domain\obj\Debug\net9.0\Domain.pdb
 C:\Users\lucas\Desktop\projeto-final\backend\src\Domain\obj\Debug\net9.0\ref\Domain.dll
+c:\Users\Lucas\Desktop\projeto-final\backend\src\Domain\obj\Debug\net9.0\Domain.sourcelink.json
