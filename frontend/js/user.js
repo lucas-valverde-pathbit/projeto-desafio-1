@@ -17,6 +17,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Função para verificar e redirecionar com base no token
+    function checkToken() {
+        const token = localStorage.getItem('jwtToken');
+        
+        // Se não houver token, redireciona para login
+        if (!token) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        // Se houver token, tenta decodificá-lo para verificar a validade
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const currentTime = Math.floor(Date.now() / 1000);
+            
+            // Verifica se o token expirou
+            if (payload.exp < currentTime) {
+                localStorage.removeItem('jwtToken');
+                window.location.href = 'login.html'; // Redireciona para login se o token estiver expirado
+            } else {
+                window.location.href = 'index.html'; // Redireciona para index se o token for válido
+            }
+        } catch (error) {
+            console.error('Erro ao verificar token:', error);
+            localStorage.removeItem('jwtToken');
+            window.location.href = 'login.html'; // Redireciona para login se houver erro ao decodificar o token
+        }
+    }
+
+    // Verifica o token assim que o script for carregado
+    checkToken();
 
     // Função para abrir as tabs
     function openTab(tabName) {
@@ -73,18 +104,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-
                 let responseData;
                 try {
                     responseData = await response.json();
                 } catch (error) {
-                    // Handle non-JSON responses
                     const text = await response.text();
                     showMessage('loginMessage', text || 'Erro ao fazer login. Verifique suas credenciais.', 'error');
                     console.error('Login error:', text);
                     return;
                 }
-                
+
                 if (response.ok && responseData.token) {
                     localStorage.setItem('jwtToken', responseData.token);
                     // Verify token was stored before redirect
@@ -94,8 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         showMessage('loginMessage', 'Erro ao armazenar token. Tente novamente.', 'error');
                     }
                 } else {
-
-
                     const errorMsg = responseData.message || 'Erro ao fazer login. Verifique suas credenciais.';
                     showMessage('loginMessage', errorMsg, 'error');
                     console.error('Login error:', responseData);
@@ -134,7 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const confirmPassword = signupConfirmPassword.value;
             const role = signupRole.value.toUpperCase();
             
-            // Verificando se as senhas coincidem
             if (password !== confirmPassword) {
                 showMessage('signupMessage', 'As senhas não coincidem', 'error');
                 return;
@@ -162,7 +188,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     showMessage('signupMessage', 'Cadastro realizado com sucesso!', 'success');
                     signupForm.reset();
-                    // Open login tab after successful signup
                     openTab('login');
                 } else {
                     showMessage('signupMessage', data.message || 'Erro ao cadastrar', 'error');
@@ -185,40 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 messageElement.style.display = 'none';
             }, 5000);
-        }
-    }
-
-    // Verifica autenticação ao carregar a página
-    const token = localStorage.getItem('jwtToken');
-    
-    // Only redirect if trying to access login page while already authenticated
-    if (token && window.location.pathname.includes('login')) {
-        window.location.href = 'index.html';
-    }
-
-    // Redirect to login if not authenticated and trying to access protected pages
-    if (!token && !window.location.pathname.includes('user.html')) {
-        // Store intended destination before redirect
-        sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
-        window.location.href = 'user.html';
-        return;
-    }
-
-
-
-    if (token) {
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            const currentTime = Math.floor(Date.now() / 1000);
-            
-            if (payload.exp < currentTime) {
-                localStorage.removeItem('jwtToken');
-                window.location.href = 'index.html';
-            }
-        } catch (error) {
-            console.error('Erro ao verificar token:', error);
-            localStorage.removeItem('jwtToken');
-            window.location.href = 'index.html';
         }
     }
 });

@@ -3,26 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <title>Menu de Opções</title>
+    <link rel="stylesheet" href="../css/index.css">
 </head>
 <body>
-    <div class="login-container">
-        <h1>Login</h1>
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="loginEmail">Email:</label>
-                <input type="email" id="loginEmail" required>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="header-content">
+            <h1>Minha Aplicação</h1>
+            <div id="userInfo" class="user-info">
+                <span id="userName" class="user-name"></span>
+                <button id="logoutBtn" class="logout-btn" style="display: block;" onclick="logout()">Sair</button>
             </div>
-            <div class="form-group">
-                <label for="loginPassword">Senha:</label>
-                <input type="password" id="loginPassword" required>
-            </div>
-            <button type="submit">Entrar</button>
-        </form>
-        <div id="loginMessage" class="message"></div>
-        <p>Não tem uma conta? <a href="user.html">Cadastre-se</a></p>
+        </div>
+    </header>
+
+    <!-- Conteúdo principal -->
+    <div class="container">
+        <h1>Bem-vindo ao Sistema</h1>
+        <p>Escolha uma das opções abaixo:</p>
+        <div class="buttons-container">
+            <!-- Botões para acessar outras páginas -->
+            <a href="customer.html" class="admin-only button" >Clientes</a>
+
+            <a href="product.html" class="button">Produtos</a>
+            <a href="order.html" class="button">Pedidos</a>
+            <!-- Botão de login (apenas visível se o usuário não estiver logado) -->
+            <a id="loginButton" href="login.html" class="button">Login</a>
+        </div>
     </div>
-    <script src="../js/user.js"></script>
+    <script src="../js/index.js"></script>
 </body>
 </html>

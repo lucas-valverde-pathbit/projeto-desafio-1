@@ -1,108 +1,145 @@
-/* Resetando alguns estilos padrões */
+/* Estilo global */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
 }
 
-/* Corpo e fonte padrão */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-    color: #333;
+    background-color: #f4f4f9; /* Cor de fundo clara */
+    color: #333; /* Cor de texto */
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
 }
 
 /* Cabeçalho */
 header {
-    background-color: #6a4c9c; /* Roxo escuro */
-    color: #fff;
-    padding: 20px 0;
-    text-align: center;
+    background-color: #5f27cd; /* Cor roxa */
+    color: white;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 header h1 {
-    font-size: 2.5rem;
+    font-size: 26px;
+    font-weight: bold;
+    letter-spacing: 1px;
 }
 
-header p {
-    font-size: 1rem;
-}
-
-/* Container principal */
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 30px auto;
-}
-
-/* Estilizando os botões */
-.button-container {
+.user-info {
     display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 20px;
+    align-items: center;
 }
 
-.button-box {
-    width: 30%;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+.user-name {
+    font-size: 18px;
+    color: white;
+    cursor: pointer;
+    margin-right: 15px;
+    font-weight: bold;
 }
 
-.button-box:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+.logout-btn {
+    padding: 8px 16px;
+    background-color: #ff4757; /* Cor vermelha */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: none;
+    transition: background-color 0.3s;
 }
 
-.button-link {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    height: 100%;
+.logout-btn:hover {
+    background-color: #e84118;
 }
 
-.button-box-content {
+.logout-btn:focus {
+    outline: none;
+}
+
+/* Conteúdo principal */
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
     padding: 20px;
     text-align: center;
 }
 
-.button-box h2 {
-    font-size: 1.8rem;
-    margin-bottom: 10px;
-    color: #6a4c9c; /* Roxo escuro */
+.container h1 {
+    font-size: 36px;
+    font-weight: bold;
+    color: #5f27cd; /* Cor roxa */
+    margin-bottom: 20px;
 }
 
-.button-box p {
-    font-size: 1rem;
+.container p {
+    font-size: 18px;
     color: #555;
+    margin-bottom: 30px;
 }
 
-/* Responsividade para dispositivos móveis */
+/* Botões de navegação */
+.buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.button {
+    display: inline-block;
+    padding: 15px 25px;
+    background-color: #5f27cd;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 5px;
+    text-align: center;
+    width: 200px;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.button:hover {
+    background-color: #4e21a2;
+    transform: translateY(-4px); /* Elevação ao passar o mouse */
+}
+
+.button:active {
+    transform: translateY(2px); /* Animação de clique */
+}
+
+/* Responsividade */
 @media (max-width: 768px) {
-    .button-box {
-        width: 45%;
+    header {
+        padding: 15px;
     }
-}
 
-@media (max-width: 480px) {
-    .button-box {
+    header h1 {
+        font-size: 20px;
+    }
+
+    .container h1 {
+        font-size: 30px;
+    }
+
+    .buttons-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .button {
         width: 100%;
+        max-width: 250px;
+        margin-bottom: 15px;
     }
-}
-
-/* Efeito para o link ativo */
-.button-link.active .button-box-content {
-    background-color: #6a4c9c; /* Roxo escuro */
-    color: #fff;
-}
-
-.button-link.active .button-box h2 {
-    color: #fff;
-}
-
-.button-link.active .button-box p {
-    color: #fff;
 }

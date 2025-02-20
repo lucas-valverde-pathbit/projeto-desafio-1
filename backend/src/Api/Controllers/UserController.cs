@@ -12,50 +12,81 @@ using Microsoft.Extensions.Logging;
 namespace Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/users")]
     public class UserController : ControllerBase
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<UserController> _logger;
         private readonly IUserService _service;
-
-        public UserController(IUserService service, IConfiguration configuration, ILogger<UserController> logger)
+        private readonly ICustomerService _customerService;
+        public UserController(IUserService service, ICustomerService customerService, IConfiguration configuration, ILogger<UserController> logger)
         {
             _service = service;
             _configuration = configuration;
             _logger = logger;
+            _customerService = customerService;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
+        {
+             var users = await _service.GetAll();
+                if (users == null || !users.Any())
+                return NotFound("Nenhum usuário encontrado.");
+
+             return Ok(users);
+        }
         // Endpoint de Cadastro de Usuário
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp([FromBody] UserSignupRequest request)
         {
-            _logger.LogInformation("Recebida requisição de cadastro: {@Request}", request);
+          _logger.LogInformation("Recebida requisição de cadastro: {@Request}", request);
 
-            if (string.IsNullOrEmpty(request.SignupPassword))
+          // Validações
+          if (string.IsNullOrEmpty(request.SignupPassword))
                 return BadRequest("Senha é obrigatória");
 
-            if (string.IsNullOrEmpty(request.SignupName) || string.IsNullOrEmpty(request.SignupEmail))
+         if (string.IsNullOrEmpty(request.SignupName) || string.IsNullOrEmpty(request.SignupEmail))
                 return BadRequest("Nome e email são obrigatórios");
 
-            if (!Enum.TryParse(request.SignupRole, true, out UserRole signupRole))
-            {
+         if (!Enum.TryParse(request.SignupRole, true, out UserRole signupRole))
+         {
                 _logger.LogWarning("Tipo de usuário inválido recebido: {Role}", request.SignupRole);
-                return BadRequest($"Tipo de usuário inválido. Valores aceitos: {string.Join(", ", Enum.GetNames(typeof(UserRole)))}");
+             return BadRequest($"Tipo de usuário inválido. Valores aceitos: {string.Join(", ", Enum.GetNames(typeof(UserRole)))}");
+         }
+
+         // Criação do novo usuário
+          var user = new User
+         {
+              UserName = request.SignupName,
+               UserEmail = request.SignupEmail,
+               UserPassword = ComputeSha256Hash(request.SignupPassword), // Hash da senha
+              Role = signupRole
+         };
+
+         // Tenta adicionar o usuário ao banco de dados
+         var createdUser = await _service.Add(user);
+
+         // Se o tipo de usuário for "CLIENTE", cria um registro na tabela Customer
+         if (signupRole == UserRole.CLIENTE)
+         {
+              // Aqui, você pode adicionar campos específicos para o cliente, por exemplo, endereço ou telefone
+              var customer = new Customer
+             {
+                    UserId = createdUser.Id,  // Aqui você associa o Customer ao User criado
+                    CustomerEmail = request.SignupEmail,
+                    CustomerName = request.SignupName,
+                 // Se tiver mais informações a serem passadas, adicione-as aqui
+              };
+
+              // Insere o cliente na tabela Customer
+              await _customerService.Add(customer); // Supondo que você tenha um serviço para manipular clientes
             }
 
-            // Criação do novo usuário
-            var user = new User
-            {
-                UserName = request.SignupName,
-                UserEmail = request.SignupEmail,
-                UserPassword = ComputeSha256Hash(request.SignupPassword), // Hash da senha
-                Role = signupRole
-            };
-
-            var createdUser = await _service.Add(user);
-            return CreatedAtAction(nameof(GetById), new { id = createdUser.Id }, createdUser);
+         return CreatedAtAction(nameof(GetById), new { id = createdUser.Id }, createdUser);
         }
+
+
 
         // Endpoint de Login
         [HttpPost("login")]

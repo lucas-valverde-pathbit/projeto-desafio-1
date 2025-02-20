@@ -19,9 +19,10 @@ services:
       dockerfile: Dockerfile.api
     container_name: projeto-final-api
     environment:
-      POSTGRES_PASSWORD: minhasenha
+     - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Username=meuusuario;Password=minhasenha;Database=meubanco
     depends_on:
       - db
+    command: ["./wait-for-it.sh", "db:5432", "--", "dotnet", "run"]
     ports:
       - "5064:5064"
     networks:

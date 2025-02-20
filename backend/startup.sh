@@ -1,12 +1,12 @@
 #!/bin/sh
 
-# Wait for PostgreSQL to be ready
+# Esperar o PostgreSQL estar disponível
 /wait-for-postgres.sh
 
-# Apply database migrations and seed data
-echo "Applying database migrations..."
-dotnet Api.dll --migrate
+# Aplicar as migrações
+echo "Aplicando migrações do banco de dados..."
+dotnet ef database update --no-build
 
-# Start the application
-echo "Starting application..."
+# Iniciar a aplicação
+echo "Iniciando a aplicação..."
 exec dotnet Api.dll

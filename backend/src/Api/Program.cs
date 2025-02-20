@@ -63,7 +63,6 @@ namespace Api
                 });
             });
 
-
             // Adicionando o controlador e outros serviços
             builder.Services.AddControllers();
 
@@ -73,29 +72,26 @@ namespace Api
 
             var app = builder.Build();
 
-            // Migração e seed do banco de dados se solicitado
-            if (args.Contains("--migrate"))
+            // Aplicar migrações automaticamente durante a inicialização
+            using (var scope = app.Services.CreateScope())
             {
-                using (var scope = app.Services.CreateScope())
+                var services = scope.ServiceProvider;
+                try
                 {
-                    var services = scope.ServiceProvider;
-                    try
-                    {
-                        var context = services.GetRequiredService<AppDbContext>();
-                        await context.Database.MigrateAsync();
-                        Console.WriteLine("Migrations applied successfully.");
+                    // Obter o contexto do banco de dados
+                    var context = services.GetRequiredService<AppDbContext>();
+                    await context.Database.MigrateAsync(); // Aplica as migrações
 
-                        // Executar o seeder
-                        var seeder = new DatabaseSeeder();
-                        await seeder.SeedAsync(context);
-                        Console.WriteLine("Database seeded successfully.");
-                    }
-                    catch (Exception ex)
-                    {
-                        var logger = services.GetRequiredService<ILogger<Program>>();
-                        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
-                        throw;
-                    }
+                    // Opcional: Adicionar um Seeder, caso necessário
+                    var seeder = new DatabaseSeeder();
+                    await seeder.SeedAsync(context);
+                    Console.WriteLine("Migrações aplicadas com sucesso e banco de dados seedado.");
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "Erro ao aplicar migrações ou seed do banco de dados.");
+                    throw;
                 }
             }
 
@@ -107,25 +103,18 @@ namespace Api
             }
 
             app.UseRouting();
-            
+
             // CORS deve vir antes de autenticação e autorização
             app.UseCors("CorsPolicy");
-            
-            // Add explicit CORS headers
-            app.Use(async (context, next) =>
-            {
-                context.Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:8080");
-                context.Response.Headers.Append("Access-Control-Allow-Credentials", "true");
-                await next();
-            });
 
-            
+            // Configuração de Autenticação e Autorização
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // Mapear controladores
             app.MapControllers();
 
-            // Inicia o servidor
+            // Iniciar o servidor
             await app.RunAsync();
         }
     }
