@@ -9,18 +9,20 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 
-app.UseRouting();
+// Permitir servir arquivos estáticos
+app.UseStaticFiles();
 
-app.UseAuthorization();
+// Definir a rota da raiz para servir o arquivo login.html
+app.MapGet("/", () => Results.Redirect("/html/login.html")); // Redireciona para login.html na raiz
 
-app.MapStaticAssets();
-app.MapRazorPages()
-   .WithStaticAssets();
 
+// Mapeia Razor Pages, se necessário
+app.MapRazorPages();
+
+// Iniciar a aplicação
 app.Run();

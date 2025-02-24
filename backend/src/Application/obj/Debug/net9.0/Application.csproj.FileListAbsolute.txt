@@ -46,3 +46,5 @@ c:/Users/Lucas/Desktop/projeto-final/backend/src/Application/obj/Debug/net9.0/Ap
 /api/Application/obj/Debug/net9.0/refint/Application.dll
 /api/Application/obj/Debug/net9.0/Application.pdb
 /api/Application/obj/Debug/net9.0/ref/Application.dll
+C:/Users/Lucas/Desktop/projeto-final/backend/src/Application/bin/Debug/net9.0/Infrastructure.dll
+C:/Users/Lucas/Desktop/projeto-final/backend/src/Application/bin/Debug/net9.0/Infrastructure.pdb

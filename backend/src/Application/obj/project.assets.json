@@ -218,14 +218,10 @@
       "Microsoft.Extensions.Primitives/9.0.1": {
         "type": "package",
         "compile": {
-          "lib/net9.0/Microsoft.Extensions.Primitives.dll": {
-            "related": ".xml"
-          }
+          "lib/net9.0/Microsoft.Extensions.Primitives.dll": {}
         },
         "runtime": {
-          "lib/net9.0/Microsoft.Extensions.Primitives.dll": {
-            "related": ".xml"
-          }
+          "lib/net9.0/Microsoft.Extensions.Primitives.dll": {}
         },
         "build": {
           "buildTransitive/net8.0/_._": {}
@@ -237,14 +233,10 @@
           "Microsoft.Extensions.Logging.Abstractions": "8.0.2"
         },
         "compile": {
-          "lib/net8.0/Npgsql.dll": {
-            "related": ".xml"
-          }
+          "lib/net8.0/Npgsql.dll": {}
         },
         "runtime": {
-          "lib/net8.0/Npgsql.dll": {
-            "related": ".xml"
-          }
+          "lib/net8.0/Npgsql.dll": {}
         }
       },
       "Npgsql.EntityFrameworkCore.PostgreSQL/9.0.3": {
@@ -255,14 +247,10 @@
           "Npgsql": "9.0.2"
         },
         "compile": {
-          "lib/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {
-            "related": ".xml"
-          }
+          "lib/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {}
         },
         "runtime": {
-          "lib/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {
-            "related": ".xml"
-          }
+          "lib/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {}
         }
       },
       "Domain/1.0.0": {

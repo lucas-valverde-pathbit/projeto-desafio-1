@@ -459,3 +459,4 @@ C:/Users/Lucas/Desktop/projeto-final/backend/src/api/bin/Debug/net9.0/IdentityMo
 /api/Api/obj/Debug/net9.0/Api.pdb
 /api/Api/obj/Debug/net9.0/Api.genruntimeconfig.cache
 /api/Api/obj/Debug/net9.0/ref/Api.dll
+/api/Api/bin/Debug/net9.0/Microsoft.IdentityModel.Abstractions.dll

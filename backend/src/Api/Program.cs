@@ -56,7 +56,6 @@ namespace Api
                 options.AddPolicy("CorsPolicy", policy =>
                 {
                     policy.WithOrigins("http://localhost:8080")
-
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials()
@@ -112,7 +111,11 @@ namespace Api
             app.UseAuthentication();
             app.UseAuthorization();
 
-            // Mapear controladores
+            // Habilitar arquivos estáticos
+            app.UseStaticFiles(); 
+
+            // Redirecionar a rota raiz para login.html
+
             app.MapControllers();
 
             // Iniciar o servidor

@@ -15,41 +15,38 @@ services:
   # Development API
   api-dev:
     build:
-      context: .
-      dockerfile: Dockerfile.api.dev
+      context: .  # Contexto do build
+      dockerfile: Dockerfile.api.dev  # Dockerfile do backend
     container_name: api-dev
     depends_on:
       - db
     ports:
       - "5064:5064"
     volumes:
-      - ./backend/src:/api
+      - ./backend/src:/api  # Volume para mapear código fonte do backend
     networks:
       - test-docker-sample-net
     environment:
       PG_CONNECTION_STRING: "postgresql://meuusuario:minhasenha@db:5432/meubanco"
     tty: true
     stdin_open: true
-    command: ["/bin/sh", "-c", "/wait-for-postgres.sh db && dotnet watch run --project /api/Api/Api.csproj"]
-
+    command: ["/bin/sh", "-c", "/wait-for-postgres.sh db && dotnet watch run --project /api/Api/Api.csproj"]  # Espera o PostgreSQL e inicia o dotnet
 
   # Development Web
   web-dev:
     build:
-      context: .
-      dockerfile: Dockerfile.web.dev
+      context: .  # Contexto do build
+      dockerfile: Dockerfile.web.dev  # Dockerfile do frontend
     container_name: web-dev
     tty: true
     stdin_open: true
-    command: ["nginx", "-g", "daemon off;"]  # Iniciar o Nginx
+    command: ["dotnet", "watch", "run", "--project", "/web/webapp.csproj"]  # Comando para rodar o frontend com watch
     ports:
-      - "8080:80"
+      - "8080:8080"  
     depends_on:
-      - api-dev
+      - api-dev  
     volumes:
-      - ./frontend/webapp/wwwroot:/usr/share/nginx/html  # Mapeando o diretório correto
-    networks:
-      - test-docker-sample-net
+      - ./frontend/webapp:/web  
 
 networks:
   test-docker-sample-net:

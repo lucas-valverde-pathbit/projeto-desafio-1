@@ -1,20 +1,15 @@
-# Usar a imagem base do Nginx
-FROM nginx:alpine
+# Usar a imagem base do .NET
+FROM mcr.microsoft.com/dotnet/sdk:9.0
 
 # Definir o diretório de trabalho
 WORKDIR /web
 
-# Expor a porta 80
-EXPOSE 80
+# Copiar os arquivos do frontend para o diretório de trabalho dentro do contêiner
+# Aqui você copia os arquivos locais para o contêiner (você também pode montar os volumes no docker-compose)
+COPY ./frontend/webapp /web
 
-# Remover arquivos padrão do Nginx
-RUN rm -rf /usr/share/nginx/html/*
+# Expor a porta do servidor de desenvolvimento
+EXPOSE 8080
 
-# Copiar os arquivos do frontend para o diretório do Nginx
-COPY ./frontend/webapp/wwwroot/html /usr/share/nginx/html
-
-# Listar permissões dos arquivos
-RUN ls -l /usr/share/nginx/html
-
-# Copiar o arquivo de configuração do Nginx
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+# Rodar o servidor com "dotnet watch" para reiniciar o app sempre que houver alterações
+CMD ["dotnet", "watch", "run", "--project", "/web/webapp.csproj"]
