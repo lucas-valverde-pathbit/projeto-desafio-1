@@ -10,5 +10,9 @@ namespace Domain.Services
     public interface IUserService : IBaseService<User>
     {
         Task<User> Authenticate(string username, string password);
+        Task<User?> GetByEmail(string email);
+        Task Create(User user);
     }
+
+
 }

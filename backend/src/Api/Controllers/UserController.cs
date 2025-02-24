@@ -1,127 +1,89 @@
 using Microsoft.AspNetCore.Mvc;
-using Domain.Services;
 using Domain.Models;
+using Domain.Services;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers
 {
     [ApiController]
     [Route("api/users")]
-    public class UserController : ControllerBase
+    public class UserController : BaseController<User, IUserService>
     {
-        private readonly IConfiguration _configuration;
-        private readonly ILogger<UserController> _logger;
-        private readonly IUserService _service;
-        private readonly ICustomerService _customerService;
-        public UserController(IUserService service, ICustomerService customerService, IConfiguration configuration, ILogger<UserController> logger)
+        public UserController(IUserService service) : base(service) {}
+
+        [HttpGet("status")]
+        public IActionResult Status()
         {
-            _service = service;
-            _configuration = configuration;
-            _logger = logger;
-            _customerService = customerService;
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
-        {
-             var users = await _service.GetAll();
-                if (users == null || !users.Any())
-                return NotFound("Nenhum usuário encontrado.");
-
-             return Ok(users);
-        }
-        // Endpoint de Cadastro de Usuário
-        [HttpPost("signup")]
-        public async Task<IActionResult> SignUp([FromBody] UserSignupRequest request)
-        {
-          _logger.LogInformation("Recebida requisição de cadastro: {@Request}", request);
-
-          // Validações
-          if (string.IsNullOrEmpty(request.SignupPassword))
-                return BadRequest("Senha é obrigatória");
-
-         if (string.IsNullOrEmpty(request.SignupName) || string.IsNullOrEmpty(request.SignupEmail))
-                return BadRequest("Nome e email são obrigatórios");
-
-         if (!Enum.TryParse(request.SignupRole, true, out UserRole signupRole))
-         {
-                _logger.LogWarning("Tipo de usuário inválido recebido: {Role}", request.SignupRole);
-             return BadRequest($"Tipo de usuário inválido. Valores aceitos: {string.Join(", ", Enum.GetNames(typeof(UserRole)))}");
-         }
-
-         // Criação do novo usuário
-          var user = new User
-         {
-              UserName = request.SignupName,
-               UserEmail = request.SignupEmail,
-               UserPassword = ComputeSha256Hash(request.SignupPassword), // Hash da senha
-              Role = signupRole
-         };
-
-         // Tenta adicionar o usuário ao banco de dados
-         var createdUser = await _service.Add(user);
-
-         // Se o tipo de usuário for "CLIENTE", cria um registro na tabela Customer
-         if (signupRole == UserRole.CLIENTE)
-         {
-              // Aqui, você pode adicionar campos específicos para o cliente, por exemplo, endereço ou telefone
-              var customer = new Customer
-             {
-                    UserId = createdUser.Id,  // Aqui você associa o Customer ao User criado
-                    CustomerEmail = request.SignupEmail,
-                    CustomerName = request.SignupName,
-                 // Se tiver mais informações a serem passadas, adicione-as aqui
-              };
-
-              // Insere o cliente na tabela Customer
-              await _customerService.Add(customer); // Supondo que você tenha um serviço para manipular clientes
-            }
-
-         return CreatedAtAction(nameof(GetById), new { id = createdUser.Id }, createdUser);
+            return Ok(new { status = "API está online e funcionando" });
         }
 
 
-
-        // Endpoint de Login
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            if (string.IsNullOrEmpty(request.LoginEmail) || string.IsNullOrEmpty(request.LoginPassword))
-                return BadRequest("Email e senha são obrigatórios");
-
-            // Autenticação do usuário
+            Console.WriteLine($"Tentativa de login para: {request.LoginEmail}");
+            
             var user = await _service.Authenticate(request.LoginEmail, request.LoginPassword);
-
+            
             if (user == null)
-                return Unauthorized("Email ou senha inválidos");
-
-            // Geração do Token JWT
+            {
+                Console.WriteLine("Autenticação falhou - usuário não encontrado ou credenciais inválidas");
+                return Unauthorized(new { message = "Erro ao fazer login. Verifique suas credenciais." });
+            }
+            
+            Console.WriteLine($"Login bem-sucedido para: {user.UserEmail}");
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
+            var key = Encoding.ASCII.GetBytes("your_secret_key_here"); // Use a secure key in production
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Email, user.UserEmail),
-                    new Claim(ClaimTypes.Role, user.Role.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddHours(2),
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(key), 
-                    SecurityAlgorithms.HmacSha256Signature)
+                Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) }),
+                Expires = DateTime.UtcNow.AddHours(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
-            
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            return Ok(new { Token = tokenHandler.WriteToken(token) });
+            var tokenString = tokenHandler.WriteToken(token);
+
+            return Ok(new { 
+                user.Id,
+                user.UserName,
+                user.UserEmail,
+                user.Role,
+                Token = tokenString
+
+            });
+
         }
 
-        // Método auxiliar para calcular o hash da senha
+        [HttpPost("signup")]
+        public async Task<IActionResult> Signup([FromBody] SignupRequest request)
+        {
+            var existingUser = await _service.GetByEmail(request.SignupEmail);
+            
+            if (existingUser != null)
+                return Conflict("Email já cadastrado");
+
+            if (!Enum.TryParse<UserRole>(request.SignupRole, out var role))
+            {
+                return BadRequest("Tipo de usuário inválido. Escolha entre CLIENTE ou ADMINISTRADOR");
+            }
+
+            var user = new User
+            {
+                UserName = request.SignupName,
+                UserEmail = request.SignupEmail,
+                UserPassword = ComputeSha256Hash(request.SignupPassword),
+                Role = role,
+                CreatedAt = DateTime.UtcNow
+            };
+
+
+            await _service.Create(user);
+            
+            return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
+        }
+
         private string ComputeSha256Hash(string rawData)
         {
             using (SHA256 sha256Hash = SHA256.Create())
@@ -135,36 +97,21 @@ namespace Api.Controllers
                 return builder.ToString();
             }
         }
+    }
 
-        [HttpGet("status")]
-        public IActionResult Status()
+    public class LoginRequest
+    {
+        public required string LoginEmail { get; set; }
+        public required string LoginPassword { get; set; }
+    }
+
+        public class SignupRequest
         {
-            return Ok(new { status = "API is running" });
+            public required string SignupName { get; set; }
+            public required string SignupEmail { get; set; }
+            public required string SignupPassword { get; set; }
+            public required string SignupRole { get; set; }
         }
 
-        [HttpGet("by-id/{id}")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var user = await _service.GetById(id);
-            if (user == null)
-                return NotFound();
-            return Ok(user);
-        }
-    }
 
-    // Modelo de Requisição para Cadastro
-    public class UserSignupRequest
-    {
-        public string SignupName { get; set; }
-        public string SignupEmail { get; set; }
-        public string SignupPassword { get; set; }
-        public string SignupRole { get; set; }
-    }
-
-    // Modelo de Requisição para Login
-    public class UserLoginRequest
-    {
-        public string LoginEmail { get; set; }
-        public string LoginPassword { get; set; }
-    }
 }

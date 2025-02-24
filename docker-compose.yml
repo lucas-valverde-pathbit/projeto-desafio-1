@@ -1,45 +1,56 @@
 services:
+  # Infrastructure
   db:
-    image: postgres:17.3
-    container_name: projeto-final-db
+    image: postgres:latest
+    container_name: db
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: meubanco
       POSTGRES_USER: meuusuario
       POSTGRES_PASSWORD: minhasenha
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     networks:
-      - app-network
+      - test-docker-sample-net
 
-  api:
+  # Development API
+  api-dev:
     build:
-      context: ./backend
-      dockerfile: Dockerfile.api
-    container_name: projeto-final-api
-    environment:
-     - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Username=meuusuario;Password=minhasenha;Database=meubanco
+      context: .
+      dockerfile: Dockerfile.api.dev
+    container_name: api-dev
     depends_on:
       - db
-    command: ["./wait-for-it.sh", "db:5432", "--", "dotnet", "run"]
     ports:
       - "5064:5064"
+    volumes:
+      - ./backend/src:/api
     networks:
-      - app-network
+      - test-docker-sample-net
+    environment:
+      PG_CONNECTION_STRING: "postgresql://meuusuario:minhasenha@db:5432/meubanco"
+    tty: true
+    stdin_open: true
+    command: ["/bin/sh", "-c", "/wait-for-postgres.sh db && dotnet watch run --project /api/Api/Api.csproj"]
 
-  frontend:
+
+  # Development Web
+  web-dev:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile.frontend
-    container_name: projeto-final-frontend
+      context: .
+      dockerfile: Dockerfile.web.dev
+    container_name: web-dev
+    tty: true
+    stdin_open: true
+    command: ["nginx", "-g", "daemon off;"]  # Iniciar o Nginx
     ports:
       - "8080:80"
+    depends_on:
+      - api-dev
+    volumes:
+      - ./frontend/webapp/wwwroot:/usr/share/nginx/html  # Mapeando o diretório correto
     networks:
-      - app-network
-
-volumes:
-  postgres_data:
+      - test-docker-sample-net
 
 networks:
-  app-network:
+  test-docker-sample-net:
+    driver: bridge

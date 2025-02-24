@@ -56,6 +56,7 @@ namespace Api
                 options.AddPolicy("CorsPolicy", policy =>
                 {
                     policy.WithOrigins("http://localhost:8080")
+
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials()

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "CBomKUyaCag=",
+  "dgSpecHash": "1hIyG4IuhV8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj",
+  "projectFilePath": "/api/Domain/Domain.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

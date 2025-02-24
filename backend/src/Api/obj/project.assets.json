@@ -1181,7 +1181,10 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v9.0",
         "dependencies": {
-          "Domain": "1.0.0"
+          "Domain": "1.0.0",
+          "Infrastructure": "1.0.0",
+          "Microsoft.EntityFrameworkCore": "9.0.1",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "9.0.3"
         },
         "compile": {
           "bin/placeholder/Application.dll": {}
@@ -3742,19 +3745,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Lucas\\.nuget\\packages\\": {}
+    "/root/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\api\\Api.csproj",
+      "projectUniqueName": "/api/Api/Api.csproj",
       "projectName": "Api",
-      "projectPath": "C:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\api\\Api.csproj",
-      "packagesPath": "C:\\Users\\Lucas\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\api\\obj\\",
+      "projectPath": "/api/Api/Api.csproj",
+      "packagesPath": "/root/.nuget/packages/",
+      "outputPath": "/api/Api/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Lucas\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/root/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
@@ -3766,14 +3769,14 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "C:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Application\\Application.csproj": {
-              "projectPath": "C:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Application\\Application.csproj"
+            "/api/Application/Application.csproj": {
+              "projectPath": "/api/Application/Application.csproj"
             },
-            "C:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj": {
-              "projectPath": "C:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj"
+            "/api/Domain/Domain.csproj": {
+              "projectPath": "/api/Domain/Domain.csproj"
             },
-            "C:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\Infrastructure.csproj": {
-              "projectPath": "C:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\Infrastructure.csproj"
+            "/api/Infrastructure/Infrastructure.csproj": {
+              "projectPath": "/api/Infrastructure/Infrastructure.csproj"
             }
           }
         }
@@ -3788,7 +3791,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.100"
+      "SdkAnalysisLevel": "9.0.200"
     },
     "frameworks": {
       "net9.0": {
@@ -3838,7 +3841,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.200/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

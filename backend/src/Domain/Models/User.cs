@@ -1,18 +1,26 @@
+using System;
+using Domain.Services;
+
 namespace Domain.Models
 {
-    public enum UserRole
-    {
-        CLIENTE,
-        ADMINISTRADOR
-    }
-
     public class User : IEntity
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
-        public string? UserName { get; set; }
-        public string? UserEmail { get; set; }
-        public string? UserPassword { get; set; }
-        public UserRole Role { get; set; } = UserRole.CLIENTE;
-        public ICollection<Order>? Orders { get; set; }
+        public Guid Id { get; set; }
+        public required string UserName { get; set; }
+        public required string UserEmail { get; set; }
+        public required string UserPassword { get; set; }
+
+        public UserRole Role { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? LockoutEnd { get; set; }
+        public int FailedLoginAttempts { get; set; }
     }
+
+    public enum UserRole
+    {
+        ADMINISTRADOR,
+        CLIENTE
+    }
+
 }

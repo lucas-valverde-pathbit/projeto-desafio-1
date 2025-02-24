@@ -1,15 +1,15 @@
-#!/bin/sh
+#!/bin/bash
 
-set -e
-
-host="$1"
-shift
-cmd="$@"
-
-until PGPASSWORD=$POSTGRES_PASSWORD psql -h "$host" -U "meuusuario" -d "meubanco" -c '\q'; do
-  >&2 echo "Postgres is unavailable - sleeping"
-  sleep 1
+# Espera até que o PostgreSQL esteja disponível
+until pg_isready -h db -p 5432; do
+  echo "Aguardando o PostgreSQL..."
+  sleep 2
 done
 
->&2 echo "Postgres is up - executing command"
-exec $cmd
+echo "Postgres está pronto - executando comando"
+
+# Aplicar migrações
+dotnet ef database update --project /api/Api/Api.csproj
+
+# Executar o comando dotnet run
+dotnet run --project /api/Api/Api.csproj
