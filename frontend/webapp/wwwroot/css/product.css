@@ -1,0 +1,144 @@
+/* Estilo global */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #f4f4f9; /* Cor de fundo clara */
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    text-align: center;
+}
+
+/* Container principal */
+.container {
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 40px;
+}
+
+/* Título */
+h1 {
+    font-size: 32px;
+    font-weight: bold;
+    color: #5f27cd; /* Roxo */
+    margin-bottom: 20px;
+}
+
+/* Formulário */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+label {
+    text-align: left;
+    font-size: 16px;
+    color: #5f27cd; /* Roxo */
+    font-weight: bold;
+}
+
+input {
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+}
+
+input:focus {
+    border-color: #5f27cd; /* Roxo claro ao focar */
+    outline: none;
+}
+
+/* Botões */
+button {
+    padding: 12px;
+    font-size: 16px;
+    background-color: #5f27cd; /* Roxo */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #4e21a2; /* Roxo escuro ao passar o mouse */
+}
+
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #5f27cd; /* Roxo claro para foco */
+}
+
+/* Botão de voltar */
+.back-button {
+    margin-top: 20px;
+    text-align: left;
+}
+
+.back-btn {
+    background-color: transparent;
+    color: #5f27cd;
+    border: 2px solid #5f27cd;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.back-btn:hover {
+    background-color: #5f27cd;
+    color: white;
+}
+
+/* Lista de produtos */
+#productsList {
+    margin-top: 40px;
+    text-align: left;
+}
+
+.product-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+        margin-top: 20px;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    label {
+        font-size: 14px;
+    }
+
+    input, button {
+        font-size: 14px;
+    }
+}

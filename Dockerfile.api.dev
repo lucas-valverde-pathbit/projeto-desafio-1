@@ -3,35 +3,4 @@ ENV ASPNETCORE_URLS=http://+:5064
 
 WORKDIR /api
 
-# Copiar toda a estrutura do diretório src para dentro do container
-COPY backend/src /api
-
-# Restaurar dependências para todos os projetos
-RUN dotnet restore "/api/Domain/Domain.csproj"
-RUN dotnet restore "/api/Infrastructure/Infrastructure.csproj"
-RUN dotnet restore "/api/Application/Application.csproj"
-RUN dotnet restore "/api/Api/Api.csproj"
-
-# Instalar pacotes adicionais
-RUN dotnet add "Api/Api.csproj" package Npgsql.EntityFrameworkCore.PostgreSQL --version 9.0.3
-RUN dotnet add "Api/Api.csproj" package Microsoft.AspNetCore.Authentication.JwtBearer --version 7.0.0
-RUN dotnet add "Api/Api.csproj" package IdentityModel --version 7.0.0
-
-# Instalar a ferramenta dotnet-ef e adicioná-la ao PATH global
-RUN dotnet tool install --global dotnet-ef
-ENV PATH="$PATH:/root/.dotnet/tools"
-
-# Instalar o cliente PostgreSQL no contêiner
-RUN apt-get update && \
-    apt-get install -y postgresql-client && \
-    rm -rf /var/lib/apt/lists/*
-
-# Copiar scripts de inicialização
-COPY backend/wait-for-postgres.sh /wait-for-postgres.sh
-COPY backend/startup.sh /startup.sh
-RUN chmod +x /wait-for-postgres.sh /startup.sh
-
 EXPOSE 5064
-
-# Definir o ponto de entrada
-ENTRYPOINT ["/bin/sh", "-c", "/wait-for-postgres.sh db && dotnet run --project /api/Api/Api.csproj"]

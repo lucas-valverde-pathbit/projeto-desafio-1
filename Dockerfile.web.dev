@@ -4,12 +4,7 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0
 # Definir o diretório de trabalho
 WORKDIR /web
 
-# Copiar os arquivos do frontend para o diretório de trabalho dentro do contêiner
-# Aqui você copia os arquivos locais para o contêiner (você também pode montar os volumes no docker-compose)
-COPY ./frontend/webapp /web
-
 # Expor a porta do servidor de desenvolvimento
 EXPOSE 8080
 
-# Rodar o servidor com "dotnet watch" para reiniciar o app sempre que houver alterações
-CMD ["dotnet", "watch", "run", "--project", "/web/webapp.csproj"]
+

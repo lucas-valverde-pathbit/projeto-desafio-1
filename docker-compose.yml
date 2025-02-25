@@ -30,7 +30,7 @@ services:
       PG_CONNECTION_STRING: "postgresql://meuusuario:minhasenha@db:5432/meubanco"
     tty: true
     stdin_open: true
-    command: ["/bin/sh", "-c", "/wait-for-postgres.sh db && dotnet watch run --project /api/Api/Api.csproj"]  # Espera o PostgreSQL e inicia o dotnet
+    command: ["tail", "-f", "/dev/null"]  # Inicia o servidor web com monitoramento de alterações
 
   # Development Web
   web-dev:
@@ -40,7 +40,7 @@ services:
     container_name: web-dev
     tty: true
     stdin_open: true
-    command: ["dotnet", "watch", "run", "--project", "/web/webapp.csproj"]  # Comando para rodar o frontend com watch
+    command: ["tail", "-f", "/dev/null"]  # Comando para rodar o frontend com watch
     ports:
       - "8080:8080"  
     depends_on:

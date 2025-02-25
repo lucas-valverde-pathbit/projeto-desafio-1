@@ -22,7 +22,6 @@ namespace Api.Controllers
             return Ok(new { status = "API está online e funcionando" });
         }
 
-
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -38,7 +37,8 @@ namespace Api.Controllers
             
             Console.WriteLine($"Login bem-sucedido para: {user.UserEmail}");
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("your_secret_key_here"); // Use a secure key in production
+            var key = Encoding.ASCII.GetBytes("your_secure_long_key_here_256_bits" + user.UserName + ComputeSha256Hash(user.UserPassword));
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) }),
@@ -54,37 +54,30 @@ namespace Api.Controllers
                 user.UserEmail,
                 user.Role,
                 Token = tokenString
-
             });
-
         }
 
         [HttpPost("signup")]
         public async Task<IActionResult> Signup([FromBody] SignupRequest request)
         {
             var existingUser = await _service.GetByEmail(request.SignupEmail);
-            
-            if (existingUser != null)
-                return Conflict("Email já cadastrado");
 
-            if (!Enum.TryParse<UserRole>(request.SignupRole, out var role))
+            if (existingUser != null)
             {
-                return BadRequest("Tipo de usuário inválido. Escolha entre CLIENTE ou ADMINISTRADOR");
+                return BadRequest(new { message = "Email já cadastrado." });
             }
 
-            var user = new User
+            var newUser = new User
             {
                 UserName = request.SignupName,
                 UserEmail = request.SignupEmail,
                 UserPassword = ComputeSha256Hash(request.SignupPassword),
-                Role = role,
-                CreatedAt = DateTime.UtcNow
+                Role = request.SignupRole
             };
 
+            await _service.Create(newUser);
 
-            await _service.Create(user);
-            
-            return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
+            return Ok(new { message = "Usuário cadastrado com sucesso!" });
         }
 
         private string ComputeSha256Hash(string rawData)
@@ -100,21 +93,19 @@ namespace Api.Controllers
                 return builder.ToString();
             }
         }
-    }
 
-    public class LoginRequest
-    {
-        public required string LoginEmail { get; set; }
-        public required string LoginPassword { get; set; }
-    }
+        public class LoginRequest
+        {
+            public required string LoginEmail { get; set; }
+            public required string LoginPassword { get; set; }
+        }
 
         public class SignupRequest
         {
             public required string SignupName { get; set; }
             public required string SignupEmail { get; set; }
             public required string SignupPassword { get; set; }
-            public required string SignupRole { get; set; }
+            public required UserRole SignupRole { get; set; }
         }
-
-
+    }
 }

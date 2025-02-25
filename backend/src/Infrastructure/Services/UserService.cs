@@ -25,7 +25,7 @@ namespace Infrastructure.Services
                 return null;
             }
 
-            // Check if account is locked
+    
             if (user.LockoutEnd != null && user.LockoutEnd > DateTime.UtcNow)
             {
                 Console.WriteLine($"Conta bloqueada até {user.LockoutEnd}");
@@ -58,7 +58,7 @@ namespace Infrastructure.Services
 
 
 
-            // Reset failed attempts on successful login
+
             user.FailedLoginAttempts = 0;
             user.LockoutEnd = null;
             await _context.SaveChangesAsync();

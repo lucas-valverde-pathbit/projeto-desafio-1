@@ -110,6 +110,22 @@ public class DatabaseSeeder
                 ProductDescription = "Descrição do Produto 2",
                 ProductPrice = 20.0m,
                 ProductStockQuantity = 6
+            },
+            new Product 
+            { 
+                Id = Guid.NewGuid(), 
+                ProductName = "Produto 3", 
+                ProductDescription = "Descrição do Produto 3",
+                ProductPrice = 30.0m,
+                ProductStockQuantity = 3
+            },
+            new Product 
+            { 
+                Id = Guid.NewGuid(), 
+                ProductName = "Produto 4", 
+                ProductDescription = "Descrição do Produto 4",
+                ProductPrice = 40.0m,
+                ProductStockQuantity = 4
             }
         };
     }
@@ -146,7 +162,16 @@ public class DatabaseSeeder
                 UserEmail = "cliente@exemplo.com",
                 UserPassword = ComputeSha256Hash("senhaCliente123"),
                 Role = UserRole.CLIENTE
+            },
+            new User
+            {
+                Id = Guid.NewGuid(),
+                UserName = "lucascliente",
+                UserEmail = "lucascliente@gmail.com",
+                UserPassword = ComputeSha256Hash("lucascliente"),
+                Role = UserRole.CLIENTE
             }
+            
         };
     }
 

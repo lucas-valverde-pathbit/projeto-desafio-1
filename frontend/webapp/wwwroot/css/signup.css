@@ -1,0 +1,123 @@
+/* Estilo global */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #f4f4f9; /* Cor de fundo clara */
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    text-align: center;
+}
+
+/* Container principal */
+.signup-container {
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+h1 {
+    font-size: 32px;
+    font-weight: bold;
+    color: #5f27cd; /* Roxo */
+    margin-bottom: 20px;
+}
+
+/* Formulário */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.label, label {
+    text-align: left;
+    font-size: 16px;
+    color: #5f27cd; /* Roxo */
+    font-weight: bold;
+}
+
+input, select {
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+}
+
+input:focus, select:focus {
+    border-color: #5f27cd; /* Roxo claro ao focar */
+    outline: none;
+}
+
+/* Botões */
+button {
+    padding: 12px;
+    font-size: 16px;
+    background-color: #4e21a2; /* Roxo */
+    color: white;
+    border: none;
+
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #4e21a2; /* Roxo escuro ao passar o mouse */
+}
+
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #5f27cd; /* Roxo claro para foco */
+}
+
+/* Links */
+p a {
+    color: #5f27cd; /* Roxo */
+    text-decoration: none;
+}
+
+p a:hover {
+    text-decoration: underline;
+}
+
+/* Mensagens */
+.message {
+    margin-top: 20px;
+    color: #d9534f; /* Cor para mensagens de erro */
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .signup-container {
+        padding: 15px;
+        margin-top: 20px;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    label {
+        font-size: 14px;
+    }
+
+    input, select, button {
+        font-size: 14px;
+    }
+}

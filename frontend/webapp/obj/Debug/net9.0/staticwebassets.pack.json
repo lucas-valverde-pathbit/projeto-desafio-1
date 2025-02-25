@@ -5,16 +5,28 @@
       "PackagePath": "staticwebassets/webapp.kxtxn8qnj6.bundle.scp.css"
     },
     {
+      "Id": "/web/wwwroot/css/customer.css",
+      "PackagePath": "staticwebassets/css/customer.css"
+    },
+    {
       "Id": "/web/wwwroot/css/index.css",
       "PackagePath": "staticwebassets/css/index.css"
     },
     {
-      "Id": "/web/wwwroot/css/site.css",
-      "PackagePath": "staticwebassets/css/site.css"
+      "Id": "/web/wwwroot/css/login.css",
+      "PackagePath": "staticwebassets/css/login.css"
     },
     {
-      "Id": "/web/wwwroot/css/style.css",
-      "PackagePath": "staticwebassets/css/style.css"
+      "Id": "/web/wwwroot/css/order.css",
+      "PackagePath": "staticwebassets/css/order.css"
+    },
+    {
+      "Id": "/web/wwwroot/css/product.css",
+      "PackagePath": "staticwebassets/css/product.css"
+    },
+    {
+      "Id": "/web/wwwroot/css/signup.css",
+      "PackagePath": "staticwebassets/css/signup.css"
     },
     {
       "Id": "/web/wwwroot/favicon.ico",
@@ -67,10 +79,6 @@
     {
       "Id": "/web/wwwroot/js/signup.js",
       "PackagePath": "staticwebassets/js/signup.js"
-    },
-    {
-      "Id": "/web/wwwroot/js/site.js",
-      "PackagePath": "staticwebassets/js/site.js"
     },
     {
       "Id": "/web/wwwroot/js/user.js",

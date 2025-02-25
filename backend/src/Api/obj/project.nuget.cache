@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ICZc/p6+InI=",
+  "dgSpecHash": "NIvlv9oXefg=",
   "success": true,
-  "projectFilePath": "/api/Api/Api.csproj",
+  "projectFilePath": "/api/api/Api.csproj",
   "expectedPackageFiles": [
     "/root/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/root/.nuget/packages/identitymodel/7.0.0/identitymodel.7.0.0.nupkg.sha512",

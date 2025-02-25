@@ -8,138 +8,77 @@
 
 body {
     background-color: #f4f4f9; /* Cor de fundo clara */
-    color: #333; /* Cor de texto */
-    line-height: 1.6;
-}
-
-a {
-    text-decoration: none;
-    color: inherit;
-}
-
-/* Cabeçalho */
-header {
-    background-color: #5f27cd; /* Cor roxa */
-    color: white;
-    padding: 20px 40px;
+    color: #333;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-header h1 {
-    font-size: 26px;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-}
-
-.user-name {
-    font-size: 18px;
-    color: white;
-    cursor: pointer;
-    margin-right: 15px;
-    font-weight: bold;
-}
-
-.logout-btn {
-    padding: 8px 16px;
-    background-color: #ff4757; /* Cor vermelha */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    display: none;
-    transition: background-color 0.3s;
-}
-
-.logout-btn:hover {
-    background-color: #e84118;
-}
-
-.logout-btn:focus {
-    outline: none;
-}
-
-/* Conteúdo principal */
-.container {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 20px;
+    height: 100vh;
+    flex-direction: column;
     text-align: center;
 }
 
-.container h1 {
+/* Cabeçalho */
+h1 {
     font-size: 36px;
     font-weight: bold;
-    color: #5f27cd; /* Cor roxa */
-    margin-bottom: 20px;
+    color: #5f27cd; /* Roxo */
+    margin-bottom: 40px;
 }
 
-.container p {
-    font-size: 18px;
-    color: #555;
-    margin-bottom: 30px;
+/* Navegação */
+nav {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 20px;
 }
 
-/* Botões de navegação */
-.buttons-container {
+ul {
+    list-style: none;
     display: flex;
     justify-content: center;
     gap: 20px;
     flex-wrap: wrap;
+    padding: 0;
 }
 
-.button {
-    display: inline-block;
-    padding: 15px 25px;
+ul li {
+    font-size: 18px;
+}
+
+a {
+    text-decoration: none;
+    color: #5f27cd; /* Roxo */
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+a:hover {
     background-color: #5f27cd;
     color: white;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 5px;
-    text-align: center;
-    width: 200px;
-    transition: background-color 0.3s, transform 0.2s;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.button:hover {
-    background-color: #4e21a2;
-    transform: translateY(-4px); /* Elevação ao passar o mouse */
-}
-
-.button:active {
-    transform: translateY(2px); /* Animação de clique */
+a:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #5f27cd; /* Roxo claro para foco */
 }
 
 /* Responsividade */
 @media (max-width: 768px) {
-    header {
-        padding: 15px;
+    h1 {
+        font-size: 28px;
     }
 
-    header h1 {
-        font-size: 20px;
-    }
-
-    .container h1 {
-        font-size: 30px;
-    }
-
-    .buttons-container {
+    ul {
         flex-direction: column;
-        align-items: center;
     }
 
-    .button {
-        width: 100%;
-        max-width: 250px;
+    ul li {
         margin-bottom: 15px;
+    }
+
+    a {
+        font-size: 16px;
     }
 }
