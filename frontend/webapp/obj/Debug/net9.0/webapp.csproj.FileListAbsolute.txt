@@ -97,7 +97,6 @@
 /web/obj/Debug/net9.0/webapp.pdb
 /web/obj/Debug/net9.0/webapp.genruntimeconfig.cache
 /web/obj/Debug/net9.0/ref/webapp.dll
-/web/obj/Debug/net9.0/compressed/slfamdedpb-cwinq3fzi4.gz
 /web/obj/Debug/net9.0/compressed/tqee5lladz-r9zowje65f.gz
 /web/obj/Debug/net9.0/compressed/h0wtb8s2hx-x3ql0i9poh.gz
 /web/obj/Debug/net9.0/compressed/72z15wuuml-wtzbcqpni0.gz
@@ -109,6 +108,6 @@
 /web/obj/Debug/net9.0/compressed/f74ozls3r6-5h4pw5wekx.gz
 /web/obj/Debug/net9.0/compressed/2z2qoy2cqp-r33jmf4db1.gz
 /web/obj/Debug/net9.0/compressed/scl02kp8l8-wo19dg0pla.gz
-/web/obj/Debug/net9.0/compressed/j01xduc5h7-fclwadg8gf.gz
-/web/obj/Debug/net9.0/compressed/o13go2u96m-whqc8vzgcm.gz
 /web/obj/Debug/net9.0/compressed/ol3gaoy6vp-dc85jkbndk.gz
+/web/obj/Debug/net9.0/compressed/slfamdedpb-c2bzrbmthj.gz
+/web/obj/Debug/net9.0/compressed/j01xduc5h7-m383f5rdbs.gz

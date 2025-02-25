@@ -1,5 +1,4 @@
 window.onload = () => {
-
     const apiBaseUrl = window.location.hostname === "localhost"
                        ? "http://localhost:5064/api/users"
                        : "http://api:5064/api/users";
@@ -19,7 +18,6 @@ window.onload = () => {
     }
 
     // Função para fazer login com validação
-
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         const loginEmail = document.getElementById('loginEmail');
@@ -33,8 +31,7 @@ window.onload = () => {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const email = loginEmail.value.trim(); // Remove espaços em branco
-
+            const email = loginEmail.value.trim();
             const password = loginPassword.value;
             
             // Verifica conexão com a API antes de tentar login
@@ -45,9 +42,8 @@ window.onload = () => {
             }
 
             try {
-                showMessage('loginMessage', 'Fazendo login, por favor aguarde...', 'info'); // Mensagem de carregamento
+                showMessage('loginMessage', 'Fazendo login, por favor aguarde...', 'info');
                 const response = await fetch(`${apiBaseUrl}/login`, { 
-
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -57,8 +53,7 @@ window.onload = () => {
                 });
 
                 if (!response.ok) { 
-                    showMessage('loginMessage', 'Erro ao fazer login. Verifique suas credenciais.', 'error'); // Mensagem de erro
-
+                    showMessage('loginMessage', 'Erro ao fazer login. Verifique suas credenciais.', 'error');
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
@@ -68,16 +63,14 @@ window.onload = () => {
                 } catch (error) {
                     const text = await response.text();
                     showMessage('loginMessage', text || 'Erro ao fazer login. Verifique suas credenciais.', 'error'); 
-                    loginEmail.value = ''; // Limpa o campo de email
-                    loginPassword.value = ''; // Limpa o campo de senha
-
+                    loginEmail.value = '';
+                    loginPassword.value = '';
                     console.error('Login error:', text);
                     return;
                 }
 
                 if (response.ok) {
                     console.log('Resposta do login:', responseData);
-                    // Armazena informações básicas do usuário
                     const userData = {
                         id: responseData.id,
                         name: responseData.userName,
@@ -86,34 +79,18 @@ window.onload = () => {
                     };
                     console.log('Armazenando dados do usuário:', userData);
                     localStorage.setItem('userData', JSON.stringify(userData));
-                    console.log('Login bem-sucedido, redirecionando para index.html');
-                    localStorage.setItem('token', responseData.Token); // Armazenar o token JWT
-                    window.location.href = 'index.html'; // Redireciona para a página inicial
-
-
-
-                    localStorage.setItem('token', responseData.Token); // Armazenar o token JWT
-
-
-                } else {
-                    console.error('Erro na resposta:', responseData);
-                    const errorMsg = responseData.message || 'Erro ao fazer login. Verifique suas credenciais.';
-                    showMessage('loginMessage', errorMsg, 'error');
+                    console.log('Token recebido:', responseData.Token);
+                    localStorage.setItem('token', responseData.Token);
+                    console.log('Token armazenado:', localStorage.getItem('token'));
+                    window.location.href = 'index.html';
                 }
-
-
             } catch (error) {
                 console.error('Erro no login:', error);
-                console.log('Status da resposta:', error.response?.status);
-                console.log('Texto da resposta:', error.response?.text());
                 const errorMsg = error.message.includes('HTTP error')
                     ? 'Credenciais inválidas. Verifique seu email e senha.'
                     : 'Erro ao conectar com o servidor. Tente novamente.';
-                console.log('Exibindo mensagem de erro:', errorMsg);
                 showMessage('loginMessage', errorMsg, 'error');
-
             }
-
         });
     }
 
@@ -129,5 +106,11 @@ window.onload = () => {
                 messageElement.style.display = 'none';
             }, 5000);
         }
+    }
+
+    // Verifica se há um token ao carregar a página
+    if (localStorage.getItem('token')) {
+        console.log('Token encontrado ao carregar a página, redirecionando para index.html');
+        window.location.href = 'index.html';
     }
 }

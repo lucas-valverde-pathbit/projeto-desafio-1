@@ -81,10 +81,6 @@
       "PackagePath": "staticwebassets/js/signup.js"
     },
     {
-      "Id": "/web/wwwroot/js/user.js",
-      "PackagePath": "staticwebassets/js/user.js"
-    },
-    {
       "Id": "/web/wwwroot/lib/bootstrap/LICENSE",
       "PackagePath": "staticwebassets/lib/bootstrap"
     },

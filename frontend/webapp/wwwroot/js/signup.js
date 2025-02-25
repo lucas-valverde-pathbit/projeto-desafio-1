@@ -38,18 +38,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     SignupName: name,
                     SignupEmail: email,
                     SignupPassword: password,
-                    SignupRole: role
+                    SignupRole: role === 'ADMINISTRADOR' ? 1 : 0 // ADMINISTRADOR = 1, CLIENTE = 0
                 })
+
+
             });
 
-            const data = await response.json();
+            let data;
+            try {
+                data = await response.json();
+            } catch (error) {
+                console.error('Erro ao processar resposta:', error);
+                alert('Erro ao processar resposta do servidor.');
+                return;
+            }
 
             if (response.ok) {
+                console.log('Cadastro realizado com sucesso:', data);
                 alert(data.message);
                 window.location.href = 'login.html'; // Redireciona para a página de login após o cadastro
             } else {
-                alert(data.message || 'Erro ao cadastrar usuário.');
+                console.error('Erro no cadastro:', data);
+                alert(data.message || 'Erro ao cadastrar usuário. Verifique os dados informados.');
             }
+
         });
     }
 });
