@@ -1,16 +1,8 @@
-import { checkPermissions } from './permissions.js';
+import { checkToken } from './permissions.js';
 
 window.onload = () => {
-    // Função para verificar se o usuário está autenticado
-    function checkAuth() {
-        const { isAuthenticated } = checkPermissions();
-        if (!isAuthenticated) {
-        window.location.href = 'index.html'; // Redireciona para o index se não houver token
-
-            return;
-        }
+    // Verificar se o token está presente
+    if (!checkToken()) {
+        window.location.href = 'login.html'; // Redirecionar para login.html se o token não estiver presente
     }
-
-    // Verifica o token assim que a página for carregada
-    checkAuth();
 };
