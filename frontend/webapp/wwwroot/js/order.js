@@ -1,190 +1,198 @@
-const apiBaseUrl = window.location.hostname === "localhost"
-    ? "http://localhost:5064/api/orders"  // URL de desenvolvimento (localhost)
-    : "http://api:5064/api/orders"; // URL para produção (se necessário)
+// Variáveis globais para armazenar dados selecionados
+let selectedCustomer = null;
+let selectedProduct = null;
 
-let orders = [];
-
-async function fetchCustomers() {
-    const response = await fetch("http://localhost:5064/api/customers"); // URL para buscar clientes
-    if (response.ok) {
-        const customers = await response.json();
-        const customerListContainer = document.getElementById('customerListContainer');
-        customerListContainer.innerHTML = ''; // Limpa a lista anterior
-
-        customers.forEach(customer => {
-            const customerItem = document.createElement('div');
-            customerItem.innerHTML = `
-                <p>${customer.customerName} (ID: ${customer.id})</p>
-                <button onclick="selectCustomer('${customer.id}')">Selecionar</button>
-            `;
-            customerListContainer.appendChild(customerItem);
-        });
-    } else {
-        console.error('Erro ao buscar clientes');
-    }
-}
-
+// Função para abrir o modal de seleção de cliente
 function showCustomerSelection() {
     document.getElementById('customerSelectionModal').style.display = 'block';
-    fetchCustomers(); // Busca a lista de clientes ao abrir o modal
+    loadCustomers(); // Carrega os clientes
 }
 
+// Função para carregar os clientes na lista
+function loadCustomers() {
+    fetch('http://localhost:5064/api/customers') // URL correta da API para buscar clientes
+        .then(response => response.json())
+        .then(customers => {
+            const container = document.getElementById('customerListContainer');
+            container.innerHTML = ''; // Limpa a lista antes de adicionar novos itens
+
+            customers.forEach(customer => {
+                const button = document.createElement('button');
+                button.textContent = customer.customerName;
+                button.onclick = function() {
+                    selectCustomer(customer);
+                };
+                container.appendChild(button);
+            });
+        })
+        .catch(error => console.error('Erro ao carregar clientes:', error));
+}
+
+// Função para selecionar um cliente
+function selectCustomer(customer) {
+    selectedCustomer = customer;
+    document.getElementById('customerId').value = customer.customerName; // Exibe o nome do cliente no campo de entrada
+    closeCustomerSelection();
+}
+
+// Função para fechar o modal de seleção de cliente
 function closeCustomerSelection() {
     document.getElementById('customerSelectionModal').style.display = 'none';
 }
 
-function selectCustomer(customerId) {
-    const selectedCustomerElement = document.getElementById('selectedCustomer');
-    selectedCustomerElement.innerText = `Cliente Selecionado: ${customerId}`; // Atualiza o texto com o ID do cliente selecionado
-    closeCustomerSelection(); // Fecha o modal
+// Função para abrir o modal de seleção de produto
+function showProductSelection() {
+    document.getElementById('productSelectionModal').style.display = 'block';
+    loadProducts(); // Carrega os produtos
 }
 
-async function displayOrders() {
-    const response = await fetch(apiBaseUrl);
-    if (response.ok) {
-        orders = await response.json();
-        renderOrderList(orders);
-    } else {
-        console.error('Erro ao buscar pedidos');
+// Função para carregar os produtos na lista
+function loadProducts() {
+    fetch('http://localhost:5064/api/products') // URL correta da API para buscar produtos
+        .then(response => response.json())
+        .then(products => {
+            const container = document.getElementById('productListContainer');
+            container.innerHTML = ''; // Limpa a lista antes de adicionar novos itens
+
+            products.forEach(product => {
+                const button = document.createElement('button');
+                button.textContent = product.productName;
+                button.onclick = function() {
+                    selectProduct(product);
+                };
+                container.appendChild(button);
+            });
+        })
+        .catch(error => console.error('Erro ao carregar produtos:', error));
+}
+
+// Função para selecionar um produto
+function selectProduct(product) {
+    selectedProduct = product;
+    document.getElementById('productId').value = product.productName; // Exibe o nome do produto no campo de entrada
+    closeProductSelection();
+}
+
+// Função para fechar o modal de seleção de produto
+function closeProductSelection() {
+    document.getElementById('productSelectionModal').style.display = 'none';
+}
+
+// Função para buscar o endereço com base no CEP
+function fetchAddress() {
+    const cep = document.getElementById('cep').value;
+    if (cep) {
+        fetch(`https://viacep.com.br/ws/${cep}/json/`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.erro) {
+                    document.getElementById('deliveryAddress').value = `${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf}`;
+                } else {
+                    alert('CEP não encontrado.');
+                }
+            })
+            .catch(error => console.error('Erro ao buscar endereço:', error));
     }
 }
 
-// Função para renderizar a lista de pedidos
-function renderOrderList(orders) {
-    const orderCardContainer = document.getElementById('orderCardContainer');
-    orderCardContainer.innerHTML = '';
+// Função para salvar o pedido
+function saveOrder(event) {
+    event.preventDefault();
 
-    orders.forEach(order => {
-        const card = document.createElement('div');
-        card.className = 'order-card';
-        card.innerHTML = `
-            <h3>${order.Id}</h3>
-            <p>Detalhes: ${order.DeliveryAddress}</p>
-            <p>ID: ${order.Id}</p>
-            <p>Data do Pedido: ${order.OrderDate}</p>
-            <p>Status: ${order.Status}</p>
-            <p>Cliente ID: ${order.CustomerId}</p>
-            <p>Usuário ID: ${order.UserId}</p>
+    if (!selectedCustomer || !selectedProduct) {
+        alert('Por favor, selecione todos os campos obrigatórios!');
+        return;
+    }
 
-            <div class="actions">
-                <button onclick="showEditForm('${order.id}')">Editar</button>
-            </div>
-        `;
-        orderCardContainer.appendChild(card);
-    });
+    const orderData = {
+        customerId: selectedCustomer.id, // ID do cliente
+        deliveryAddress: document.getElementById('deliveryAddress').value,
+        status: document.getElementById('status').value,
+        products: [
+            {
+                productId: selectedProduct.id, // ID do produto
+                orderItemQuantity: document.getElementById('quantity').value,
+                orderItemPrice: selectedProduct.productPrice // Valor do produto
+            }
+        ]
+    };
+
+    fetch('http://localhost:5064/api/orders', { // URL correta da API para criar pedidos
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderData)
+    })
+    .then(response => response.json())
+    .then(newOrder => {
+        alert('Pedido criado com sucesso!');
+        closeForm(); // Fecha o formulário
+        loadOrders(); // Recarrega a lista de pedidos
+    })
+    .catch(error => console.error('Erro ao criar pedido:', error));
 }
 
-// Função para mostrar o formulário de adicionar pedido
-function showAddForm() {
-    document.getElementById('addOrderModal').style.display = 'block';
+// Função para carregar os pedidos
+function loadOrders() {
+    fetch('http://localhost:5064/api/orders') // URL correta da API de pedidos
+        .then(response => response.json())
+        .then(orders => {
+            const container = document.getElementById('orderCardContainer');
+            container.innerHTML = ''; // Limpa a lista antes de adicionar novos pedidos
+
+            orders.forEach(order => {
+                const orderCard = createOrderCard(order);
+                container.appendChild(orderCard);
+            });
+        })
+        .catch(error => console.error('Erro ao carregar pedidos:', error));
 }
 
-// Função para fechar os formulários
+// Função para criar um card de pedido
+function createOrderCard(order) {
+    const card = document.createElement('div');
+    card.classList.add('order-card');
+    card.innerHTML = `
+        <h3>Pedido #${order.id}</h3>
+        <p><strong>Cliente:</strong> ${order.customerName}</p>
+        <p><strong>Endereço:</strong> ${order.deliveryAddress}</p>
+        <p><strong>Status:</strong> ${order.status}</p>
+        <div class="actions">
+            <button onclick="editOrder('${order.id}')">Editar</button>
+            <button onclick="deleteOrder('${order.id}')">Excluir</button>
+        </div>
+    `;
+    return card;
+}
+
+// Função para editar um pedido
+function editOrder(orderId) {
+    alert('Editar pedido: ' + orderId);
+}
+
+// Função para excluir um pedido
+function deleteOrder(orderId) {
+    if (confirm('Tem certeza que deseja excluir este pedido?')) {
+        fetch(`http://localhost:5064/api/orders/${orderId}`, { // URL correta de sua API
+            method: 'DELETE'
+        })
+        .then(() => {
+            alert('Pedido excluído!');
+            loadOrders(); // Atualiza a lista de pedidos
+        })
+        .catch(error => console.error('Erro ao excluir pedido:', error));
+    }
+}
+
+// Função para fechar o formulário de criação de pedido
 function closeForm() {
     document.getElementById('addOrderModal').style.display = 'none';
-    document.getElementById('editOrderModal').style.display = 'none';
 }
 
-// Função para adicionar pedido (POST)
-async function saveOrder(event) {
-    event.preventDefault();
-
-    // Obter os valores do formulário
-    const orderName = document.getElementById('orderName').value;
-    const orderDetails = document.getElementById('orderDetails').value;
-
-    // Enviar dados via POST para o backend
-    const response = await fetch(apiBaseUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            OrderName: orderName,
-            OrderDetails: orderDetails
-        })
-    });
-
-    if (response.ok) {
-        const newOrder = await response.json();
-        orders.push(newOrder); // Adiciona o novo pedido à lista
-        closeForm();
-        displayOrders(); // Recarrega a lista de pedidos
-    } else {
-        console.error('Erro ao adicionar pedido');
-    }
+// Função para abrir o formulário de criação de pedido
+function showAddForm() {
+    document.getElementById('addOrderModal').style.display = 'block';
+    loadCustomers();
+    loadProducts();
 }
-
-// Função para mostrar o formulário de edição de pedido (PUT)
-function showEditForm(id) {
-    const order = orders.find(o => o.id === id);
-    
-    // Preenche os campos do formulário de edição com os dados do pedido
-    document.getElementById('editOrderId').value = order.id;
-    document.getElementById('editOrderName').value = order.orderName;
-    document.getElementById('editOrderDetails').value = order.orderDetails;
-
-    document.getElementById('editOrderModal').style.display = 'block';
-}
-
-// Função para editar pedido (PUT)
-async function updateOrder(event) {
-    event.preventDefault();
-
-    // Obter os valores do formulário de edição
-    const orderId = document.getElementById('editOrderId').value;
-    const orderName = document.getElementById('editOrderName').value;
-    const orderDetails = document.getElementById('editOrderDetails').value;
-
-    // Enviar dados via PUT para atualizar o pedido no backend
-    const response = await fetch(`${apiBaseUrl}/${orderId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            Id: orderId,
-            OrderName: orderName,
-            OrderDetails: orderDetails
-        })
-    });
-
-    if (response.ok) {
-        const updatedOrder = await response.json();
-        orders = orders.map(o => o.id === orderId ? updatedOrder : o);
-        closeForm();
-        displayOrders();
-    } else {
-        console.error('Erro ao editar pedido');
-    }
-}
-
-// Função para deletar pedido (DELETE)
-async function deleteOrder() {
-    const orderId = document.getElementById('editOrderId').value;
-
-    const response = await fetch(`${apiBaseUrl}/${orderId}`, {
-        method: 'DELETE'
-    });
-
-    if (response.ok) {
-        orders = orders.filter(o => o.id !== orderId); // Remove o pedido da lista
-        closeForm();
-        displayOrders(); // Recarrega a lista de pedidos
-    } else {
-        console.error('Erro ao deletar pedido');
-    }
-}
-
-// Função para filtrar pedidos (com base no nome ou detalhes)
-function filterOrders() {
-    const filterValue = document.getElementById('filterInput').value.toLowerCase();
-
-    const filteredOrders = orders.filter(order => 
-        order.orderName.toLowerCase().includes(filterValue) || 
-        order.orderDetails.toLowerCase().includes(filterValue)
-    );
-
-    renderOrderList(filteredOrders);
-}
-
-// Carregar os pedidos ao inicializar
-window.onload = function() {
-    displayOrders();
-};

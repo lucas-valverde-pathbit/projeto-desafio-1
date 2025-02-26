@@ -80,7 +80,8 @@ public class DatabaseSeeder
                             Id = Guid.NewGuid(),
                             OrderDate = DateTime.UtcNow,
                             CustomerId = customer.Id, // Associando a ordem ao cliente
-                            UserId = user.Id // Associando a ordem ao usuário
+                            // UserId = user.Id // Associando a ordem ao usuário
+
                         });
                     }
                 }

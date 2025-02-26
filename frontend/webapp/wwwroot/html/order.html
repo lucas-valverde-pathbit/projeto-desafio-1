@@ -17,7 +17,15 @@
     <!-- Filtro e Botão de Adicionar Pedido -->
     <div class="filter-container">
         <input type="text" id="filterInput" placeholder="Filtrar pedidos..." onkeyup="filterOrders()">
-        <button id="addButton" onclick="showAddForm()">Adicionar Pedido</button>
+<button id="addButton" onclick="showAddForm()">Adicionar Pedido</button>
+<script>
+function showAddForm() {
+    document.getElementById('addOrderModal').style.display = 'block';
+    populateCustomerSelection(); // Preenche a lista de clientes
+    populateProductSelection(); // Preenche a lista de produtos
+}
+</script>
+
     </div>
     
     <div id="orderCardContainer"></div>
@@ -30,15 +38,18 @@
             
             <label for="customerId">Cliente:</label>
             <input type="text" id="customerId" readonly>
-            <button type="button" onclick="showCustomerSelection()">+</button>
+            <button type="button" onclick="showCustomerSelection()">+</button> <!-- Selecionar Cliente -->
+
             
             <label for="userId">Usuário:</label>
             <input type="text" id="userId" readonly>
-            <button type="button" onclick="showUserSelection()">+</button>
+            <button type="button" onclick="showUserSelection()">+</button> <!-- Selecionar Usuário -->
+
             
             <label for="deliveryAddress">Endereço de Entrega:</label>
             <input type="text" id="deliveryAddress" required>
-            <button type="button" onclick="validateAddress()">+</button>
+            <button type="button" onclick="validateAddress()">+</button> <!-- Validar Endereço -->
+
             
             <label for="status">Status:</label>
             <select id="status">
@@ -50,7 +61,8 @@
             
             <label for="productId">Produto:</label>
             <input type="text" id="productId" readonly>
-            <button type="button" onclick="showProductSelection()">+</button>
+            <button type="button" onclick="showProductSelection()">+</button> <!-- Selecionar Produto -->
+
             
             <label for="quantity">Quantidade:</label>
             <input type="number" id="quantity" required>
@@ -120,6 +132,6 @@
     </div>
 
     <script src="../js/order.js"></script>
-    <script type="module" src="../js/auth.js"></script>
+    <!-- <script type="module" src="../js/auth.js"></script> -->
 </body>
 </html>

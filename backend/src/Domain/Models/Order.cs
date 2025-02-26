@@ -8,7 +8,6 @@ namespace Domain.Models
         public Guid CustomerId { get; set; }
         public Customer? Customer { get; set; }
 
-        public Guid UserId { get; set; }  // Referência para o User
         public User? User { get; set; }  // Propriedade de navegação para User
 
         public string? DeliveryAddress { get; set; }  // Endereço de entrega
