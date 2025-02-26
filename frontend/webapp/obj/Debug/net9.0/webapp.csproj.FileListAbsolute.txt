@@ -18,7 +18,6 @@
 /web/obj/Debug/net9.0/scopedcss/bundle/webapp.styles.css
 /web/obj/Debug/net9.0/scopedcss/projectbundle/webapp.bundle.scp.css
 /web/obj/Debug/net9.0/compressed/x96oruzo2r-61n19gt1b8.gz
-/web/obj/Debug/net9.0/compressed/bdc2g2n1sp-8h0tbon5om.gz
 /web/obj/Debug/net9.0/compressed/t5wy6fix6t-uvvv188kui.gz
 /web/obj/Debug/net9.0/compressed/l2pg0dzin8-bqjiyaj88i.gz
 /web/obj/Debug/net9.0/compressed/z76kxl883o-c2jlpeoesf.gz
@@ -97,7 +96,6 @@
 /web/obj/Debug/net9.0/ref/webapp.dll
 /web/obj/Debug/net9.0/compressed/qm34urs3lf-st56hqbper.gz
 /web/obj/Debug/net9.0/compressed/ol3gaoy6vp-dc85jkbndk.gz
-/web/obj/Debug/net9.0/compressed/tqee5lladz-dhrwlk0g5g.gz
 /web/obj/Debug/net9.0/compressed/xi1q3laagh-x4v7yaaeyk.gz
 /web/obj/Debug/net9.0/compressed/1y2f2yyj4u-w6zwkvqeb4.gz
 C:/Users/Lucas/Desktop/projeto-final/frontend/webapp/bin/Debug/net9.0/appsettings.Development.json
@@ -217,13 +215,15 @@ C:/Users/Lucas/Desktop/projeto-final/frontend/webapp/obj/Debug/net9.0/ref/webapp
 /web/obj/Debug/net9.0/compressed/72z15wuuml-1171jgq9mz.gz
 /web/obj/Debug/net9.0/compressed/j01xduc5h7-vq3f64lwxl.gz
 /web/obj/Debug/net9.0/compressed/6hycmozhuy-x3ql0i9poh.gz
-/web/obj/Debug/net9.0/compressed/iaskq0lryy-vpgmjwtoto.gz
 /web/obj/Debug/net9.0/compressed/slfamdedpb-p4m40g10mu.gz
 /web/obj/Debug/net9.0/compressed/1bw3xwkslc-md2duyq183.gz
-/web/obj/Debug/net9.0/compressed/xk30k9gz12-ayw7t28rax.gz
-/web/obj/Debug/net9.0/compressed/ql3bn40f4s-to7qeck0nl.gz
 /web/obj/Debug/net9.0/compressed/wobie5xj9j-gwlqb2nzfk.gz
 /web/obj/Debug/net9.0/compressed/or5kzizktl-6n7diagmal.gz
 /web/obj/Debug/net9.0/compressed/scl02kp8l8-1dgrq36cz3.gz
-/web/obj/Debug/net9.0/compressed/f74ozls3r6-otciq2v5k6.gz
-/web/obj/Debug/net9.0/compressed/2z2qoy2cqp-42m94ynwn9.gz
+/web/obj/Debug/net9.0/compressed/iaskq0lryy-ewshvaduqj.gz
+/web/obj/Debug/net9.0/compressed/f74ozls3r6-3q8khy1imq.gz
+/web/obj/Debug/net9.0/compressed/2z2qoy2cqp-t4930r0w2m.gz
+/web/obj/Debug/net9.0/compressed/tqee5lladz-uxqyvfva0s.gz
+/web/obj/Debug/net9.0/compressed/xk30k9gz12-2fgm6rva7a.gz
+/web/obj/Debug/net9.0/compressed/ql3bn40f4s-zsihyycx9o.gz
+/web/obj/Debug/net9.0/compressed/bdc2g2n1sp-nw0er89hfd.gz

@@ -1,0 +1,18 @@
+# Ignorar dependências do Node.js
+node_modules/
+# Ignorar arquivos de log
+*.log
+# Ignorar arquivos temporários
+*.tmp
+# Ignorar arquivos de ambiente
+*.env
+# Ignorar diretórios de build
+bin/
+obj/
+# Ignorar arquivos de solução e projeto
+*.sln
+*.csproj
+*.user
+*.db
+# Ignorar arquivos de configuração do Visual Studio
+.vscode/

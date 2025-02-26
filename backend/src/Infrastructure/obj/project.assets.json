@@ -118,14 +118,10 @@
       "Microsoft.Extensions.DependencyInjection.Abstractions/9.0.1": {
         "type": "package",
         "compile": {
-          "lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
-            "related": ".xml"
-          }
+          "lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {}
         },
         "runtime": {
-          "lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
-            "related": ".xml"
-          }
+          "lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {}
         },
         "build": {
           "buildTransitive/net8.0/_._": {}
@@ -139,14 +135,10 @@
           "Microsoft.Extensions.Options": "9.0.1"
         },
         "compile": {
-          "lib/net9.0/Microsoft.Extensions.Logging.dll": {
-            "related": ".xml"
-          }
+          "lib/net9.0/Microsoft.Extensions.Logging.dll": {}
         },
         "runtime": {
-          "lib/net9.0/Microsoft.Extensions.Logging.dll": {
-            "related": ".xml"
-          }
+          "lib/net9.0/Microsoft.Extensions.Logging.dll": {}
         },
         "build": {
           "buildTransitive/net8.0/_._": {}
@@ -158,14 +150,10 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.1"
         },
         "compile": {
-          "lib/net9.0/Microsoft.Extensions.Logging.Abstractions.dll": {
-            "related": ".xml"
-          }
+          "lib/net9.0/Microsoft.Extensions.Logging.Abstractions.dll": {}
         },
         "runtime": {
-          "lib/net9.0/Microsoft.Extensions.Logging.Abstractions.dll": {
-            "related": ".xml"
-          }
+          "lib/net9.0/Microsoft.Extensions.Logging.Abstractions.dll": {}
         },
         "build": {
           "buildTransitive/net8.0/Microsoft.Extensions.Logging.Abstractions.targets": {}
@@ -178,14 +166,10 @@
           "Microsoft.Extensions.Primitives": "9.0.1"
         },
         "compile": {
-          "lib/net9.0/Microsoft.Extensions.Options.dll": {
-            "related": ".xml"
-          }
+          "lib/net9.0/Microsoft.Extensions.Options.dll": {}
         },
         "runtime": {
-          "lib/net9.0/Microsoft.Extensions.Options.dll": {
-            "related": ".xml"
-          }
+          "lib/net9.0/Microsoft.Extensions.Options.dll": {}
         },
         "build": {
           "buildTransitive/net8.0/Microsoft.Extensions.Options.targets": {}
@@ -194,14 +178,10 @@
       "Microsoft.Extensions.Primitives/9.0.1": {
         "type": "package",
         "compile": {
-          "lib/net9.0/Microsoft.Extensions.Primitives.dll": {
-            "related": ".xml"
-          }
+          "lib/net9.0/Microsoft.Extensions.Primitives.dll": {}
         },
         "runtime": {
-          "lib/net9.0/Microsoft.Extensions.Primitives.dll": {
-            "related": ".xml"
-          }
+          "lib/net9.0/Microsoft.Extensions.Primitives.dll": {}
         },
         "build": {
           "buildTransitive/net8.0/_._": {}
@@ -213,14 +193,10 @@
           "Microsoft.Extensions.Logging.Abstractions": "8.0.2"
         },
         "compile": {
-          "lib/net8.0/Npgsql.dll": {
-            "related": ".xml"
-          }
+          "lib/net8.0/Npgsql.dll": {}
         },
         "runtime": {
-          "lib/net8.0/Npgsql.dll": {
-            "related": ".xml"
-          }
+          "lib/net8.0/Npgsql.dll": {}
         }
       },
       "Npgsql.EntityFrameworkCore.PostgreSQL/9.0.3": {
@@ -231,14 +207,10 @@
           "Npgsql": "9.0.2"
         },
         "compile": {
-          "lib/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {
-            "related": ".xml"
-          }
+          "lib/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {}
         },
         "runtime": {
-          "lib/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {
-            "related": ".xml"
-          }
+          "lib/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {}
         }
       },
       "Domain/1.0.0": {

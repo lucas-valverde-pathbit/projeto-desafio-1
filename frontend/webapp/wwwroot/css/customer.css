@@ -1,149 +1,152 @@
-/* Estilo global */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
-}
-
+/* Estilo para o body */
 body {
-    background-color: #f4f4f9; /* Cor de fundo clara */
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    flex-direction: column;
-    text-align: center;
-}
-
-/* Container principal */
-.container {
-    width: 100%;
-    max-width: 600px;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
     padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 40px;
 }
 
-/* Título */
+/* Estilo do Modal (Formulários Flutuantes) */
+.customer-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    width: 300px;
+    display: none; /* Inicia oculto */
+}
+
+.customer-modal h3 {
+    text-align: center;
+    color: #6a1b9a;
+    margin-bottom: 15px;
+}
+
+.customer-modal label {
+    display: block;
+    margin: 10px 0 5px;
+    color: #6a1b9a;
+}
+
+.customer-modal input[type="text"],
+.customer-modal input[type="email"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.customer-modal button {
+    width: 48%;
+    margin: 5px 1%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #4a148c;
+    color: white;
+    cursor: pointer;
+}
+
+.customer-modal button:hover {
+    background-color: #6a1b9a;
+}
+
+/* Estilos gerais do layout */
+.container {
+    max-width: 800px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
 h1 {
-    font-size: 32px;
-    font-weight: bold;
-    color: #5f27cd; /* Roxo */
+    text-align: center;
+    color: #6a1b9a;
+}
+
+form {
     margin-bottom: 20px;
 }
 
-/* Formulário */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
 label {
-    text-align: left;
-    font-size: 16px;
-    color: #5f27cd; /* Roxo */
-    font-weight: bold;
+    display: block;
+    margin: 10px 0 5px;
+    color: #6a1b9a;
 }
 
-input {
-    padding: 12px;
-    font-size: 16px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+input[type="text"],
+input[type="email"] {
     width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-input:focus {
-    border-color: #5f27cd; /* Roxo claro ao focar */
-    outline: none;
-}
-
-/* Botões */
 button {
-    padding: 12px;
-    font-size: 16px;
-    background-color: #5f27cd; /* Roxo */
+    background-color: #6a1b9a;
+    transition: background-color 0.3s;
     color: white;
+    padding: 10px 15px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s;
-    width: 100%;
 }
 
 button:hover {
-    background-color: #4e21a2; /* Roxo escuro ao passar o mouse */
+    background-color: #4a148c;
 }
 
-button:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px #5f27cd; /* Roxo claro para foco */
-}
-
-/* Botão de voltar */
 .back-button {
-    margin-top: 20px;
-    text-align: left;
+    margin-bottom: 20px;
 }
 
-.back-btn {
-    background-color: transparent;
-    color: #5f27cd;
-    border: 2px solid #5f27cd;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+.customer-card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
-.back-btn:hover {
-    background-color: #5f27cd;
-    color: white;
-}
-
-/* Lista de clientes */
-#customersList {
-    margin-top: 40px;
-    text-align: left;
-}
-
-.customer-item {
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #f8f8f8;
+.customer-card {
+    background: #fff;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    width: calc(33.333% - 20px);
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+.customer-card h3 {
+    margin: 0 0 10px;
+    color: #6a1b9a;
+}
+
+.customer-card .actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.customer-card .actions button {
+    font-size: 12px;
 }
 
 /* Responsividade */
 @media (max-width: 768px) {
-    .container {
-        padding: 15px;
-        margin-top: 20px;
+    .customer-card {
+        width: calc(50% - 20px);
     }
+}
 
-    h1 {
-        font-size: 28px;
-    }
-
-    label {
-        font-size: 14px;
-    }
-
-    input, button {
-        font-size: 14px;
-    }
-
-    .back-btn {
-        font-size: 14px;
-        padding: 8px 15px;
+@media (max-width: 480px) {
+    .customer-card {
+        width: 100%;
     }
 }
