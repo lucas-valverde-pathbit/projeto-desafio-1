@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 console.log('Cadastro realizado com sucesso:', data);
                 alert(data.message);
-                window.location.href = 'login.html'; // Redireciona para a página de login após o cadastro
+                window.location.href = 'index.html'; // Redireciona para a página de login após o cadastro
             } else {
                 console.error('Erro no cadastro:', data);
                 alert(data.message || 'Erro ao cadastrar usuário. Verifique os dados informados.');

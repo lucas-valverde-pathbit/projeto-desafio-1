@@ -1,144 +1,152 @@
-/* Estilo global */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
-}
-
+/* Estilos gerais */
 body {
-    background-color: #f4f4f9; /* Cor de fundo clara */
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    flex-direction: column;
-    text-align: center;
-}
-
-/* Container principal */
-.container {
-    width: 100%;
-    max-width: 600px;
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
     padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 40px;
 }
 
-/* Título */
-h1 {
-    font-size: 32px;
-    font-weight: bold;
-    color: #5f27cd; /* Roxo */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Botão de Voltar */
+.back-button {
     margin-bottom: 20px;
 }
 
-/* Formulário */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-label {
-    text-align: left;
-    font-size: 16px;
-    color: #5f27cd; /* Roxo */
-    font-weight: bold;
-}
-
-input {
-    padding: 12px;
-    font-size: 16px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 100%;
-}
-
-input:focus {
-    border-color: #5f27cd; /* Roxo claro ao focar */
-    outline: none;
-}
-
-/* Botões */
-button {
-    padding: 12px;
-    font-size: 16px;
-    background-color: #5f27cd; /* Roxo */
-    color: white;
+.back-btn {
+    background-color: #6c757d;
+    color: #fff;
+    padding: 10px 20px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s;
-    width: 100%;
-}
-
-button:hover {
-    background-color: #4e21a2; /* Roxo escuro ao passar o mouse */
-}
-
-button:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px #5f27cd; /* Roxo claro para foco */
-}
-
-/* Botão de voltar */
-.back-button {
-    margin-top: 20px;
-    text-align: left;
-}
-
-.back-btn {
-    background-color: transparent;
-    color: #5f27cd;
-    border: 2px solid #5f27cd;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
 }
 
 .back-btn:hover {
-    background-color: #5f27cd;
-    color: white;
+    background-color: #5a6268;
 }
 
-/* Lista de produtos */
-#productsList {
-    margin-top: 40px;
-    text-align: left;
+/* Lista de Produtos */
+.products-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
-.product-item {
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #f8f8f8;
+.product {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.product:hover {
+    transform: translateY(-5px);
+}
+
+.product h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.product p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.product button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.product button:first-of-type {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.product button:last-of-type {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Formulário de Produto */
+.product-form-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: block; /* Exibido por padrão */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    width: 400px;
+    max-width: 90%;
+}
+
+
+.product-form-container h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+.product-form-container label {
+    display: block;
+    margin-bottom: 5px;
+    color: #666;
+}
+
+.product-form-container input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 4px;
+}
+
+.product-form-container button {
+    background-color: #28a745;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.product-form-container button:hover {
+    background-color: #218838;
+}
+
+/* Botão de Adicionar Produto */
+.add-product-btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.add-product-btn:hover {
+    background-color: #0069d9;
 }
 
 /* Responsividade */
 @media (max-width: 768px) {
-    .container {
-        padding: 15px;
-        margin-top: 20px;
-    }
-
-    h1 {
-        font-size: 28px;
-    }
-
-    label {
-        font-size: 14px;
-    }
-
-    input, button {
-        font-size: 14px;
+    .products-list {
+        grid-template-columns: 1fr;
     }
 }

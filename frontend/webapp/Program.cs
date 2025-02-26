@@ -17,8 +17,7 @@ app.UseHttpsRedirection();
 // Permitir servir arquivos estáticos
 app.UseStaticFiles();
 
-// Definir a rota da raiz para servir o arquivo login.html
-app.MapGet("/", () => Results.Redirect("/html/login.html")); // Redireciona para login.html na raiz
+app.MapGet("/", () => Results.Redirect("/html/home.html")); 
 
 
 // Mapeia Razor Pages, se necessário

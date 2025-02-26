@@ -1,10 +1,24 @@
 # Usar a imagem base do .NET
 FROM mcr.microsoft.com/dotnet/sdk:9.0
 
+# Atualizar pacotes e instalar dependências necessárias
+RUN apt-get update && apt-get install -y curl
+
+# Instalar Node.js (LTS 18.x)
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
+
+# Verificar se o node e npm foram instalados corretamente
+RUN node -v && npm -v
+
+# Instalar npm globalmente caso não tenha sido instalado corretamente
+RUN npm install -g npm
+
 # Definir o diretório de trabalho
 WORKDIR /web
 
+# Instalar o jsonwebtoken globalmente
+RUN npm install -g jsonwebtoken
+
 # Expor a porta do servidor de desenvolvimento
 EXPOSE 8080
-
-

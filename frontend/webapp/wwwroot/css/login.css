@@ -7,7 +7,7 @@
 }
 
 body {
-    background-color: #f4f4f9; /* Cor de fundo clara */
+    background-color: #ffffff; /* Cor de fundo clara */
     color: #333;
     display: flex;
     justify-content: center;
@@ -68,7 +68,7 @@ input:focus {
 
 button {
     padding: 12px;
-    background-color: #5f27cd; /* Roxo */
+    background-color: #5627ae;
     color: white;
     border: none;
     border-radius: 4px;
@@ -79,7 +79,7 @@ button {
 }
 
 button:hover {
-    background-color: #4e21a2; /* Roxo escuro */
+    background-color: #5627ae; /* Roxo escuro */
 }
 
 .message {

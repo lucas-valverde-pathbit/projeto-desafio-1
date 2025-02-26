@@ -4,16 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Cliente</title>
-    <link rel="stylesheet" href="../css/customer">
+    <link rel="stylesheet" href="../css/customer.css">
+    <script type="module" src="../js/permissions.js"></script>
 </head>
 <body>
-     <!-- Botão de Voltar -->
-     <div class="back-button">
+    <script>
+        // Verificar permissões
+        const { isAuthenticated } = checkPermissions();
+        if (!isAuthenticated) {
+            window.location.href = 'index.html'; // Redireciona para index.html se não houver token
+        }
+    </script>
+
+    <!-- Botão de Voltar -->
+    <div class="back-button">
         <a href="index.html">
             <button class="back-btn">Voltar para Seleção</button>
         </a>
     </div>
-    
+
     <div class="container">
         <h1>Cadastro de Cliente</h1>
 
@@ -30,12 +39,11 @@
             <button type="button" id="cancelEditButton" style="display: none;">Cancelar Edição</button>
         </form>
 
-
         <div id="customersList">
             <!-- Lista de clientes cadastrados será exibida aqui -->
         </div>
     </div>
 
-    <script src="../js/customer.js"></script>
+    <script type="module" src="../js/customer.js"></script>
 </body>
 </html>

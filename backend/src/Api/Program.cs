@@ -114,8 +114,8 @@ namespace Api
             // Habilitar arquivos estáticos
             app.UseStaticFiles(); 
 
-            // Redirecionar a rota raiz para login.html
-
+            // Redirecionar a rota raiz para index.html
+            app.MapGet("/", () => Results.Redirect("/html/home.html")); 
             app.MapControllers();
 
             // Iniciar o servidor

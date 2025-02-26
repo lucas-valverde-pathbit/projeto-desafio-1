@@ -9,8 +9,8 @@
       "PackagePath": "staticwebassets/css/customer.css"
     },
     {
-      "Id": "/web/wwwroot/css/index.css",
-      "PackagePath": "staticwebassets/css/index.css"
+      "Id": "/web/wwwroot/css/home.css",
+      "PackagePath": "staticwebassets/css/home.css"
     },
     {
       "Id": "/web/wwwroot/css/login.css",
@@ -37,8 +37,8 @@
       "PackagePath": "staticwebassets/html/customer.html"
     },
     {
-      "Id": "/web/wwwroot/html/index.html",
-      "PackagePath": "staticwebassets/html/index.html"
+      "Id": "/web/wwwroot/html/home.html",
+      "PackagePath": "staticwebassets/html/home.html"
     },
     {
       "Id": "/web/wwwroot/html/login.html",
@@ -61,8 +61,8 @@
       "PackagePath": "staticwebassets/js/customer.js"
     },
     {
-      "Id": "/web/wwwroot/js/index.js",
-      "PackagePath": "staticwebassets/js/index.js"
+      "Id": "/web/wwwroot/js/home.js",
+      "PackagePath": "staticwebassets/js/home.js"
     },
     {
       "Id": "/web/wwwroot/js/login.js",
@@ -71,6 +71,10 @@
     {
       "Id": "/web/wwwroot/js/order.js",
       "PackagePath": "staticwebassets/js/order.js"
+    },
+    {
+      "Id": "/web/wwwroot/js/permissions.js",
+      "PackagePath": "staticwebassets/js/permissions.js"
     },
     {
       "Id": "/web/wwwroot/js/product.js",
