@@ -57,6 +57,10 @@
       "PackagePath": "staticwebassets/html/signup.html"
     },
     {
+      "Id": "/web/wwwroot/js/auth.js",
+      "PackagePath": "staticwebassets/js/auth.js"
+    },
+    {
       "Id": "/web/wwwroot/js/customer.js",
       "PackagePath": "staticwebassets/js/customer.js"
     },

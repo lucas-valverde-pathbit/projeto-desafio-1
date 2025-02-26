@@ -3,19 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Produto</title>
+    <title>Produtos</title>
     <link rel="stylesheet" href="../css/product.css">
-    <script type="module" src="../js/permissions.js"></script>
 </head>
 <body>
-    <script>
-        // Verificar permissões
-        const { isAuthenticated } = checkPermissions();
-        if (!isAuthenticated) {
-            window.location.href = 'home.html'; // Redireciona para o login se não houver token
-        }
-    </script>
-
+    <h1>Produtos</h1>
     <!-- Botão de Voltar -->
     <div class="back-button">
         <a href="home.html">
@@ -55,7 +47,7 @@
         <!-- Botão para Adicionar Novo Produto -->
         <button class="add-product-btn" id="addProductBtn">Adicionar Produto</button>
     </div>
-
-    <script type="module" src="../js/product.js"></script>
+     <script type="module" src="../js/auth.js"></script>
+     <script type="module" src="../js/product.js"></script>
 </body>
 </html>
