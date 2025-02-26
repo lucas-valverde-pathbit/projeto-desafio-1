@@ -108,25 +108,44 @@ async function updateCustomer(event) {
 
     if (response.ok) {
         const updatedCustomer = await response.json();
-        customers = customers.map(customer =>
-            customer.id === customerId ? updatedCustomer : customer
-        );
+        customers = customers.map(c => c.id === customerId ? updatedCustomer : c);
         closeForm();
-        displayCustomers(); // Recarrega a lista de clientes
+        displayCustomers();
     } else {
         console.error('Erro ao editar cliente');
     }
 }
 
-// Função para buscar clientes conforme o filtro de nome ou email
+// Função para deletar cliente (DELETE)
+async function deleteCustomer() {
+    const customerId = document.getElementById('editCustomerId').value;
+
+    const response = await fetch(`${apiBaseUrl}/${customerId}`, {
+        method: 'DELETE'
+    });
+
+    if (response.ok) {
+        customers = customers.filter(c => c.id !== customerId); // Remove o cliente da lista
+        closeForm();
+        displayCustomers(); // Recarrega a lista de clientes
+    } else {
+        console.error('Erro ao deletar cliente');
+    }
+}
+
+// Função para filtrar clientes (com base no nome ou email)
 function filterCustomers() {
     const filterValue = document.getElementById('filterInput').value.toLowerCase();
-    const filteredCustomers = customers.filter(customer =>
-        customer.customerName.toLowerCase().includes(filterValue) ||
+
+    const filteredCustomers = customers.filter(customer => 
+        customer.customerName.toLowerCase().includes(filterValue) || 
         customer.customerEmail.toLowerCase().includes(filterValue)
     );
+
     renderCustomerList(filteredCustomers);
 }
 
-// Inicializa a exibição dos clientes ao carregar a página
-displayCustomers();
+// Carregar os clientes ao inicializar
+window.onload = function() {
+    displayCustomers();
+};

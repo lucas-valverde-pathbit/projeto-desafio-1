@@ -14,6 +14,7 @@
         </a>
     </div>
 
+    <!-- Filtro e Botão de Adicionar Cliente -->
     <div class="filter-container">
         <input type="text" id="filterInput" placeholder="Filtrar clientes..." onkeyup="filterCustomers()">
         <button id="addButton" onclick="showAddForm()">Adicionar Cliente</button>
@@ -40,26 +41,33 @@
     <!-- Formulário Flutuante para Editar Cliente -->
     <div id="editCustomerModal" class="customer-modal">
         <h3>Editar Cliente</h3>
-        <form id="editCustomerForm" onsubmit="updateCustomer(event);">
+        <form id="editForm" onsubmit="updateCustomer(event)">
             <input type="hidden" id="editCustomerId">
-            <label for="editCustomerName">Nome do Cliente:</label>
+            
+            <label for="editCustomerName">Nome:</label>
             <input type="text" id="editCustomerName" required>
-    
-            <label for="editCustomerEmail">Email:</label>
+            
+            <label for="editCustomerEmail">E-mail:</label>
             <input type="email" id="editCustomerEmail" required>
-    
-            <button type="submit" id="editButtonModal">Salvar</button>
+            
+            <!-- Botão de Salvar -->
+            <button type="submit">Salvar</button>
+            
+            <!-- Botão de Deletar -->
+            <button type="button" onclick="deleteCustomer()" id="deleteButton">Deletar</button>
+            
+            <!-- Botão de Cancelar -->
             <button type="button" onclick="closeForm()">Cancelar</button>
         </form>
     </div>
 
     <div id="customersList" style="margin-top: 20px;">
-        <h2>Lista de Clientes</h2>
         <div class="customer-card-container" id="customerCardContainer">
             <!-- Os dados dos clientes serão inseridos aqui -->
         </div>
     </div>
-    <script src="../js/customer.js"></script> <!-- Link para o arquivo JavaScript -->
+
+    <script src="../js/customer.js"></script>
     <script type="module" src="../js/auth.js"></script>
 </body>
 </html>

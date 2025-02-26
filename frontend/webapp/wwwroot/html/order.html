@@ -3,41 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedidos</title>
-    <link rel="stylesheet" href="../css/order.css">
+    <title>Cadastro de Pedido</title>
+    <link rel="stylesheet" href="../css/order.css"> <!-- Link para o arquivo CSS -->
 </head>
 <body>
+    <!-- Botão de Voltar -->
     <div class="back-button">
         <a href="home.html">
             <button class="back-btn">Voltar para Seleção</button>
         </a>
     </div>
 
-    <h1>Pedidos</h1>
-    <div class="container">
-        <h1>Cadastro de Pedido</h1>
-
-        <form id="orderForm">
-            <label for="orderCustomerId">Cliente (ID):</label>
-            <input type="text" id="orderCustomerId" required>
-
-            <label for="orderUserId">Usuário (ID):</label>
-            <input type="text" id="orderUserId" required>
-
-            <label for="orderDate">Data do Pedido:</label>
-            <input type="datetime-local" id="orderDate" required>
-
-            <label for="orderDeliveryAddress">Endereço de Entrega:</label>
-            <input type="text" id="orderDeliveryAddress" required>
-
-            <button type="submit">Cadastrar Pedido</button>
+    <!-- Filtro e Botão de Adicionar Pedido -->
+    <div class="filter-container">
+        <input type="text" id="filterInput" placeholder="Filtrar pedidos..." onkeyup="filterOrders()">
+        <button id="addButton" onclick="showAddForm()">Adicionar Pedido</button>
+    </div>
+    
+    <div id="orderCardContainer"></div>
+    
+    <!-- Formulário Flutuante para Adicionar Pedido -->
+    <div id="addOrderModal" class="order-modal">
+        <h3>Adicionar Pedido</h3>
+        <form id="orderForm" onsubmit="saveOrder(event);">
+            <input type="hidden" id="orderId">
+            
+            <label for="customerId">Cliente:</label>
+            <input type="text" id="customerId" readonly>
+            <button type="button" onclick="showCustomerSelection()">+</button>
+            
+            <label for="userId">Usuário:</label>
+            <input type="text" id="userId" readonly>
+            <button type="button" onclick="showUserSelection()">+</button>
+            
+            <label for="deliveryAddress">Endereço de Entrega:</label>
+            <input type="text" id="deliveryAddress" required>
+            <button type="button" onclick="validateAddress()">+</button>
+            
+            <label for="status">Status:</label>
+            <select id="status">
+                <option value="Pendente">Pendente</option>
+                <option value="Enviado">Enviado</option>
+                <option value="Entregue">Entregue</option>
+                <option value="Cancelado">Cancelado</option>
+            </select>
+            
+            <label for="productId">Produto:</label>
+            <input type="text" id="productId" readonly>
+            <button type="button" onclick="showProductSelection()">+</button>
+            
+            <label for="quantity">Quantidade:</label>
+            <input type="number" id="quantity" required>
+            
+            <button type="submit" id="addButtonModal">Adicionar</button>
+            <button type="button" onclick="closeForm()">Cancelar</button>
         </form>
+    </div>
 
-        <div id="ordersList">
-            <!-- Lista de pedidos cadastrados será exibida aqui -->
+    
+    <!-- Botão para selecionar cliente -->
+    <button id="selectCustomerButton" onclick="showCustomerSelection()">Selecionar Cliente</button>
+
+    <!-- Modal para Seleção de Cliente -->
+    <div id="customerSelectionModal" class="order-modal">
+        <h3>Selecionar Cliente</h3>
+        <div id="customerListContainer"></div>
+        <button type="button" onclick="closeCustomerSelection()">Fechar</button>
+    </div>
+
+    
+    <!-- Formulário Flutuante para Adicionar Pedido -->
+    <div id="addOrderModal" class="order-modal">
+        <h3>Adicionar Pedido</h3>
+        <form id="orderForm" onsubmit="saveOrder(event);">
+            <input type="hidden" id="orderId">
+            <label for="orderName">Nome do Pedido:</label>
+            <input type="text" id="orderName" required>
+    
+            <label for="orderDetails">Detalhes:</label>
+            <input type="text" id="orderDetails" required>
+    
+            <button type="submit" id="addButtonModal">Adicionar</button>
+            <button type="button" onclick="closeForm()">Cancelar</button>
+        </form>
+    </div>
+
+    <!-- Formulário Flutuante para Editar Pedido -->
+    <div id="editOrderModal" class="order-modal">
+        <h3>Editar Pedido</h3>
+        <form id="editForm" onsubmit="updateOrder(event)">
+            <input type="hidden" id="editOrderId">
+            
+            <label for="editOrderName">Nome:</label>
+            <input type="text" id="editOrderName" required>
+            
+            <label for="editOrderDetails">Detalhes:</label>
+            <input type="text" id="editOrderDetails" required>
+            
+            <!-- Botão de Salvar -->
+            <button type="submit">Salvar</button>
+            
+            <!-- Botão de Deletar -->
+            <button type="button" onclick="deleteOrder()" id="deleteButton">Deletar</button>
+            
+            <!-- Botão de Cancelar -->
+            <button type="button" onclick="closeForm()">Cancelar</button>
+        </form>
+    </div>
+
+    <div id="ordersList" style="margin-top: 20px;">
+        <p id="selectedCustomer">Cliente Selecionado: Nenhum</p>
+
+        <div class="order-card-container" id="orderCardContainer">
+            <!-- Os dados dos pedidos serão inseridos aqui -->
         </div>
     </div>
+
+    <script src="../js/order.js"></script>
     <script type="module" src="../js/auth.js"></script>
-    <script type="module" src="../js/order.js"></script>
 </body>
 </html>

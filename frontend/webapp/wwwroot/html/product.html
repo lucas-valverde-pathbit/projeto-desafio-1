@@ -8,6 +8,7 @@
 </head>
 <body>
     <h1>Produtos</h1>
+
     <!-- Botão de Voltar -->
     <div class="back-button">
         <a href="home.html">
@@ -16,18 +17,23 @@
     </div>
 
     <div class="container">
-        <!-- Seção de Produtos -->
-        <div class="products-list" id="productsList">
-            <!-- Produtos cadastrados serão exibidos aqui -->
+        <!-- Filtro e Botão de Adicionar Produto -->
+        <div class="filter-container">
+            <input type="text" id="filterInput" placeholder="Filtrar produtos..." onkeyup="filterProducts()">
+            <button id="addProductBtn" onclick="showAddProductForm()">Adicionar Produto</button>
         </div>
 
-        <!-- Formulário para Cadastro/Alteração de Produto -->
-        <div class="product-form-container" style="display: none;">
-            <div style="position: relative;">
-                <button class="close-form-btn" onclick="closeForm()" style="position: absolute; right: 0; top: 0; background: red; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer;">X</button>
-                <h2 id="formTitle">Cadastrar Produto</h2>
-            </div>
-            <form id="productForm">
+        <!-- Lista de Produtos -->
+        <div class="products-list" id="productsList">
+            <!-- Os produtos cadastrados serão exibidos aqui -->
+        </div>
+
+        <!-- Formulário Flutuante para Cadastro de Produto -->
+        <div id="addProductModal" class="product-modal">
+            <h3>Cadastrar Produto</h3>
+            <form id="productForm" onsubmit="saveProduct(event);">
+                <input type="hidden" id="productId">
+                
                 <label for="productName">Nome do Produto:</label>
                 <input type="text" id="productName" required>
 
@@ -40,14 +46,41 @@
                 <label for="productStockQuantity">Quantidade em Estoque:</label>
                 <input type="number" id="productStockQuantity" required>
 
-                <button type="submit">Salvar Produto</button>
+                <button type="submit" id="addProductButton">Salvar Produto</button>
+                <button type="button" onclick="closeForm()">Cancelar</button>
             </form>
         </div>
 
-        <!-- Botão para Adicionar Novo Produto -->
-        <button class="add-product-btn" id="addProductBtn">Adicionar Produto</button>
+        <!-- Formulário Flutuante para Editar Produto -->
+        <div id="editProductModal" class="product-modal">
+            <h3>Editar Produto</h3>
+            <form id="editProductForm" onsubmit="updateProduct(event)">
+                <input type="hidden" id="editProductId">
+                
+                <label for="editProductName">Nome do Produto:</label>
+                <input type="text" id="editProductName" required>
+
+                <label for="editProductDescription">Descrição:</label>
+                <input type="text" id="editProductDescription" required>
+
+                <label for="editProductPrice">Preço:</label>
+                <input type="number" id="editProductPrice" required>
+
+                <label for="editProductStockQuantity">Quantidade em Estoque:</label>
+                <input type="number" id="editProductStockQuantity" required>
+
+                <!-- Botão de Salvar Alterações -->
+                <button type="submit">Salvar Alterações</button>
+
+                <!-- Botão de Excluir Produto -->
+                <button type="button" onclick="deleteProduct()">Excluir</button>
+
+                <button type="button" onclick="closeForm()">Cancelar</button>
+            </form>
+        </div>
     </div>
-     <script type="module" src="../js/auth.js"></script>
-     <script src="../js/product.js"></script>
+
+    <script src="../js/product.js"></script>
+    <script type="module" src="../js/auth.js"></script>
 </body>
 </html>

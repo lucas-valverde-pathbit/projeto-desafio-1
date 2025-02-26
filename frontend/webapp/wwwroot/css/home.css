@@ -28,7 +28,7 @@ h1 {
 /* Navegação */
 nav {
     width: 100%;
-    max-width: 500px;
+    max-width: 1000px;
     margin-top: 20px;
 }
 
@@ -36,27 +36,43 @@ ul {
     list-style: none;
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 30px;
     flex-wrap: wrap;
     padding: 0;
 }
 
 ul li {
-    font-size: 18px;
+    width: 200px; /* Definindo um tamanho fixo para os itens da lista */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 a {
     text-decoration: none;
     color: #5f27cd; /* Roxo */
     font-weight: bold;
-    padding: 8px 15px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+    padding: 20px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    display: block;
+    width: 150px;
+    height: 150px;
+    box-sizing: border-box;
+}
+
+a img {
+    width: 70px; /* Tamanho do ícone */
+    height: 70px; /* Tamanho do ícone */
+    margin-bottom: 15px;
 }
 
 a:hover {
     background-color: #5f27cd;
     color: white;
+    transform: scale(1.1); /* Efeito de aumento ao passar o mouse */
 }
 
 a:focus {
@@ -75,10 +91,17 @@ a:focus {
     }
 
     ul li {
-        margin-bottom: 15px;
+        margin-bottom: 20px;
     }
 
     a {
         font-size: 16px;
+        width: 120px;
+        height: 120px;
+    }
+
+    a img {
+        width: 50px;
+        height: 50px;
     }
 }

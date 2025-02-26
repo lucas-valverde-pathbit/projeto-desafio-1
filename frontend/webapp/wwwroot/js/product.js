@@ -1,183 +1,183 @@
-// URL da API - Certifique-se de que está correta para seu ambiente
-const apiProductUrl = window.location.hostname === "localhost"
-    ? "http://localhost:5064/api/products"
-    : "http://api:5064/api/products";
+const apiBaseUrl = window.location.hostname === "localhost"
+    ? "http://localhost:5064/api/products"  // URL para desenvolvimento (localhost)
+    : "http://api:5064/api/products";       // URL para produção
 
-// Seleciona os elementos necessários
-const productForm = document.getElementById("productForm");
-const productList = document.getElementById("productsList");
-const productFormContainer = document.querySelector(".product-form-container");
-const addProductBtn = document.getElementById("addProductBtn");
-let editingProduct = null;
-
-// Função para listar os produtos cadastrados
-async function listProducts() {
+// Função para carregar a lista de produtos (requisição GET)
+async function loadProducts() {
     try {
-        const response = await fetch(apiProductUrl, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}` // Adicionando o token no cabeçalho
-            }
-        });
+        const response = await fetch(apiBaseUrl); // URL do seu backend
+        if (!response.ok) {
+            throw new Error("Erro ao carregar produtos.");
+        }
+        const products = await response.json(); // Converte a resposta para JSON
 
-        const products = await response.json();
+        console.log("Produtos recebidos da API: ", products); // Verifique o que é retornado
 
-        if (response.ok) {
-            const productsListDiv = document.getElementById("productsList");
-            productsListDiv.innerHTML = "";  // Limpa a lista
+        const productListContainer = document.getElementById("productsList");
+        productListContainer.innerHTML = ""; // Limpa a lista de produtos antes de preenchê-la
 
-            if (products.length === 0) {
-                productsListDiv.innerHTML = "<p>Nenhum produto cadastrado.</p>";
-            } else {
-                const listHtml = products.map(product => {
-                    return `
-                        <div class="product">
-                            <h3>${product.productName}</h3>
-                            <p>Descrição: ${product.productDescription}</p>
-                            <p>Preço: R$ ${product.productPrice}</p>
-                            <p>Quantidade em Estoque: ${product.productStockQuantity}</p>
-                            <button onclick="editProduct('${product.id}')">Editar</button>
-                            <button onclick="deleteProduct('${product.id}')">Excluir</button>
-                        </div>
-                    `;
-                }).join("");
+        if (products.length > 0) {
+            // Cria os cartões de produto e os insere no DOM
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.classList.add('product-card');
 
-                productsListDiv.innerHTML = listHtml;  // Exibe os produtos
-            }
+                // Verifique se os dados são válidos antes de usar toFixed()
+                const productPrice = (product.ProductPrice && !isNaN(product.ProductPrice)) ? product.ProductPrice.toFixed(2) : "N/A";
+                const productStockQuantity = (product.ProductStockQuantity && !isNaN(product.ProductStockQuantity)) ? product.ProductStockQuantity : "N/A";
+
+                productCard.innerHTML = `
+                    <h3 class="product-name">${product.productName}</h3>
+                    <p class="product-description">${product.productDescription}</p>
+                    <p><strong>Preço:</strong> R$ ${productPrice}</p>
+                    <p><strong>Estoque:</strong> ${productStockQuantity}</p>
+                    <button onclick="editProduct('${product.Id}')">Editar</button>
+                    <button onclick="deleteProduct('${product.Id}')">Excluir</button>
+                `;
+                productListContainer.appendChild(productCard);
+            });
         } else {
-            alert("Erro ao carregar os produtos.");
+            const noProductsMessage = document.createElement('p');
+            noProductsMessage.textContent = "Nenhum produto encontrado.";
+            productListContainer.appendChild(noProductsMessage);
         }
     } catch (error) {
-        alert("Erro ao carregar os produtos.");
+        console.error('Erro ao carregar produtos:', error);
     }
 }
 
-// Função para editar um produto
+// Função para editar um produto (requisição GET)
 async function editProduct(productId) {
-    console.log(`Iniciando edição do produto ID: ${productId}`);
     try {
-        const response = await fetch(`${apiProductUrl}/${productId}`, {
+        const response = await fetch(`${apiBaseUrl}/${productId}`);
+        const product = await response.json();
+
+        console.log("Produto para edição: ", product); // Verifique a estrutura da resposta para edição
+
+        document.getElementById("editProductModal").style.display = "block";
+        document.getElementById("addProductModal").style.display = "none";
+
+        document.getElementById("editProductId").value = product.Id;
+        document.getElementById("editProductName").value = product.productName;
+        document.getElementById("editProductDescription").value = product.productDescription;
+        document.getElementById("editProductPrice").value = product.ProductPrice; // Corrigido de Productprice para ProductPrice
+        document.getElementById("editProductStockQuantity").value = product.ProductStockQuantity; // Corrigido de roductStockQuantity para ProductStockQuantity
+    } catch (error) {
+        console.error("Erro ao editar produto:", error);
+    }
+}
+
+// Função para atualizar um produto (requisição PUT)
+async function updateProduct(event) {
+    event.preventDefault();
+
+    const productId = document.getElementById("editProductId").value;
+    const updatedProduct = {
+        productName: document.getElementById("editProductName").value,
+        productDescription: document.getElementById("editProductDescription").value,
+        productPrice: parseFloat(document.getElementById("editProductPrice").value),
+        productStockQuantity: parseInt(document.getElementById("editProductStockQuantity").value),
+    };
+
+    console.log("Dados do produto para atualização: ", updatedProduct);  // Debugging
+
+    try {
+        const response = await fetch(`${apiBaseUrl}/${productId}`, {
+            method: 'PUT',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}` // Adicionando o token no cabeçalho
-            }
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedProduct)  // Envia os dados como JSON
         });
 
         if (!response.ok) {
-            throw new Error(`Erro HTTP! Status: ${response.status}`);
+            throw new Error("Erro ao atualizar produto.");
         }
 
-        const product = await response.json();
-        console.log("Dados do produto recebidos:", product);
-
-        document.getElementById("productName").value = product.productName;
-        document.getElementById("productDescription").value = product.productDescription;
-        document.getElementById("productPrice").value = product.productPrice;
-        document.getElementById("productStockQuantity").value = product.productStockQuantity;
-
-        editingProduct = product;
-        document.querySelector('.product-form-container').style.display = "block";
-        document.getElementById("formTitle").innerText = "Editar Produto";
-        console.log("Editando produto existente:", product);
+        loadProducts();  // Atualiza a lista de produtos
+        closeForm();
     } catch (error) {
-        console.error("Erro ao editar o produto:", error);
-        alert(`Erro ao carregar os dados do produto: ${error.message}`);
+        console.error('Erro ao atualizar produto:', error);
     }
 }
 
-// Função para excluir um produto
+// Função para excluir um produto (requisição DELETE)
 async function deleteProduct(productId) {
     try {
-        const response = await fetch(`${apiProductUrl}/${productId}`, {
-            method: "DELETE",
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}` // Adicionando o token no cabeçalho
-            }
+        // Certificando-se de que o productId é passado corretamente
+        const response = await fetch(`${apiBaseUrl}/${productId}`, {
+            method: 'DELETE'
         });
 
-        if (response.ok) {
-            alert("Produto excluído com sucesso!");
-            listProducts();  // Atualiza a lista de produtos
-        } else {
-            alert("Erro ao excluir o produto.");
+        if (!response.ok) {
+            throw new Error("Erro ao excluir produto.");
         }
+
+        loadProducts();  // Atualiza a lista de produtos
     } catch (error) {
-        alert("Erro ao excluir o produto.");
+        console.error('Erro ao excluir produto:', error);
     }
 }
 
-// Função para cadastrar ou atualizar o produto
-productForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    console.log("Formulário de produto submetido");
-
-    const productName = document.getElementById("productName").value;
-    const productDescription = document.getElementById("productDescription").value;
-    const productPrice = parseFloat(document.getElementById("productPrice").value);
-    const productStockQuantity = parseInt(document.getElementById("productStockQuantity").value);
-
-    if (!productName || !productDescription || isNaN(productPrice) || isNaN(productStockQuantity)) {
-        alert("Por favor, preencha todos os campos corretamente.");
-        return;
-    }
-
-    const productData = { 
-        productName, 
-        productDescription, 
-        productPrice, 
-        productStockQuantity 
+// Função para salvar um novo produto (requisição POST)
+async function saveProduct(event) {
+    event.preventDefault();
+    const product = {
+        ProductName: document.getElementById("productName").value,
+        ProductDescription: document.getElementById("productDescription").value,
+        ProductPrice: parseFloat(document.getElementById("productPrice").value),
+        ProductStockQuantity: parseInt(document.getElementById("productStockQuantity").value),
     };
 
     try {
-        let response;
-        if (editingProduct) {
-            console.log("Atualizando produto existente ID:", editingProduct.id);
-            const url = `${apiProductUrl}/${editingProduct.id}`;
-            response = await fetch(url, {
-                method: "PUT",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify(productData),
-            });
-        } else {
-            console.log("Criando novo produto");
-            response = await fetch(apiProductUrl, {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify(productData),
-            });
-        }
+        const response = await fetch(apiBaseUrl, {  // URL do backend
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(product)  // Envia os dados como JSON
+        });
 
         if (!response.ok) {
-            throw new Error(`Erro HTTP! Status: ${response.status}`);
+            throw new Error("Erro ao salvar produto.");
         }
 
-        const result = await response.json();
-        console.log("Resposta da API:", result);
-
-        alert("Produto salvo com sucesso!");
-        listProducts();
-        document.getElementById("productForm").reset();
-        productFormContainer.style.display = "none";
-        editingProduct = null;
+        loadProducts();  // Atualiza a lista de produtos após salvar
+        closeForm();
     } catch (error) {
-        console.error("Erro ao salvar o produto:", error);
-        alert(`Erro ao salvar o produto: ${error.message}`);
+        console.error('Erro ao salvar produto:', error);
     }
-});
+}
 
-// Função para exibir o formulário de cadastro
-addProductBtn.addEventListener("click", function() {
-    console.log("Botão Adicionar Produto clicado");
-    document.querySelector('.product-form-container').style.display = "block";
-    document.getElementById("formTitle").innerText = "Cadastrar Produto";
-    productForm.reset();
-    editingProduct = null;
-    console.log("Formulário de cadastro exibido");
-});
+// Função para exibir o formulário de adição de produto
+function showAddProductForm() {
+    document.getElementById("addProductModal").style.display = "block";
+    document.getElementById("editProductModal").style.display = "none";
+    document.getElementById("productForm").reset();  // Limpar formulário
+}
 
-// Chama a função de listagem quando a página carrega
-listProducts();
+// Função para fechar os formulários
+function closeForm() {
+    document.getElementById("addProductModal").style.display = "none";
+    document.getElementById("editProductModal").style.display = "none";
+}
+
+// Função para filtrar produtos
+function filterProducts() {
+    const filter = document.getElementById("filterInput").value.toLowerCase();
+    const productCards = document.getElementsByClassName("product-card");
+
+    Array.from(productCards).forEach(card => {
+        const productName = card.querySelector(".product-name").innerText.toLowerCase();
+        const productDescription = card.querySelector(".product-description").innerText.toLowerCase();
+
+        if (productName.includes(filter) || productDescription.includes(filter)) {
+            card.style.display = "";
+        } else {
+            card.style.display = "none";
+        }
+    });
+}
+
+// Inicializar a lista de produtos ao carregar a página
+document.addEventListener('DOMContentLoaded', loadProducts);  // Chama loadProducts quando a página carrega
