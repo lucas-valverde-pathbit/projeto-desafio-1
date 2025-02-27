@@ -1,16 +1,47 @@
 // Variáveis globais para armazenar dados selecionados
-let selectedCustomer = null;
-let selectedProduct = null;
+const apiBaseUrl = window.location.hostname === "localhost"
+    ? "http://localhost:5064"  // URL de desenvolvimento (localhost)
+    : "http://api:5064"; // URL para produção (se necessário)
 
-// Função para abrir o modal de seleção de cliente
+let selectedCustomer = null;
+let selectedProducts = []; // Alterado para armazenar múltiplos produtos
+
+function showAddForm() {
+    document.getElementById('addOrderModal').style.display = 'block';
+    loadCustomers();
+    loadProducts();
+}
+
+// Função para mostrar o modal de seleção de cliente
 function showCustomerSelection() {
-    document.getElementById('customerSelectionModal').style.display = 'block';
-    loadCustomers(); // Carrega os clientes
+    const modal = document.getElementById('customerSelectionModal');
+    if (modal) {
+        modal.style.display = 'block';
+        loadCustomers(); // Carrega os clientes
+    } else {
+        console.error('Modal de seleção de clientes não encontrado.');
+    }
+}
+
+// Função para adicionar um novo campo de produto
+function addProductField() {
+    const productFieldsContainer = document.getElementById('productFields');
+    
+    const newProductField = document.createElement('div');
+    newProductField.innerHTML = `
+        <label for="productId">Produto:</label>
+        <input type="text" class="productId" readonly required>
+        <button type="button" onclick="showProductSelection(this)">+</button>
+        <label for="quantity">Quantidade:</label>
+        <input type="number" class="quantity" required min="1">
+    `;
+    
+    productFieldsContainer.appendChild(newProductField);
 }
 
 // Função para carregar os clientes na lista
 function loadCustomers() {
-    fetch('http://localhost:5064/api/customers') // URL correta da API para buscar clientes
+    fetch(`${apiBaseUrl}/api/customers`) // URL correta da API para buscar clientes
         .then(response => response.json())
         .then(customers => {
             const container = document.getElementById('customerListContainer');
@@ -42,13 +73,18 @@ function closeCustomerSelection() {
 
 // Função para abrir o modal de seleção de produto
 function showProductSelection() {
-    document.getElementById('productSelectionModal').style.display = 'block';
-    loadProducts(); // Carrega os produtos
+    const modal = document.getElementById('productSelectionModal');
+    if (modal) {
+        modal.style.display = 'block';
+        loadProducts(); // Carrega os produtos
+    } else {
+        console.error('Modal de seleção de produtos não encontrado.');
+    }
 }
 
 // Função para carregar os produtos na lista
 function loadProducts() {
-    fetch('http://localhost:5064/api/products') // URL correta da API para buscar produtos
+    fetch(`${apiBaseUrl}/api/products`) // URL correta da API para buscar produtos
         .then(response => response.json())
         .then(products => {
             const container = document.getElementById('productListContainer');
@@ -68,8 +104,11 @@ function loadProducts() {
 
 // Função para selecionar um produto
 function selectProduct(product) {
-    selectedProduct = product;
-    document.getElementById('productId').value = product.productName; // Exibe o nome do produto no campo de entrada
+    const productIdField = event.target.closest('div').querySelector('.productId');
+    const quantityField = event.target.closest('div').querySelector('.quantity');
+    
+    selectedProducts.push(product); // Adiciona o produto à lista de produtos selecionados
+    productIdField.value = product.productName; // Exibe o nome do produto no campo de entrada
     closeProductSelection();
 }
 
@@ -80,18 +119,32 @@ function closeProductSelection() {
 
 // Função para buscar o endereço com base no CEP
 function fetchAddress() {
-    const cep = document.getElementById('cep').value;
+    const cepInput = document.getElementById('cep');
+    const cep = cepInput.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+
     if (cep) {
-        fetch(`https://viacep.com.br/ws/${cep}/json/`)
-            .then(response => response.json())
+        fetch(`${apiBaseUrl}/api/cep/${cep}`)
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.error || 'Erro ao buscar endereço');
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
-                if (!data.erro) {
-                    document.getElementById('deliveryAddress').value = `${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf}`;
+                console.log(data); // Log the response for debugging
+                if (data && data.address) {
+                    document.getElementById('deliveryAddress').value = data.address;
                 } else {
                     alert('CEP não encontrado.');
                 }
             })
-            .catch(error => console.error('Erro ao buscar endereço:', error));
+            .catch(error => {
+                console.error('Erro ao buscar endereço:', error);
+                alert(error.message);
+            });
+
     }
 }
 
@@ -99,7 +152,7 @@ function fetchAddress() {
 function saveOrder(event) {
     event.preventDefault();
 
-    if (!selectedCustomer || !selectedProduct) {
+    if (!selectedCustomer) {
         alert('Por favor, selecione todos os campos obrigatórios!');
         return;
     }
@@ -108,16 +161,24 @@ function saveOrder(event) {
         customerId: selectedCustomer.id, // ID do cliente
         deliveryAddress: document.getElementById('deliveryAddress').value,
         status: document.getElementById('status').value,
-        products: [
-            {
-                productId: selectedProduct.id, // ID do produto
-                orderItemQuantity: document.getElementById('quantity').value,
-                orderItemPrice: selectedProduct.productPrice // Valor do produto
-            }
-        ]
+        orderItems: [] // Alterado para armazenar os itens do pedido
     };
 
-    fetch('http://localhost:5064/api/orders', { // URL correta da API para criar pedidos
+    const productFields = document.querySelectorAll('#productFields > div');
+    productFields.forEach(field => {
+        const productId = field.querySelector('input[id="productId"]').value;
+        const quantity = field.querySelector('input[type="number"]').value;
+
+        if (productId && quantity) {
+            orderData.orderItems.push({
+                productId: productId, // ID do produto
+                orderItemQuantity: quantity, // Quantidade do produto
+                orderItemPrice: selectedProduct.productPrice // Valor do produto
+            });
+        }
+    });
+
+    fetch(`${apiBaseUrl}/api/orders`, { // URL correta da API para criar pedidos
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -135,7 +196,7 @@ function saveOrder(event) {
 
 // Função para carregar os pedidos
 function loadOrders() {
-    fetch('http://localhost:5064/api/orders') // URL correta da API de pedidos
+    fetch(`${apiBaseUrl}/api/orders`) // URL correta da API de pedidos
         .then(response => response.json())
         .then(orders => {
             const container = document.getElementById('orderCardContainer');
@@ -174,7 +235,7 @@ function editOrder(orderId) {
 // Função para excluir um pedido
 function deleteOrder(orderId) {
     if (confirm('Tem certeza que deseja excluir este pedido?')) {
-        fetch(`http://localhost:5064/api/orders/${orderId}`, { // URL correta de sua API
+        fetch(`${apiBaseUrl}/api/orders/${orderId}`, { // URL correta de sua API
             method: 'DELETE'
         })
         .then(() => {
@@ -188,11 +249,4 @@ function deleteOrder(orderId) {
 // Função para fechar o formulário de criação de pedido
 function closeForm() {
     document.getElementById('addOrderModal').style.display = 'none';
-}
-
-// Função para abrir o formulário de criação de pedido
-function showAddForm() {
-    document.getElementById('addOrderModal').style.display = 'block';
-    loadCustomers();
-    loadProducts();
 }

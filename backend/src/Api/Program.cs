@@ -50,6 +50,9 @@ namespace Api
                 };
             });
 
+            // Configuração de HttpClient
+            builder.Services.AddHttpClient();
+
             // Configuração de CORS
             builder.Services.AddCors(options =>
             {
@@ -65,6 +68,7 @@ namespace Api
 
             // Adicionando o controlador e outros serviços
             builder.Services.AddControllers();
+
 
             // Configuração do Swagger
             builder.Services.AddEndpointsApiExplorer();
