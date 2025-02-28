@@ -7,7 +7,26 @@
     <title>Criar Pedido</title>
 </head>
 <body>
+     <!-- Botão de Voltar -->
+    <div class="back-button">
+         <a href="home.html">
+         <button class="back-btn">Voltar para Seleção</button>
+      </a>
+     </div>
+     
     <div class="container">
+        <!-- Filtro e Botão de Adicionar Ordens -->
+        <div class="filter-container">
+            <input type="text" id="filterInput" placeholder="Filtrar Ordens..." onkeyup="filterOrders()">
+            <button id="addOrderBtn" onclick="showAddOrderForm()">Adicionar Ordem</button>
+        </div>
+
+        <!-- Lista de Ordens -->
+        <div class="products-list" id="productsList">
+            <!-- As Ordens cadastradas serão exibidas aqui -->
+        </div>
+
+    <div id="addOrderModal" class="order-modal">
         <h1>Criar Pedido</h1>
         <form id="orderForm" onsubmit="saveOrder(event)">
             <label for="customerId">Cliente:</label>
@@ -67,5 +86,7 @@
     </div>
 
     <script src="../js/order.js"></script>
+        <!-- <script type="module" src="../js/auth.js"></script> -->
+
 </body>
 </html>

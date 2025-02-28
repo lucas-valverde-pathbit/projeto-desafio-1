@@ -9,9 +9,11 @@ namespace Domain.Models
         public User? User { get; set; } 
         public string? DeliveryAddress { get; set; }  
         public OrderStatus Status { get; set; } = OrderStatus.Pendente;  
+        public decimal TotalAmount { get; set; }
 
         public ICollection<OrderItem>? OrderItems { get; set; }  
     }
+
 
     public enum OrderStatus
     {
