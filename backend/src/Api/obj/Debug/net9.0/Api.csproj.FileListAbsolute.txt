@@ -472,3 +472,4 @@ C:/Users/Lucas/Desktop/projeto-final/backend/src/api/bin/Debug/net9.0/Microsoft.
 C:/Users/Lucas/Desktop/projeto-final/backend/src/api/bin/Debug/net9.0/Microsoft.Extensions.Primitives.dll
 C:/Users/Lucas/Desktop/projeto-final/backend/src/api/bin/Debug/net9.0/System.Text.Json.dll
 /api/api/bin/Debug/net9.0/Newtonsoft.Json.dll
+C:/Users/Lucas/Desktop/projeto-final/backend/src/api/bin/Debug/net9.0/Newtonsoft.Json.dll

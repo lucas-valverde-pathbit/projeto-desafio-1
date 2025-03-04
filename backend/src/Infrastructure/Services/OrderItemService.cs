@@ -59,59 +59,63 @@ namespace Infrastructure.Services
         }
 
         // Métodos da interface IOrderItemService
-        public async Task<OrderItem> AddOrderItem(Guid orderId, Guid productId, int quantity)
-        {
-            var product = await _productService.GetById(productId);
-            if (product == null)
-            {
-                throw new Exception("Produto não encontrado.");
-            }
+       public async Task<OrderItem> AddOrderItem(Guid orderId, Guid productId, int quantity)
+{
+    var product = await _productService.GetById(productId);
+    if (product == null)
+    {
+        throw new Exception("Produto não encontrado.");
+    }
 
-            if (product.ProductStockQuantity < quantity)
-            {
-                throw new Exception("Quantidade insuficiente em estoque.");
-            }
+    if (product.ProductStockQuantity < quantity)
+    {
+        throw new Exception("Quantidade insuficiente em estoque.");
+    }
 
-            var orderItem = new OrderItem
-            {
-                OrderId = orderId,
-                ProductId = productId,
-                OrderItemQuantity = quantity,
-                OrderItemPrice = product.ProductPrice * quantity
-            };
+    var orderItem = new OrderItem
+    {
+        OrderId = orderId,
+        ProductId = productId,
+        OrderItemQuantity = quantity,
+        OrderItemPrice = product.ProductPrice * quantity
+    };
 
-            await _context.OrderItems.AddAsync(orderItem);
+    await _context.OrderItems.AddAsync(orderItem);
 
-            product.ProductStockQuantity -= quantity;
+    // Ajuste no estoque do produto
+    product.ProductStockQuantity -= quantity;
 
-            await _context.SaveChangesAsync();
+    await _context.SaveChangesAsync();
 
-            return orderItem;
-        }
+    return orderItem;
+}
+       public async Task<OrderItem?> UpdateOrderItem(Guid orderItemId, int quantity)
+{
+    var orderItem = await _context.OrderItems.FindAsync(orderItemId);
+    if (orderItem == null) return null;
 
-        public async Task<OrderItem?> UpdateOrderItem(Guid orderItemId, int quantity)
-        {
-            var orderItem = await _context.OrderItems.FindAsync(orderItemId);
-            if (orderItem == null) return null;
+    var product = await _productService.GetById(orderItem.ProductId);
+    if (product == null) throw new Exception("Produto não encontrado.");
 
-            var product = await _productService.GetById(orderItem.ProductId);
-            if (product == null) throw new Exception("Produto não encontrado.");
+    // Calcular a diferença de estoque
+    var stockDifference = orderItem.OrderItemQuantity - quantity;
+    if (product.ProductStockQuantity + stockDifference < 0)
+    {
+        throw new Exception("Quantidade insuficiente em estoque.");
+    }
 
-            var stockDifference = orderItem.OrderItemQuantity - quantity;
-            if (product.ProductStockQuantity + stockDifference < 0)
-            {
-                throw new Exception("Quantidade insuficiente em estoque.");
-            }
+    // Ajuste de estoque para a nova quantidade
+    product.ProductStockQuantity += stockDifference;
 
-            product.ProductStockQuantity += stockDifference;
+    // Atualiza o item do pedido com a nova quantidade e preço
+    orderItem.OrderItemQuantity = quantity;
+    orderItem.OrderItemPrice = product.ProductPrice * quantity;
 
-            orderItem.OrderItemQuantity = quantity;
-            orderItem.OrderItemPrice = product.ProductPrice * quantity;
+    await _context.SaveChangesAsync();
 
-            await _context.SaveChangesAsync();
+    return orderItem;
+}
 
-            return orderItem;
-        }
 
         public async Task<bool> RemoveOrderItem(Guid orderItemId)
         {

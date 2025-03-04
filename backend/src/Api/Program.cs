@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Infrastructure.Data;
 using Infrastructure.Services;
+using System.Text.Json; // Adicionando a diretiva de namespace para ReferenceHandler
 
 namespace Api
 {
@@ -50,6 +51,7 @@ namespace Api
                 };
             });
 
+
             // Configuração de HttpClient
             builder.Services.AddHttpClient();
 
@@ -67,8 +69,16 @@ namespace Api
             });
 
             // Adicionando o controlador e outros serviços
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve; // Adicionando suporte a ciclos
+                });
 
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "My API", Version = "v1" });
+            });
 
             // Configuração do Swagger
             builder.Services.AddEndpointsApiExplorer();
@@ -112,10 +122,17 @@ namespace Api
             app.UseCors("CorsPolicy");
 
             // Configuração de Autenticação e Autorização
-            app.UseAuthentication();
-            app.UseAuthorization();
+            // app.UseAuthentication();
+            // app.UseAuthorization();
 
             // Habilitar arquivos estáticos
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+            });
+
             app.UseStaticFiles(); 
 
             // Redirecionar a rota raiz para index.html

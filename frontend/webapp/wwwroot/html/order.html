@@ -26,50 +26,50 @@
             <!-- As Ordens cadastradas serão exibidas aqui -->
         </div>
 
-    <div id="addOrderModal" class="order-modal">
-        <h1>Criar Pedido</h1>
-        <form id="orderForm" onsubmit="saveOrder(event)">
-            <label for="customerId">Cliente:</label>
-            <input type="text" id="customerId" readonly required>
-            <button type="button" onclick="showCustomerSelection()">+</button>
+<!-- Modal para Adicionar Pedido -->
+<div id="addOrderModal" class="order-modal">
+    <h1>Criar Pedido</h1>
+    <form id="orderForm" onsubmit="saveOrder(event)">
+        <!-- Campos do formulário -->
+        <label for="customerId">Cliente:</label>
+        <input type="text" id="customerId" readonly required>
+        <button type="button" onclick="showCustomerSelection()">+</button>
 
+        <label for="cep">CEP:</label>
+        <input type="text" id="cep" required onblur="fetchAddress()">
 
-            <label for="cep">CEP:</label>
-            <input type="text" id="cep" required onblur="fetchAddress()">
+        <label for="deliveryAddress">Endereço:</label>
+        <input type="text" id="deliveryAddress" required>
 
-            <label for="deliveryAddress">Endereço:</label>
-            <input type="text" id="deliveryAddress" required>
+        <label for="status">Status:</label>
+        <select id="status" required>
+            <option value="">Selecione o status</option>
+            <option value="Pendente">Pendente</option>
+            <option value="Enviado">Enviado</option>
+            <option value="Entregue">Entregue</option>
+            <option value="Cancelado">Cancelado</option>
 
-            <label for="status">Status:</label>
-            <select id="status" required>
-                <option value="">Selecione o status</option>
-                <option value="pendente">Pendente</option>
-                <option value="em_transito">Em transito</option>
-                <option value="entregue">Entregue</option>
-            </select>
+        </select>
 
-            <div id="productFields">
-                <label for="productId">Produto:</label>
-                <input type="text" id="productId" readonly required>
-                <label for="quantity">Quantidade:</label>
-                <input type="number" id="quantity" required min="1">
-            <button type="button" onclick="showProductSelection()">+</button>
+        <div id="productFields">
+            <!-- Campos de produto serão adicionados dinamicamente -->
+        </div>
 
-            </div>
+        <button type="button" onclick="addProductField()">Adicionar Produto</button>
 
-            <button type="button" onclick="addProductField()">Adicionar Produto</button>
-            <button type="submit">Adicionar Pedido</button>
-        </form>
-        <div id="orderCardContainer"></div>
-    </div>
+        <button type="submit">Adicionar Pedido</button>
+    </form>
+</div>
 
-    <div id="addOrderModal" class="order-modal" style="display:none;">
-        <h3>Adicionar Pedido</h3>
-        <form id="addOrderForm" onsubmit="saveOrder(event)">
-            <!-- Campos do formulário de adicionar pedido -->
-            <button type="button" onclick="closeForm()">Fechar</button>
-        </form>
-    </div>
+<!-- Modal para Fechar Pedido -->
+<div id="addOrderModalClose" class="order-modal" style="display:none;">
+    <h3>Adicionar Pedido</h3>
+    <form id="addOrderForm" onsubmit="saveOrder(event)">
+        <!-- Campos do formulário de adicionar pedido -->
+        <button type="button" onclick="closeForm()">Fechar</button>
+    </form>
+</div>
+
 
     <!-- Modal de Seleção de Cliente -->
     <div id="customerSelectionModal" class="order-modal" style="display:none;">

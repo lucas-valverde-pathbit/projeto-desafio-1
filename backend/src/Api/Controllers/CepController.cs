@@ -7,7 +7,7 @@ using Newtonsoft.Json; // Certifique-se de que o Newtonsoft.Json está referenci
 namespace Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/cep")]
     public class CepController : ControllerBase
     {
         private readonly HttpClient _httpClient;

@@ -9,6 +9,9 @@ namespace Domain.Services
     public interface IProductService : IBaseService<Product>
     {
         Task<Product?> GetByName(string name);
-        Task<bool> CheckStockAvailability(Guid productId, int quantoty);
+        Task<bool> CheckStockAvailability(Guid productId, int quantity);
+        Task<Product> CreateProduct(Product product);
+        Task<Product?> UpdateProduct(Product product);
+        Task DeleteProduct(Guid productId); // Adicionando o método DeleteProduct
     }
 }

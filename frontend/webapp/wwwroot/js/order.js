@@ -5,13 +5,14 @@ const apiBaseUrl = window.location.hostname === "localhost"
 
 let selectedCustomer = null;
 let selectedProducts = []; // Alterado para armazenar múltiplos produtos
-let selectedProduct = null; // Armazena o produto selecionado no momento
+let productCount = 0; // Contador para produtos
 
 // Função para exibir o formulário de adição de pedido
-function showAddForm() {
+function showAddOrderForm() {
     document.getElementById('addOrderModal').style.display = 'block';
     loadCustomers();
     loadProducts();
+    showProductSelection(); // Abre o modal de seleção de produtos automaticamente
 }
 
 // Função para mostrar o modal de seleção de cliente
@@ -30,22 +31,39 @@ function addProductField() {
     const productFieldsContainer = document.getElementById('productFields');
     
     const newProductField = document.createElement('div');
+    newProductField.classList.add('product-field-container'); // Classe para o contêiner de produto
+    newProductField.setAttribute('data-product-index', productCount); // Atribui um índice único
+    productCount++; // Incrementa o contador
+
     newProductField.innerHTML = `
-        <label for="productId">Produto:</label>
-        <input type="text" class="productId" readonly required>
-        <button type="button" onclick="showProductSelection(this)">+</button>
-        <label for="quantity">Quantidade:</label>
-        <input type="number" class="quantity" required min="1">
+        <div class="product-field">
+            <label for="productId">Produto:</label>
+            <input type="text" class="productId" readonly required>
+            <button type="button" class="select-product-btn">+</button>
+            <label for="quantity">Quantidade:</label>
+            <input type="number" class="quantity" required min="1">
+        </div>
     `;
-    
+
     productFieldsContainer.appendChild(newProductField);
+
+    // Adiciona o evento de clique ao botão de seleção de produto
+    newProductField.querySelector('.select-product-btn').addEventListener('click', function() {
+        showProductSelection(newProductField); // Passando o contêiner correto
+    });
 }
 
 // Função para carregar os clientes na lista
 function loadCustomers() {
     fetch(`${apiBaseUrl}/api/customers`) // URL correta da API para buscar clientes
         .then(response => response.json())
-        .then(customers => {
+        .then(data => {
+            const customers = data.$values; // Acessando o array de clientes
+            console.log('Clientes carregados:', customers); // Log para verificar os dados recebidos
+            if (!Array.isArray(customers)) {
+                console.error('A resposta não é um array de clientes:', customers);
+                return; // Retorna se a resposta não for um array
+            }
             const container = document.getElementById('customerListContainer');
             container.innerHTML = ''; // Limpa a lista antes de adicionar novos itens
 
@@ -73,12 +91,17 @@ function closeCustomerSelection() {
     document.getElementById('customerSelectionModal').style.display = 'none';
 }
 
-// Função para abrir o modal de seleção de produto
-function showProductSelection() {
+// Função para abrir o modal de seleção de produtos
+function showProductSelection(productFieldContainer) {
     const modal = document.getElementById('productSelectionModal');
     if (modal) {
         modal.style.display = 'block';
-        loadProducts(); // Carrega os produtos
+        loadProducts();
+
+        // Armazena o índice do produto no modal, se o contêiner for fornecido
+        if (productFieldContainer) {
+            modal.setAttribute('data-target', productFieldContainer.dataset.productIndex);
+        }
     } else {
         console.error('Modal de seleção de produtos não encontrado.');
     }
@@ -88,16 +111,25 @@ function showProductSelection() {
 function loadProducts() {
     fetch(`${apiBaseUrl}/api/products`) // URL correta da API para buscar produtos
         .then(response => response.json())
-        .then(products => {
+        .then(data => {
+            const products = data.$values; // Acessando o array de produtos
+            console.log('Produtos carregados:', products); // Log para verificar os dados recebidos
+            if (!Array.isArray(products)) {
+                console.error('A resposta não é um array de produtos:', products);
+                return; // Retorna se a resposta não for um array
+            }
             const container = document.getElementById('productListContainer');
             container.innerHTML = ''; // Limpa a lista antes de adicionar novos itens
 
             products.forEach(product => {
                 const button = document.createElement('button');
                 button.textContent = product.productName;
-                button.onclick = function() {
-                    selectProduct(product);
-                };
+
+                // Usar addEventListener para capturar o evento corretamente
+                button.addEventListener('click', function(event) {
+                    selectProduct(product); // Passa o produto selecionado
+                });
+
                 container.appendChild(button);
             });
         })
@@ -106,58 +138,56 @@ function loadProducts() {
 
 // Função para selecionar um produto
 function selectProduct(product) {
-    // Encontra o contêiner de campos do produto (agora considerando a criação dinâmica)
-    const productFieldContainer = event.target.closest('div');
-    
-    // Encontra os campos dentro desse contêiner (agora usando a classe 'productId' e 'quantity')
+    const modal = document.getElementById('productSelectionModal');
+    const targetIndex = modal.getAttribute('data-target'); // Obtém o índice do produto a ser atualizado
+    const productFieldContainer = document.querySelector(`.product-field-container[data-product-index="${targetIndex}"]`); // Seleciona o contêiner correto
+
+    if (!productFieldContainer) {
+        console.error('Contêiner de produto não encontrado.');
+        return;
+    }
+
+    // Buscando os campos dentro do contêiner de produto
     const productIdField = productFieldContainer.querySelector('.productId');
     const quantityField = productFieldContainer.querySelector('.quantity');
 
-    if (productIdField && quantityField) { // Verifica se os campos existem
-        selectedProducts.push(product); // Adiciona o produto à lista de produtos selecionados
-        productIdField.value = product.productName; // Exibe o nome do produto no campo de entrada
-        quantityField.value = 1; // Define uma quantidade padrão
-        closeProductSelection(); // Fecha o modal de seleção de produto
+    if (productIdField && quantityField) {
+        // Atualizando os campos com o produto selecionado
+        productIdField.value = product.productName;  // Nome do produto
+        quantityField.value = 1;  // Quantidade padrão
+        selectedProduct = product;  // Armazena o produto selecionado para o campo atual
+
+        closeProductSelection();  // Fecha o modal de seleção
     } else {
         console.error('Campos de produto ou quantidade não encontrados.');
     }
 }
 
-// Função para fechar o modal de seleção de produto
+// Função para fechar o modal de seleção de produtos
 function closeProductSelection() {
     document.getElementById('productSelectionModal').style.display = 'none';
 }
 
-// Função para buscar o endereço com base no CEP
 function fetchAddress() {
-    const cepInput = document.getElementById('cep');
-    const cep = cepInput.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+    const cep = document.getElementById('cep').value; // Obtém o valor do CEP
+    fetch(`${apiBaseUrl}/api/cep/${cep}`)
 
-    if (cep) {
-        fetch(`${apiBaseUrl}/api/cep/${cep}`)
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(errorData => {
-                        throw new Error(errorData.error || 'Erro ao buscar endereço');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data && data.address) {
-                    document.getElementById('deliveryAddress').value = data.address;
-                } else {
-                    alert('CEP não encontrado.');
-                }
-            })
-            .catch(error => {
-                console.error('Erro ao buscar endereço:', error);
-                alert(error.message);
-            });
-    }
+
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao buscar endereço');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Preenche os campos de endereço com os dados retornados
+            document.getElementById('deliveryAddress').value = data.address;
+        })
+        .catch(error => console.error('Erro:', error));
 }
 
 // Função para salvar o pedido
+
 function saveOrder(event) {
     event.preventDefault();
 
@@ -173,35 +203,53 @@ function saveOrder(event) {
         orderItems: [] // Alterado para armazenar os itens do pedido
     };
 
-    const productFields = document.querySelectorAll('#productFields > div');
-    productFields.forEach(field => {
-        const productId = field.querySelector('input[id="productId"]').value;
-        const quantity = field.querySelector('input[type="number"]').value;
+    console.log('Dados do pedido:', orderData); // Log para verificar os dados do pedido
 
-        if (productId && quantity) {
+    const productFields = document.querySelectorAll('.product-field-container');
+    productFields.forEach(field => {
+        const productName = field.querySelector('.productId').value;
+        const quantity = field.querySelector('.quantity').value;
+
+        if (productName && quantity) {
+            console.log(`Adicionando produto: ${productName}, Quantidade: ${quantity}`); // Log para verificar os produtos e quantidades
+            // Aqui usamos o `selectedProduct` para obter o ID e o preço do produto
             orderData.orderItems.push({
-                productId: productId, // ID do produto
-                orderItemQuantity: quantity, // Quantidade do produto
-                orderItemPrice: selectedProduct.productPrice // Valor do produto
+                productId: selectedProduct.id, // ID real do produto selecionado no campo atual
+                orderItemQuantity: parseInt(quantity), // Alterado para número inteiro
+                orderItemPrice: selectedProduct.productPrice // Preço do produto
             });
         }
     });
 
-    fetch(`${apiBaseUrl}/api/orders`, { // URL correta da API para criar pedidos
+    console.log('Dados do pedido após adição de itens:', orderData); // Log para verificar os dados do pedido após a adição de itens
+
+    const token = localStorage.getItem('token'); // Supondo que o token JWT esteja armazenado no localStorage
+
+    fetch(`${apiBaseUrl}/api/orders`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(orderData)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => {
+                console.error('Erro ao criar pedido:', err);
+                alert('Erro ao criar pedido: ' + JSON.stringify(err.errors)); // Exibir os erros de validação
+                throw new Error('Erro ao criar pedido: ' + err.message);
+            });
+        }
+        return response.json();
+    })
     .then(newOrder => {
         alert('Pedido criado com sucesso!');
-        closeForm(); // Fecha o formulário
-        loadOrders(); // Recarrega a lista de pedidos
+        closeForm();
+        loadOrders();
     })
     .catch(error => console.error('Erro ao criar pedido:', error));
-}
+}    
 
 // Função para carregar os pedidos
 function loadOrders() {
@@ -209,12 +257,16 @@ function loadOrders() {
         .then(response => response.json())
         .then(orders => {
             const container = document.getElementById('orderCardContainer');
-            container.innerHTML = ''; // Limpa a lista antes de adicionar novos pedidos
+            if (container) {
+                container.innerHTML = ''; // Limpa a lista antes de adicionar novos pedidos
 
-            orders.forEach(order => {
-                const orderCard = createOrderCard(order);
-                container.appendChild(orderCard);
-            });
+                orders.forEach(order => {
+                    const orderCard = createOrderCard(order);
+                    container.appendChild(orderCard);
+                });
+            } else {
+                console.error('Contêiner de pedidos não encontrado.');
+            }
         })
         .catch(error => console.error('Erro ao carregar pedidos:', error));
 }
@@ -268,12 +320,16 @@ function filterOrders() {
         .then(response => response.json())
         .then(orders => {
             const container = document.getElementById('orderCardContainer');
-            container.innerHTML = '';
+            if (container) {
+                container.innerHTML = '';
 
-            orders.forEach(order => {
-                const orderCard = createOrderCard(order);
-                container.appendChild(orderCard);
-            });
+                orders.forEach(order => {
+                    const orderCard = createOrderCard(order);
+                    container.appendChild(orderCard);
+                });
+            } else {
+                console.error('Contêiner de pedidos não encontrado.');
+            }
         })
         .catch(error => console.error('Erro ao carregar pedidos filtrados:', error));
 }

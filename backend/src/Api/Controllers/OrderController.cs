@@ -1,8 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using Domain.DTOs;
 using Domain.Services;
 using Domain.Models;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens; 
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Api.Controllers
 {
@@ -11,65 +16,92 @@ namespace Api.Controllers
     public class OrderController : BaseController<Order, IOrderService>
     {
         private readonly IOrderService _orderService;
+        private readonly IProductService _productService;
+        private readonly ILogger<OrderController> _logger;
 
-        public OrderController(IOrderService service) : base(service)
+        public OrderController(IOrderService service, IProductService productService, ILogger<OrderController> logger) : base(service)
         {
             _orderService = service;
+            _productService = productService;
+            _logger = logger;
         }
 
-        // Sobrescrevendo o método de criação de pedido para incluir a validação do estoque e endereço
-        [HttpPost]
-        public async Task<ActionResult<Order>> CreateOrder([FromBody] Order order)
+        private Guid ExtractCustomerIdFromToken(string token)
         {
-            // Verificar se o objeto order não é nulo
-            if (order == null)
-            {
-                return BadRequest("Dados do pedido não fornecidos.");
-            }
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var customerId = jwtToken.Claims.First(claim => claim.Type == "customerId").Value;
+            return Guid.Parse(customerId);
+        }
 
-            // Verifique se o pedido tem itens
-            if (order.OrderItems == null || !order.OrderItems.Any())
+        [HttpPost]
+        public async Task<ActionResult<Order>> CreateOrderWithValidation([FromBody] Order order, [FromHeader] string token)
+        {
+            try
             {
-                return BadRequest("Nenhum item de produto encontrado no pedido.");
-            }
-
-            // Iterar sobre os itens do pedido para validar o estoque de cada produto
-            foreach (var orderItem in order.OrderItems)
-            {
-                if (orderItem.Product == null)
+                if (order == null)
                 {
-                    return BadRequest("Produto não encontrado.");
+                    _logger.LogWarning("Dados do pedido não fornecidos.");
+                    return BadRequest("Dados do pedido não fornecidos.");
                 }
 
-                // Verificar se a quantidade de estoque do produto é válida
-                if (orderItem.Product.ProductStockQuantity <= 0)
+                if (order.OrderItems == null || !order.OrderItems.Any())
                 {
-                    return BadRequest("Quantidade do produto inválida.");
+                    _logger.LogWarning("Nenhum item de produto encontrado no pedido.");
+                    return BadRequest("Nenhum item de produto encontrado no pedido.");
                 }
 
-                // Verificar se o estoque do produto está disponível para a quantidade solicitada
-                var productStockIsValid = await _orderService.ValidateProductStock(orderItem.Product.Id, orderItem.OrderItemQuantity);
-                if (!productStockIsValid)
+                foreach (var orderItem in order.OrderItems)
                 {
-                    return BadRequest($"Quantidade do produto {orderItem.Product.ProductName} não disponível em estoque.");
+                    var product = await _productService.GetById(orderItem.ProductId);
+                    if (product == null)
+                    {
+                        _logger.LogWarning($"Produto não encontrado: {orderItem.ProductId}");
+                        return BadRequest("Produto não encontrado.");
+                    }
+
+                    if (orderItem.OrderItemQuantity <= 0)
+                    {
+                        _logger.LogWarning("Quantidade do produto inválida.");
+                        return BadRequest("Quantidade do produto inválida.");
+                    }
+
+                    var productStockIsValid = await _orderService.ValidateProductStock(product.Id, orderItem.OrderItemQuantity);
+                    if (!productStockIsValid)
+                    {
+                        _logger.LogWarning($"Quantidade do produto {product.ProductName} não disponível em estoque.");
+                        return BadRequest($"Quantidade do produto {product.ProductName} não disponível em estoque.");
+                    }
                 }
-            }
 
-            // Verificar se o endereço de entrega é válido
-            if (string.IsNullOrWhiteSpace(order.DeliveryAddress))
+                if (string.IsNullOrWhiteSpace(order.DeliveryAddress))
+                {
+                    _logger.LogWarning("Endereço de entrega não pode ser vazio.");
+                    return BadRequest("Endereço de entrega não pode ser vazio.");
+                }
+
+                var isAddressValid = await _orderService.ValidateDeliveryAddress(order.DeliveryAddress);
+                if (!isAddressValid)
+                {
+                    _logger.LogWarning("Endereço de entrega inválido.");
+                    return BadRequest("Endereço de entrega inválido.");
+                }
+
+                var customerId = ExtractCustomerIdFromToken(token); // Extrair ID do cliente do token
+                var createdOrder = await _orderService.CreateOrder(customerId, order.OrderItems.Select(oi => new OrderItemDTO
+                {
+                    ProductId = oi.ProductId,
+                    Quantity = oi.OrderItemQuantity
+                }).ToList(), order.DeliveryAddress);
+
+                _logger.LogInformation($"Pedido criado com sucesso: {createdOrder.Id}");
+                return CreatedAtAction(nameof(GetById), new { id = createdOrder.Id }, createdOrder);
+            }
+            catch (Exception ex)
             {
-                return BadRequest("Endereço de entrega não pode ser vazio.");
+                _logger.LogError(ex, "Erro ao criar pedido.");
+                return StatusCode(500, "Erro interno do servidor.");
             }
-
-            var isAddressValid = await _orderService.ValidateDeliveryAddress(order.DeliveryAddress);
-            if (!isAddressValid)
-            {
-                return BadRequest("Endereço de entrega inválido.");
-            }
-
-            // Criar o pedido
-            var createdOrder = await _orderService.Add(order);
-            return CreatedAtAction(nameof(GetById), new { id = createdOrder.Id }, createdOrder);
         }
     }
 }

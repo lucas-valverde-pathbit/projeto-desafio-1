@@ -10,15 +10,17 @@ public class ProductRepository : BaseRepository<Product>, IRepository<Product>
     {
         public ProductRepository(AppDbContext context) : base(context) { }
 
-        public async Task<Product?> GetByName(string name)
-        {
-            return await _dbSet.FirstOrDefaultAsync(p => p.ProductName.Equals(name, StringComparison.OrdinalIgnoreCase));
-        }
+public async Task<Product?> GetById(Guid productId)
+{
+    return await _dbSet.FindAsync(productId);
+}
 
-        public async Task<bool> CheckStockAvailability(Guid productId, int quantity)
-        {
-            var product = await _dbSet.FindAsync(productId);
-            return product != null && product.ProductStockQuantity >= quantity;
-        }
+
+public async Task<bool> CheckStockAvailability(Guid productId, int quantity)
+{
+    var product = await GetById(productId);
+    return product != null && product.ProductStockQuantity >= quantity;
+}
+
     }
 }

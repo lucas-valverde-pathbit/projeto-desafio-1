@@ -10,8 +10,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-public class OrderRepository : IRepository<Order>, IBaseService<Order>
-
+    public class OrderRepository : IRepository<Order>, IBaseService<Order>
     {
         private readonly AppDbContext _context;
 
@@ -149,12 +148,6 @@ public class OrderRepository : IRepository<Order>, IBaseService<Order>
             }
 
             return product.ProductStockQuantity >= quantity;
-        }
-
-        // Implementação do método ValidateDeliveryAddress (da interface IOrderService)
-        public async Task<bool> ValidateDeliveryAddress(string deliveryAddress)
-        {
-            return !string.IsNullOrEmpty(deliveryAddress);
         }
     }
 }

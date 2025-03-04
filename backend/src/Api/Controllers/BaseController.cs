@@ -13,27 +13,11 @@ namespace Api.Controllers
         where T : class, IEntity // Modificação: 'T' agora precisa implementar 'IEntity'
         where TService : IBaseService<T>
     {
-protected readonly TService _service;
-
+        protected readonly TService _service;
 
         public BaseController(TService service)
         {
             _service = service;
-        }
-
-        // Criar nova entidade
-        [HttpPost]
-        public async Task<ActionResult<T>> Create([FromBody] T entity)
-        {
-            try
-            {
-                var createdEntity = await _service.Add(entity);
-                return CreatedAtAction(nameof(GetById), new { id = createdEntity.Id }, createdEntity);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
         }
 
         // Obter por ID
