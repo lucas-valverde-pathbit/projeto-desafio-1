@@ -3,28 +3,17 @@ const apiBaseUrl = window.location.hostname === "localhost"
     ? "http://localhost:5064"  // URL de desenvolvimento (localhost)
     : "http://api:5064"; // URL para produção (se necessário)
 
-let selectedCustomer = null;
 let selectedProducts = []; // Alterado para armazenar múltiplos produtos
 let productCount = 0; // Contador para produtos
 
 // Função para exibir o formulário de adição de pedido
 function showAddOrderForm() {
     document.getElementById('addOrderModal').style.display = 'block';
-    loadCustomers();
     loadProducts();
     showProductSelection(); // Abre o modal de seleção de produtos automaticamente
 }
 
-// Função para mostrar o modal de seleção de cliente
-function showCustomerSelection() {
-    const modal = document.getElementById('customerSelectionModal');
-    if (modal) {
-        modal.style.display = 'block';
-        loadCustomers(); // Carrega os clientes
-    } else {
-        console.error('Modal de seleção de clientes não encontrado.');
-    }
-}
+
 
 // Função para adicionar um novo campo de produto
 function addProductField() {
@@ -53,43 +42,6 @@ function addProductField() {
     });
 }
 
-// Função para carregar os clientes na lista
-function loadCustomers() {
-    fetch(`${apiBaseUrl}/api/customers`) // URL correta da API para buscar clientes
-        .then(response => response.json())
-        .then(data => {
-            const customers = data.$values; // Acessando o array de clientes
-            console.log('Clientes carregados:', customers); // Log para verificar os dados recebidos
-            if (!Array.isArray(customers)) {
-                console.error('A resposta não é um array de clientes:', customers);
-                return; // Retorna se a resposta não for um array
-            }
-            const container = document.getElementById('customerListContainer');
-            container.innerHTML = ''; // Limpa a lista antes de adicionar novos itens
-
-            customers.forEach(customer => {
-                const button = document.createElement('button');
-                button.textContent = customer.customerName;
-                button.onclick = function() {
-                    selectCustomer(customer);
-                };
-                container.appendChild(button);
-            });
-        })
-        .catch(error => console.error('Erro ao carregar clientes:', error));
-}
-
-// Função para selecionar um cliente
-function selectCustomer(customer) {
-    selectedCustomer = customer;
-    document.getElementById('customerId').value = customer.customerName; // Exibe o nome do cliente no campo de entrada
-    closeCustomerSelection();
-}
-
-// Função para fechar o modal de seleção de cliente
-function closeCustomerSelection() {
-    document.getElementById('customerSelectionModal').style.display = 'none';
-}
 
 // Função para abrir o modal de seleção de produtos
 function showProductSelection(productFieldContainer) {
@@ -186,41 +138,67 @@ function fetchAddress() {
 
 // Função para salvar o pedido
 
+// Função para salvar o pedido
 function saveOrder(event) {
     event.preventDefault();
 
-    if (!selectedCustomer) {
-        alert('Por favor, selecione todos os campos obrigatórios!');
+    // Verificação se o Endereço, Produto e Status estão preenchidos
+    const deliveryAddress = document.getElementById('deliveryAddress').value;
+    const status = document.getElementById('status').value;
+
+    // Verificando se o Endereço, Status e pelo menos um Produto foram preenchidos
+    if (!deliveryAddress) {
+        alert('Por favor, preencha o endereço!');
         return;
     }
 
-    const orderData = {
-        order: {
-            customerId: selectedCustomer.id, // ID do cliente
-            deliveryAddress: document.getElementById('deliveryAddress').value,
-            status: 'Pendente', // Definindo valor fixo como 'Pendente'
-            orderItems: [] // Itens do pedido
-        },
-        token: localStorage.getItem('token') // Incluindo o token no payload
-    };
-
-
-    console.log('Dados do pedido:', orderData); // Log para verificar os dados do pedido
+    if (!status) {
+        alert('Por favor, selecione o status do pedido!');
+        return;
+    }
 
     const productFields = document.querySelectorAll('.product-field-container');
+    let productSelected = false;
+
+    // Verifica se ao menos um produto foi selecionado
     productFields.forEach(field => {
         const productName = field.querySelector('.productId').value;
         const quantity = field.querySelector('.quantity').value;
 
         if (productName && quantity) {
-            console.log(`Adicionando produto: ${productName}, Quantidade: ${quantity}`); // Log para verificar os produtos e quantidades
-            // Aqui usamos o `selectedProduct` para obter o ID e o preço do produto
+            productSelected = true;
+        }
+    });
+
+    if (!productSelected) {
+        alert('Por favor, adicione pelo menos um produto!');
+        return;
+    }
+
+    // Se todas as validações forem passadas, prossegue com a criação do pedido
+    const orderData = {
+        order: {
+            deliveryAddress: deliveryAddress,
+            status: status, // Status do pedido
+            orderItems: [] // Itens do pedido
+        },
+        token: localStorage.getItem('token') // Incluindo o token no payload
+    };
+
+    console.log('Dados do pedido:', orderData); // Log para verificar os dados do pedido
+
+    productFields.forEach(field => {
+        const productName = field.querySelector('.productId').value;
+        const quantity = field.querySelector('.quantity').value;
+
+        if (productName && quantity) {
+            console.log(`Adicionando produto: ${productName}, Quantidade: ${quantity}`);
+            // Usando o `selectedProduct` para obter o ID e o preço do produto
             orderData.order.orderItems.push({
-                productId: selectedProduct.id, // ID real do produto selecionado no campo atual
-                quantity: parseInt(quantity), // Alterado para número inteiro
+                productId: selectedProduct.id, // ID do produto selecionado
+                quantity: parseInt(quantity), // Quantidade em número
                 price: selectedProduct.productPrice // Preço do produto
             });
-
         }
     });
 
@@ -231,7 +209,6 @@ function saveOrder(event) {
         headers: {
             'Content-Type': 'application/json'
         },
-
         body: JSON.stringify(orderData)
     })
     .then(response => {
@@ -250,7 +227,8 @@ function saveOrder(event) {
         loadOrders();
     })
     .catch(error => console.error('Erro ao criar pedido:', error));
-}    
+}
+
 
 // Função para carregar os pedidos
 function loadOrders() {
@@ -278,7 +256,6 @@ function createOrderCard(order) {
     card.classList.add('order-card');
     card.innerHTML = `
         <h3>Pedido #${order.id}</h3>
-        <p><strong>Cliente:</strong> ${order.customerName}</p>
         <p><strong>Endereço:</strong> ${order.deliveryAddress}</p>
         <p><strong>Status:</strong> ${order.status}</p>
         <div class="actions">
