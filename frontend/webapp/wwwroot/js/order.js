@@ -169,10 +169,8 @@ function closeProductSelection() {
 }
 
 function fetchAddress() {
-    const cep = document.getElementById('cep').value; // Obtém o valor do CEP
+    const cep = document.getElementById('cep').value;
     fetch(`${apiBaseUrl}/api/cep/${cep}`)
-
-
         .then(response => {
             if (!response.ok) {
                 throw new Error('Erro ao buscar endereço');
@@ -197,11 +195,15 @@ function saveOrder(event) {
     }
 
     const orderData = {
-        customerId: selectedCustomer.id, // ID do cliente
-        deliveryAddress: document.getElementById('deliveryAddress').value,
-        status: document.getElementById('status').value,
-        orderItems: [] // Alterado para armazenar os itens do pedido
+        order: {
+            customerId: selectedCustomer.id, // ID do cliente
+            deliveryAddress: document.getElementById('deliveryAddress').value,
+            status: 'Pendente', // Definindo valor fixo como 'Pendente'
+            orderItems: [] // Itens do pedido
+        },
+        token: localStorage.getItem('token') // Incluindo o token no payload
     };
+
 
     console.log('Dados do pedido:', orderData); // Log para verificar os dados do pedido
 
@@ -213,24 +215,23 @@ function saveOrder(event) {
         if (productName && quantity) {
             console.log(`Adicionando produto: ${productName}, Quantidade: ${quantity}`); // Log para verificar os produtos e quantidades
             // Aqui usamos o `selectedProduct` para obter o ID e o preço do produto
-            orderData.orderItems.push({
+            orderData.order.orderItems.push({
                 productId: selectedProduct.id, // ID real do produto selecionado no campo atual
-                orderItemQuantity: parseInt(quantity), // Alterado para número inteiro
-                orderItemPrice: selectedProduct.productPrice // Preço do produto
+                quantity: parseInt(quantity), // Alterado para número inteiro
+                price: selectedProduct.productPrice // Preço do produto
             });
+
         }
     });
 
     console.log('Dados do pedido após adição de itens:', orderData); // Log para verificar os dados do pedido após a adição de itens
 
-    const token = localStorage.getItem('token'); // Supondo que o token JWT esteja armazenado no localStorage
-
     fetch(`${apiBaseUrl}/api/orders`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
         },
+
         body: JSON.stringify(orderData)
     })
     .then(response => {

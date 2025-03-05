@@ -9,7 +9,6 @@ namespace Domain.Models
         public required string UserName { get; set; }
         public required string UserEmail { get; set; }
         public required string UserPassword { get; set; }
-
         public UserRole Role { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

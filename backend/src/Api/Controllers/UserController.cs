@@ -45,7 +45,9 @@ namespace Api.Controllers
                Subject = new ClaimsIdentity(new[] 
               {
                   new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                  new Claim(ClaimTypes.Email, user.UserEmail)
+                  new Claim(ClaimTypes.Email, user.UserEmail),
+                  new Claim(ClaimTypes.Name, user.UserName),
+                  new Claim(ClaimTypes.Role, user.Role.ToString())
                }),
                Expires = DateTime.UtcNow.AddHours(1),
               SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -62,43 +64,42 @@ namespace Api.Controllers
          });
         }
 
+        [HttpPost("signup")]
+        public async Task<IActionResult> Signup([FromBody] SignupRequest request)
+        {
+            var existingUser = await _service.GetByEmail(request.SignupEmail);
 
-               [HttpPost("signup")]
-               public async Task<IActionResult> Signup([FromBody] SignupRequest request)
-              {
-                    var existingUser = await _service.GetByEmail(request.SignupEmail);
-
-                    if (existingUser != null)
-                   {
-                        return BadRequest(new { message = "Email já cadastrado." });
-                 }
-
-                    var newUser = new User
-                   {
-                     UserName = request.SignupName,
-                     UserEmail = request.SignupEmail,
-                     UserPassword = ComputeSha256Hash(request.SignupPassword),
-                     Role = request.SignupRole
-                    };
-
-                 await _service.Create(newUser);
-
-                  return Ok(new { message = "Usuário cadastrado com sucesso!" });
-               }
-
-              private string ComputeSha256Hash(string rawData)
-              {
-                    using (SHA256 sha256Hash = SHA256.Create())
-                    {
-                      byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-                      StringBuilder builder = new StringBuilder();
-                      foreach (byte b in bytes)
-                       {
-                          builder.Append(b.ToString("x2"));
-                      }
-                      return builder.ToString();
-                    }
+            if (existingUser != null)
+            {
+                return BadRequest(new { message = "Email já cadastrado." });
             }
+
+            var newUser = new User
+            {
+                UserName = request.SignupName,
+                UserEmail = request.SignupEmail,
+                UserPassword = ComputeSha256Hash(request.SignupPassword),
+                Role = request.SignupRole
+            };
+
+            await _service.Create(newUser);
+
+            return Ok(new { message = "Usuário cadastrado com sucesso!" });
+        }
+
+        private string ComputeSha256Hash(string rawData)
+        {
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+                StringBuilder builder = new StringBuilder();
+                foreach (byte b in bytes)
+                {
+                    builder.Append(b.ToString("x2"));
+                }
+                return builder.ToString();
+            }
+        }
 
         public class LoginRequest
         {

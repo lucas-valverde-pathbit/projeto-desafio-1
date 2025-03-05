@@ -41,8 +41,12 @@ window.onload = () => {
                 // Verificar se a resposta contém o token
                 if (responseData.token) {
                     localStorage.setItem('token', responseData.token);
-                    console.log('Token armazenado no localStorage:', responseData.token);
+                    // Decodificar o token e armazenar informações do usuário
+                    const userInfo = decodeToken(responseData.token);
+                    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+                    console.log('Token e informações do usuário armazenados:', responseData.token, userInfo);
                     window.location.href = 'home.html'; // Redireciona para home.html
+
                 } else {
                     showMessage('loginMessage', 'Erro ao receber o token.', 'error');
                 }
@@ -64,6 +68,22 @@ window.onload = () => {
             setTimeout(() => {
                 messageElement.style.display = 'none';
             }, 5000);
+        }
+    }
+
+    // Função para decodificar o token JWT
+    function decodeToken(token) {
+        try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            
+            return JSON.parse(jsonPayload);
+        } catch (error) {
+            console.error('Erro ao decodificar token:', error);
+            return null;
         }
     }
 };

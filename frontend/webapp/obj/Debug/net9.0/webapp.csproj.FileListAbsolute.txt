@@ -210,7 +210,6 @@ C:/Users/Lucas/Desktop/projeto-final/frontend/webapp/obj/Debug/net9.0/webapp.gen
 C:/Users/Lucas/Desktop/projeto-final/frontend/webapp/obj/Debug/net9.0/ref/webapp.dll
 /web/obj/Debug/net9.0/compressed/72z15wuuml-1171jgq9mz.gz
 /web/obj/Debug/net9.0/compressed/j01xduc5h7-vq3f64lwxl.gz
-/web/obj/Debug/net9.0/compressed/slfamdedpb-p4m40g10mu.gz
 /web/obj/Debug/net9.0/compressed/1bw3xwkslc-md2duyq183.gz
 /web/obj/Debug/net9.0/compressed/wobie5xj9j-gwlqb2nzfk.gz
 /web/obj/Debug/net9.0/compressed/or5kzizktl-6n7diagmal.gz
@@ -224,6 +223,7 @@ C:/Users/Lucas/Desktop/projeto-final/frontend/webapp/obj/Debug/net9.0/ref/webapp
 /web/obj/Debug/net9.0/compressed/2z2qoy2cqp-yaes8hnk80.gz
 /web/obj/Debug/net9.0/compressed/scl02kp8l8-84tmyq6ylo.gz
 /web/obj/Debug/net9.0/compressed/qm34urs3lf-8s1pbxsgzf.gz
-/web/obj/Debug/net9.0/compressed/iaskq0lryy-n6d9thv3iw.gz
 /web/obj/Debug/net9.0/compressed/f74ozls3r6-off7xo6zws.gz
-/web/obj/Debug/net9.0/compressed/t5wy6fix6t-sxk7wp6dw8.gz
+/web/obj/Debug/net9.0/compressed/iaskq0lryy-bzepqw4lz1.gz
+/web/obj/Debug/net9.0/compressed/slfamdedpb-8ddfiqoego.gz
+/web/obj/Debug/net9.0/compressed/t5wy6fix6t-ic4gwe3hky.gz
