@@ -151,18 +151,10 @@ public class DatabaseSeeder
             new User
             {
                 Id = Guid.NewGuid(),
-                UserName = "AdminExemplo",
-                UserEmail = "admin@exemplo.com",
-                UserPassword = ComputeSha256Hash("senhaAdmin123"),
+                UserName = "lucasadmin",
+                UserEmail = "lucasadmin@gmail.com",
+                UserPassword = ComputeSha256Hash("lucasadmin"),
                 Role = UserRole.ADMINISTRADOR
-            },
-            new User
-            {
-                Id = Guid.NewGuid(),
-                UserName = "ClienteExemplo",
-                UserEmail = "cliente@exemplo.com",
-                UserPassword = ComputeSha256Hash("senhaCliente123"),
-                Role = UserRole.CLIENTE
             },
             new User
             {

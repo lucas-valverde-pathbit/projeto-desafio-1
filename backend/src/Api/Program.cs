@@ -32,7 +32,6 @@ namespace Api
             builder.Services.AddScoped<Domain.Services.IProductService, Infrastructure.Services.ProductService>();
             builder.Services.AddScoped<Domain.Services.ICustomerService, Infrastructure.Services.CustomerService>();
             builder.Services.AddScoped<Domain.Services.IOrderService, Infrastructure.Services.OrderService>();
-            builder.Services.AddScoped<Domain.Services.IOrderItemService, Infrastructure.Services.OrderItemService>();
 
             // Configuração de autenticação JWT
             builder.Services.AddAuthentication(options =>
@@ -122,8 +121,9 @@ namespace Api
             app.UseCors("CorsPolicy");
 
             // Configuração de Autenticação e Autorização
-            // app.UseAuthentication();
-            // app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
 
             // Habilitar arquivos estáticos
             app.UseSwagger();

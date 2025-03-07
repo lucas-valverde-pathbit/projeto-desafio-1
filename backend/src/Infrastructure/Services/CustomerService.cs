@@ -15,5 +15,10 @@ namespace Infrastructure.Services
         {
             return await _context.Customers.FirstOrDefaultAsync(c => c.CustomerEmail == email);
         }
+
+        public async Task<Customer?> GetByUserId(Guid userId) // Implementando o método GetByUserId
+        {
+            return await _context.Customers.Include(c => c.User).FirstOrDefaultAsync(c => c.UserId == userId);
+        }
     }
 }

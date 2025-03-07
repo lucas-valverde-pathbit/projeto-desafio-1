@@ -44,6 +44,8 @@ window.onload = () => {
                     // Decodificar o token e armazenar informações do usuário
                     const userInfo = decodeToken(responseData.token);
                     localStorage.setItem('userInfo', JSON.stringify(userInfo));
+                    localStorage.setItem('customerId', userInfo.customerId); // Armazenar o CustomerId
+
                     console.log('Token e informações do usuário armazenados:', responseData.token, userInfo);
                     window.location.href = 'home.html'; // Redireciona para home.html
 

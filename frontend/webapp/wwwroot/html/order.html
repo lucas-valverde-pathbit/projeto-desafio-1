@@ -7,13 +7,13 @@
     <title>Criar Pedido</title>
 </head>
 <body>
-     <!-- Botão de Voltar -->
+    <!-- Botão de Voltar -->
     <div class="back-button">
-         <a href="home.html">
-         <button class="back-btn">Voltar para Seleção</button>
-      </a>
-     </div>
-     
+        <a href="home.html">
+            <button class="back-btn">Voltar para Seleção</button>
+        </a>
+    </div>
+
     <div class="container">
         <!-- Filtro e Botão de Adicionar Ordens -->
         <div class="filter-container">
@@ -26,55 +26,53 @@
             <!-- As Ordens cadastradas serão exibidas aqui -->
         </div>
 
-<!-- Modal para Adicionar Pedido -->
-<div id="addOrderModal" class="order-modal">
-    <h1>Criar Pedido</h1>
-    <form id="orderForm" onsubmit="saveOrder(event)">
-        <!-- Campos do formulário -->
-        <label for="cep">CEP:</label>
-        <input type="text" id="cep" required onblur="fetchAddress()">
+        <!-- Modal para Adicionar Pedido -->
+        <div id="addOrderModal" class="order-modal">
+            <h1>Criar Pedido</h1>
+            <form id="orderForm" onsubmit="saveOrder(event)">
+                <!-- Campos do formulário -->
+                <label for="cep">CEP:</label>
+                <input type="text" id="cep" required onblur="fetchAddress()">
 
-        <label for="deliveryAddress">Endereço:</label>
-        <input type="text" id="deliveryAddress" required>
+                <label for="deliveryAddress">Endereço:</label>
+                <input type="text" id="deliveryAddress" required>
 
-        <label for="status">Status:</label>
-        <select id="status" required>
-            <option value="">Selecione o status</option>
-            <option value="Pendente">Pendente</option>
-            <option value="Enviado">Enviado</option>
-            <option value="Entregue">Entregue</option>
-            <option value="Cancelado">Cancelado</option>
+                <label for="status">Status:</label>
+                <select id="status" required>
+                    <option value="">Selecione o status</option>
+                    <option value="Pendente">Pendente</option>
+                    <option value="Enviado">Enviado</option>
+                    <option value="Entregue">Entregue</option>
+                    <option value="Cancelado">Cancelado</option>
+                </select>
 
-        </select>
+                <div id="productFields">
+                    <!-- Campos de produto serão adicionados dinamicamente -->
+                </div>
 
-        <div id="productFields">
-            <!-- Campos de produto serão adicionados dinamicamente -->
+                <button type="button" onclick="addProductField()">Adicionar Produto</button>
+
+                <button type="submit">Adicionar Pedido</button>
+            </form>
         </div>
 
-        <button type="button" onclick="addProductField()">Adicionar Produto</button>
+        <!-- Modal para Fechar Pedido -->
+        <div id="addOrderModalClose" class="order-modal" style="display:none;">
+            <h3>Adicionar Pedido</h3>
+            <form id="addOrderForm" onsubmit="saveOrder(event)">
+                <!-- Campos do formulário de adicionar pedido -->
+                <button type="button" onclick="closeForm()">Fechar</button>
+            </form>
+        </div>
 
-        <button type="submit">Adicionar Pedido</button>
-    </form>
-</div>
-
-<!-- Modal para Fechar Pedido -->
-<div id="addOrderModalClose" class="order-modal" style="display:none;">
-    <h3>Adicionar Pedido</h3>
-    <form id="addOrderForm" onsubmit="saveOrder(event)">
-        <!-- Campos do formulário de adicionar pedido -->
-        <button type="button" onclick="closeForm()">Fechar</button>
-    </form>
-</div>
-
-    <!-- Modal de Seleção de Produto -->
-    <div id="productSelectionModal" class="order-modal" style="display:none;">
-        <h3>Selecionar Produto</h3>
-        <div id="productListContainer"></div>
-        <button type="button" onclick="closeProductSelection()">Fechar</button>
+        <!-- Modal de Seleção de Produto -->
+        <div id="productSelectionModal" class="order-modal" style="display:none;">
+            <h3>Selecionar Produto</h3>
+            <div id="productListContainer"></div>
+            <button type="button" onclick="closeProductSelection()">Fechar</button>
+        </div>
     </div>
 
     <script src="../js/order.js"></script>
-        <!-- <script type="module" src="../js/auth.js"></script> -->
-
 </body>
 </html>
