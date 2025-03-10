@@ -232,47 +232,50 @@ function fetchAddress() {
 function saveOrder(event) {
     event.preventDefault();
 
+    // Obtendo as informações do usuário
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     const deliveryAddress = document.getElementById('deliveryAddress').value;
     const deliveryZipCode = document.getElementById('cep').value;
     const status = document.getElementById('status').value;
 
+    // Verificando se os campos obrigatórios foram preenchidos
     if (!deliveryAddress || !status) {
         alert('Por favor, preencha todos os campos obrigatórios!');
         return;
     }
 
-    const productFields = document.querySelectorAll('#productFields .product-field');  // Acessando os campos de produto
+    // Acessando os campos de produto
+    const productFields = document.querySelectorAll('#productFields .product-field');
     let productSelected = false;
     let orderItems = [];
     let totalAmount = 0;
 
-    // Verificar os campos de produto e coletar os dados
+    // Verificando os campos de produto e coletando os dados
     productFields.forEach(field => {
-        const productName = field.querySelector('.product-name').value;  // Acessando o nome do produto
-        const productPrice = parseFloat(field.querySelector('.product-price').value.replace('R$ ', '').replace(',', '.'));  // Acessando o preço do produto
-        const quantity = parseInt(field.querySelector('.product-quantity').value);  // Acessando a quantidade do produto
+        const productName = field.querySelector('.product-name').value;
+        const productPrice = parseFloat(field.querySelector('.product-price').value.replace('R$ ', '').replace(',', '.')); // Garantir que o preço está correto
+        const quantity = parseInt(field.querySelector('.product-quantity').value);
 
-        // Verificando se todos os campos foram preenchidos
+        // Verificando se todos os campos foram preenchidos corretamente
         if (productName && productPrice && quantity > 0) {
             productSelected = true;
 
-            // Calculando o total do item
+            // Calculando o total do item e somando no total geral
             const itemTotal = productPrice * quantity;
             totalAmount += itemTotal;
 
             // Adicionando os itens ao array
-            const productId = field.querySelector('.product-id').value;  // Acessando o ID do produto
+            const productId = field.querySelector('.product-id').value;
             orderItems.push({
-                productId: productId,  // Incluindo o ID do produto
+                productId: productId,  // ID do produto
                 productName: productName,
                 productPrice: productPrice,
                 quantity: quantity
-
             });
         }
     });
 
+    // Se nenhum produto foi selecionado, exibe um alerta
     if (!productSelected) {
         alert('Por favor, adicione pelo menos um produto!');
         return;
@@ -280,18 +283,18 @@ function saveOrder(event) {
 
     // Montando os dados do pedido
     const orderData = {
-        CustomerId: userInfo.customerId, // Alterando para usar CustomerId
-
+        CustomerId: userInfo.customerId,
         DeliveryAddress: deliveryAddress,
-        DeliveryZipCode: deliveryZipCode,  // Envia o CEP de entrega
+        DeliveryZipCode: deliveryZipCode,
         Status: status,
-        TotalAmount: totalAmount,  // Envia o valor total
-        OrderItems: orderItems  // Envia os itens do pedido
+        TotalAmount: totalAmount,  // Enviando o valor total
+        OrderItems: orderItems  // Enviando os itens do pedido
     };
 
+    // Verificando os dados do pedido antes de enviar
     console.log('Dados do pedido a serem enviados:', JSON.stringify(orderData, null, 2));
 
-
+    // Recuperando o token de autenticação
     const token = localStorage.getItem('token');
     fetch(`${apiBaseUrl}/api/orders`, {
         method: 'POST',
@@ -309,15 +312,15 @@ function saveOrder(event) {
     })
     .then(newOrder => {
         alert('Pedido criado com sucesso!');
-        closeForm();
-        loadOrders();
+        closeForm();  // Fechar o formulário após a criação
+        loadOrders();  // Atualizar a lista de pedidos
     })
     .catch(error => {
         console.error('Erro ao criar pedido:', error);
         alert('Erro ao criar pedido: ' + error.message);
-
     });
 }
+
 
 
 

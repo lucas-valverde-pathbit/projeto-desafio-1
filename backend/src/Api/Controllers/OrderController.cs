@@ -124,7 +124,7 @@ namespace Api.Controllers
                     DeliveryZipCode = orderRequest.DeliveryZipCode,
                     Status = OrderStatus.Enviado,
                     OrderDate = DateTime.UtcNow,
-                    TotalAmount = orderRequest.OrderItems.Sum(item => item.Quantity * item.Price)
+                    TotalAmount = orderRequest.TotalAmount 
                 };
 
                 _logger.LogInformation($"Total do pedido: {order.TotalAmount} para o Cliente ID: {customer.Id}, Endereço: {order.DeliveryAddress}");

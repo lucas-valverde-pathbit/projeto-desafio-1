@@ -6,6 +6,7 @@ namespace Domain.DTOs
         public string DeliveryAddress { get; set; }
         public string DeliveryZipCode { get; set; }
         public List<OrderItemDTO> OrderItems { get; set; }
+        public decimal TotalAmount { get; set; }
     }
 
     public class OrderItemDTO

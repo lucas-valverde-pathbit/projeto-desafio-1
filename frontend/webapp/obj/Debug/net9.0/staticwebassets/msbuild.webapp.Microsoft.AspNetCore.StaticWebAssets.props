@@ -318,8 +318,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>6en2pr42jp</Fingerprint>
-      <Integrity>EljOJ5uaVwbQcJzfxcVCSiDUtIS9ieGLvddWdbbHv5Y=</Integrity>
+      <Fingerprint>8aq77kgpih</Fingerprint>
+      <Integrity>MAhnA3+kX4qiH4AHc6j7+A+Wsfa0nWgxk0PljbhHzA0=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\order.js'))</OriginalItemSpec>

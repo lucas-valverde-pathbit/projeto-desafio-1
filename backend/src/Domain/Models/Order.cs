@@ -10,8 +10,6 @@ namespace Domain.Models
         public string? DeliveryZipCode { get; set; }
         public OrderStatus Status { get; set; } = OrderStatus.Enviado;
         public decimal TotalAmount { get; set; }
-        
-        // Relacionamento com os itens do pedido
         public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
 
