@@ -6,8 +6,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Infrastructure.Data;
-using System.IdentityModel.Tokens.Jwt; // Adicionando a diretiva de namespace para JwtSecurityTokenHandler
-using Microsoft.Extensions.Logging; // Adicionando a diretiva de namespace para ILogger
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers
 {
@@ -18,8 +19,18 @@ namespace Api.Controllers
         private readonly IOrderService _orderService;
         private readonly IProductService _productService;
         private readonly ICustomerService _customerService;
-        private readonly AppDbContext _context; // Adicionando a dependência do DbContext
-        private readonly ILogger<OrderController> _logger; // Adicionando a dependência do logger
+        private readonly AppDbContext _context;
+        private readonly ILogger<OrderController> _logger;
+
+        public override async Task<ActionResult<IEnumerable<Order>>> GetAll()
+        {
+            var orders = await _context.Orders
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
+                .ToListAsync();
+                
+            return Ok(orders);
+        }
 
         public OrderController(
             IOrderService orderService, 
@@ -27,12 +38,49 @@ namespace Api.Controllers
             ICustomerService customerService, 
             AppDbContext context,
             ILogger<OrderController> logger) : base(orderService)
+
         {
             _orderService = orderService;
             _productService = productService;
             _customerService = customerService;
             _context = context;
             _logger = logger;
+        }
+
+        public override async Task<ActionResult<Order>> GetById(Guid id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product) // Include related Product data
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order != null)
+            {
+                // Explicitly load OrderItems if not already loaded
+                await _context.Entry(order)
+                    .Collection(o => o.OrderItems)
+                    .LoadAsync();
+            }
+
+                
+            if (order == null)
+            {
+                _logger.LogWarning($"Pedido com ID {id} não encontrado.");
+                return NotFound();
+            }
+
+            _logger.LogInformation($"Pedido encontrado com {order.OrderItems.Count} itens.");
+            
+            var options = new System.Text.Json.JsonSerializerOptions
+            {
+                ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve,
+                WriteIndented = true
+            };
+            
+            _logger.LogDebug($"Detalhes dos itens do pedido: {System.Text.Json.JsonSerializer.Serialize(order.OrderItems, options)}");
+
+            return Ok(order);
+
         }
 
         [HttpPost]
@@ -79,14 +127,13 @@ namespace Api.Controllers
                     TotalAmount = orderRequest.OrderItems.Sum(item => item.Quantity * item.Price)
                 };
 
-                // Logando os detalhes do pedido
                 _logger.LogInformation($"Total do pedido: {order.TotalAmount} para o Cliente ID: {customer.Id}, Endereço: {order.DeliveryAddress}");
 
                 using (var transaction = await _context.Database.BeginTransactionAsync())
+
                 {
                     try
                     {
-                        // Processando os itens do pedido
                         foreach (var item in orderRequest.OrderItems)
                         {
                             var product = await _productService.GetById(item.ProductId);
@@ -104,7 +151,6 @@ namespace Api.Controllers
                                 return BadRequest($"Quantidade de {product.ProductName} em estoque insuficiente.");
                             }
 
-                            // Atualizando estoque após a adição ao pedido
                             product.ProductStockQuantity -= item.Quantity;
                             await _productService.UpdateProduct(product);
 
@@ -127,7 +173,7 @@ namespace Api.Controllers
 
                         _logger.LogInformation($"Pedido {order.Id} criado com sucesso!");
 
-                        return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
+                        return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
                     }
                     catch (Exception ex)
                     {
@@ -144,51 +190,6 @@ namespace Api.Controllers
             }
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetOrder(Guid id)
-        {
-            var order = await _orderService.GetById(id);
-            if (order == null)
-            {
-                _logger.LogWarning($"Pedido com ID {id} não encontrado.");
-                return NotFound();
-            }
 
-            return Ok(order);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateOrder(Guid id, OrderUpdateDTO orderUpdateDTO)
-        {
-            if (orderUpdateDTO == null)
-            {
-                _logger.LogWarning("Dados de atualização do pedido não podem ser nulos.");
-                return BadRequest("Order update data cannot be null.");
-            }
-
-            var updatedOrder = await _orderService.UpdateOrder(id, orderUpdateDTO);
-            if (updatedOrder == null)
-            {
-                _logger.LogWarning($"Pedido com ID {id} não encontrado para atualização.");
-                return NotFound();
-            }
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOrder(Guid id)
-        {
-            var order = await _orderService.GetById(id);
-            if (order == null)
-            {
-                _logger.LogWarning($"Pedido com ID {id} não encontrado para exclusão.");
-                return NotFound();
-            }
-
-            await _orderService.DeleteOrder(id);
-            _logger.LogInformation($"Pedido com ID {id} excluído com sucesso.");
-            return NoContent();
-        }
     }
 }

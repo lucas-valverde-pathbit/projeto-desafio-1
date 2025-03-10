@@ -22,7 +22,8 @@ namespace Api.Controllers
 
         // Obter por ID
         [HttpGet("{id}")]
-        public async Task<ActionResult<T>> GetById(Guid id)
+        public virtual async Task<ActionResult<T>> GetById(Guid id)
+
         {
             var entity = await _service.GetById(id);
             if (entity == null)
@@ -33,7 +34,8 @@ namespace Api.Controllers
 
         // Obter todos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<T>>> GetAll()
+        public virtual async Task<ActionResult<IEnumerable<T>>> GetAll()
+
         {
             var entities = await _service.GetAll();
             return Ok(entities);

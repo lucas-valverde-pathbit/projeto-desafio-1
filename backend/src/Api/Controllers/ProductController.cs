@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Domain.Services;
 using Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -19,7 +20,7 @@ namespace Api.Controllers
 
         // Endpoint para obter um produto por ID
         [HttpGet("{id}")]
-        public new async Task<ActionResult<Product>> GetById(Guid id)  // Usando 'new' para indicar que está ocultando o método da classe base
+        public override async Task<ActionResult<Product>> GetById(Guid id)
         {
             var product = await _productService.GetById(id);
             if (product == null)
