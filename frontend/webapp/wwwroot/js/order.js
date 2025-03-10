@@ -321,24 +321,25 @@ function saveOrder(event) {
     });
 }
 
-
-
-
-
-
 // Função para carregar os pedidos
 function loadOrders() {
     fetch(`${apiBaseUrl}/api/orders`) // URL correta da API de pedidos
         .then(response => response.json())
-        .then(orders => {
+        .then(response => {
             const container = document.getElementById('orderCardContainer');
             if (container) {
                 container.innerHTML = ''; // Limpa a lista antes de adicionar novos pedidos
-
-                orders.forEach(order => {
-                    const orderCard = createOrderCard(order);
-                    container.appendChild(orderCard);
-                });
+                
+                // Verifica se a resposta tem a estrutura esperada
+                const orders = response.$values || response; // Verifique a estrutura da resposta
+                if (Array.isArray(orders)) {
+                    orders.forEach(order => {
+                        const orderCard = createOrderCard(order);
+                        container.appendChild(orderCard);
+                    });
+                } else {
+                    console.error('A resposta da API não contém uma lista de pedidos:', response);
+                }
             } else {
                 console.error('Contêiner de pedidos não encontrado.');
             }
@@ -350,17 +351,44 @@ function loadOrders() {
 function createOrderCard(order) {
     const card = document.createElement('div');
     card.classList.add('order-card');
-    card.innerHTML = `
-        <h3>Pedido #${order.id}</h3>
-        <p><strong>Endereço:</strong> ${order.deliveryAddress}</p>
-        <p><strong>Status:</strong> ${order.status}</p>
+    
+    // Exibindo os dados do pedido
+    card.innerHTML = ` 
+        <h3>Pedido ID: ${order.id}</h3>
+        <p><strong>Data do Pedido:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
+        <p><strong>Status:</strong> ${order.status === 1 ? 'ENVIADO' : 'PENDENTE'}</p>
+        <p><strong>CEP de Entrega:</strong> ${order.deliveryZipCode}</p>
+        <p><strong>Endereço de Entrega:</strong> ${order.deliveryAddress}</p>
+        
+        <div class="order-items">
+            <h4>Itens do Pedido:</h4>
+            <ul>
+                ${order.orderItems.$values.map(item => `
+                    <li>
+                        <strong>ID do Produto:</strong> ${item.productId} <br>
+                        <strong>Nome:</strong> ${item.product.productName} <br>
+                        <strong>Descrição:</strong> ${item.product.productDescription} <br>
+                        <strong>Quantidade:</strong> ${item.quantity} <br>
+                        <strong>Preço Unitário:</strong> R$ ${item.product.productPrice.toFixed(2)} <br>
+                        <strong>Preço Total:</strong> R$ ${(item.quantity * item.product.productPrice).toFixed(2)}
+                    </li>
+                `).join('')}
+            </ul>
+        </div>
+        
+        <div class="order-summary">
+            <p><strong>Total do Pedido:</strong> R$ ${order.totalAmount.toFixed(2)}</p>
+        </div>
+        
         <div class="actions">
             <button onclick="editOrder('${order.id}')">Editar</button>
             <button onclick="deleteOrder('${order.id}')">Excluir</button>
         </div>
     `;
+
     return card;
 }
+
 
 // Função para editar um pedido
 function editOrder(orderId) {
