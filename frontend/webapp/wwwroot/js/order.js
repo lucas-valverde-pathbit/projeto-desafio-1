@@ -68,8 +68,6 @@ function addProductField() {
     productFieldsContainer.appendChild(productField);
 }
 
-
-
 function openProductSelectionModal(targetIndex) {
     const modal = document.getElementById('productSelectionModal');
     modal.setAttribute('data-target', targetIndex);  // Guarda o índice do campo
@@ -80,9 +78,6 @@ function openProductSelectionModal(targetIndex) {
     // Chama a função para carregar os produtos
     fetchProducts();  // Carrega a lista de produtos
 }
-
-
-
 
 function fetchProducts() {
     fetch(`${apiBaseUrl}/api/products`)
@@ -120,7 +115,6 @@ function fetchProducts() {
         });
 }
 
-
 function loadProductsToModal(products) {
     const productListContainer = document.getElementById('productListContainer');
     productListContainer.innerHTML = '';  // Limpa a lista antes de adicionar novos produtos
@@ -140,8 +134,6 @@ function loadProductsToModal(products) {
         productListContainer.appendChild(productItem);  // Adiciona o produto à lista de produtos no modal
     });
 }
-
-
 
 // Função para carregar os produtos na lista
 function loadProducts() {
@@ -172,8 +164,6 @@ function loadProducts() {
         .catch(error => console.error('Erro ao carregar produtos:', error));
 }
 
-
-
 function selectProduct(product) {
     const modal = document.getElementById('productSelectionModal');
     const targetIndex = modal.getAttribute('data-target');  // Obtém o índice do campo selecionado
@@ -191,7 +181,7 @@ function selectProduct(product) {
 
         // Preenche os campos com os dados do produto
         productNameField.value = product.productName;
-        productPriceField.value = `R$ ${product.productPrice.toFixed(2)}`;
+        productPriceField.value = `R$ ${product.productPrice ? product.productPrice.toFixed(2) : '0.00'}`; // Verifica se o preço está definido
         productQuantityField.value = 1;  // Definindo a quantidade inicial como 1
         
         // Preenche o campo oculto com o ID do produto
@@ -204,13 +194,10 @@ function selectProduct(product) {
     }
 }
 
-
 function closeProductSelection() {
     const modal = document.getElementById('productSelectionModal');
     modal.style.display = 'none';  // Fecha o modal
 }
-
-
 
 function fetchAddress() {
     const cep = document.getElementById('cep').value;
@@ -366,11 +353,11 @@ function createOrderCard(order) {
                 ${order.orderItems.$values.map(item => `
                     <li>
                         <strong>ID do Produto:</strong> ${item.productId} <br>
-                        <strong>Nome:</strong> ${item.product.productName} <br>
-                        <strong>Descrição:</strong> ${item.product.productDescription} <br>
+                        <strong>Nome:</strong> ${item.product ? item.product.productName : 'Produto não disponível'} <br>
+                        <strong>Descrição:</strong> ${item.product ? item.product.productDescription : 'Descrição não disponível'} <br>
                         <strong>Quantidade:</strong> ${item.quantity} <br>
-                        <strong>Preço Unitário:</strong> R$ ${item.product.productPrice.toFixed(2)} <br>
-                        <strong>Preço Total:</strong> R$ ${(item.quantity * item.product.productPrice).toFixed(2)}
+                        <strong>Preço Unitário:</strong> R$ ${item.product && item.product.productPrice ? item.product.productPrice.toFixed(2) : '0.00'} <br>
+                        <strong>Preço Total:</strong> R$ ${(item.quantity * (item.product ? item.product.productPrice : 0)).toFixed(2)}
                     </li>
                 `).join('')}
             </ul>
@@ -388,7 +375,6 @@ function createOrderCard(order) {
 
     return card;
 }
-
 
 // Função para editar um pedido
 function editOrder(orderId) {
