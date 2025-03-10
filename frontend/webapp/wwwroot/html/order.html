@@ -21,11 +21,6 @@
             <button id="addOrderBtn" onclick="showAddOrderForm()">Adicionar Ordem</button>
         </div>
 
-        <!-- Lista de Ordens -->
-        <div class="products-list" id="productsList">
-            <!-- As Ordens cadastradas serão exibidas aqui -->
-        </div>
-
         <!-- Modal para Adicionar Pedido -->
         <div id="addOrderModal" class="order-modal">
             <h1>Criar Pedido</h1>
@@ -35,7 +30,10 @@
                 <input type="text" id="cep" required onblur="fetchAddress()">
 
                 <label for="deliveryAddress">Endereço:</label>
-                <input type="text" id="deliveryAddress" required>
+                <input type="text" id="deliveryAddress" required readonly>
+
+                <label for="houseNumber">Número da Casa:</label>
+                <input type="text" id="houseNumber" required>
 
                 <label for="status">Status:</label>
                 <select id="status" required>
@@ -53,15 +51,6 @@
                 <button type="button" onclick="addProductField()">Adicionar Produto</button>
 
                 <button type="submit">Adicionar Pedido</button>
-            </form>
-        </div>
-
-        <!-- Modal para Fechar Pedido -->
-        <div id="addOrderModalClose" class="order-modal" style="display:none;">
-            <h3>Adicionar Pedido</h3>
-            <form id="addOrderForm" onsubmit="saveOrder(event)">
-                <!-- Campos do formulário de adicionar pedido -->
-                <button type="button" onclick="closeForm()">Fechar</button>
             </form>
         </div>
 

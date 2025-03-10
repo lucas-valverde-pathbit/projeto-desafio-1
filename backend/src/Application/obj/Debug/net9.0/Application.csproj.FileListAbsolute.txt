@@ -29,6 +29,8 @@ C:/Users/lucas/Desktop/projeto-final/backend/src/Application/obj/Debug/net9.0/re
 C:/Users/lucas/Desktop/projeto-final/backend/src/Application/obj/Debug/net9.0/Application.pdb
 C:/Users/lucas/Desktop/projeto-final/backend/src/Application/obj/Debug/net9.0/ref/Application.dll
 c:/Users/Lucas/Desktop/projeto-final/backend/src/Application/obj/Debug/net9.0/Application.sourcelink.json
+C:/Users/Lucas/Desktop/projeto-final/backend/src/Application/bin/Debug/net9.0/Infrastructure.dll
+C:/Users/Lucas/Desktop/projeto-final/backend/src/Application/bin/Debug/net9.0/Infrastructure.pdb
 /api/Application/bin/Debug/net9.0/Application.deps.json
 /api/Application/bin/Debug/net9.0/Application.dll
 /api/Application/bin/Debug/net9.0/Application.pdb
@@ -46,5 +48,3 @@ c:/Users/Lucas/Desktop/projeto-final/backend/src/Application/obj/Debug/net9.0/Ap
 /api/Application/obj/Debug/net9.0/refint/Application.dll
 /api/Application/obj/Debug/net9.0/Application.pdb
 /api/Application/obj/Debug/net9.0/ref/Application.dll
-C:/Users/Lucas/Desktop/projeto-final/backend/src/Application/bin/Debug/net9.0/Infrastructure.dll
-C:/Users/Lucas/Desktop/projeto-final/backend/src/Application/bin/Debug/net9.0/Infrastructure.pdb
