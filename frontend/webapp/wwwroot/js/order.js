@@ -7,10 +7,37 @@ let productCount = 0; // Contador para produtos
 
 // Função para exibir o formulário de adição de pedido
 function showAddOrderForm() {
-    document.getElementById('addOrderModal').style.display = 'block';
+    document.getElementById('addOrderModal').style.display = 'none'; // Fechar o modal ao abrir a página
     loadProducts();
     showProductSelection(); // Abre o modal de seleção de produtos automaticamente
 }
+
+
+function loadOrders() {
+    fetch(`${apiBaseUrl}/api/orders`) // URL correta da API de pedidos
+        .then(response => response.json())
+        .then(response => {
+            const container = document.getElementById('orderCardContainer');
+            if (container) {
+                container.innerHTML = ''; // Limpa a lista antes de adicionar novos pedidos
+                // Verifica se a resposta tem a estrutura esperada
+                const orders = response.$values || response; // Verifique a estrutura da resposta
+                if (Array.isArray(orders)) {
+                    orders.forEach(order => {
+                        const orderCard = createOrderCard(order);
+                        container.appendChild(orderCard);
+                    });
+                } else {
+                    console.error('A resposta da API não contém uma lista de pedidos:', response);
+                }
+            } else {
+                console.error('Contêiner de pedidos não encontrado.');
+            }
+        })
+        .catch(error => console.error('Erro ao carregar pedidos:', error));
+}
+
+
 
 // Função para adicionar um campo de produto
 function addProductField() {
@@ -334,7 +361,6 @@ function loadOrders() {
         .catch(error => console.error('Erro ao carregar pedidos:', error));
 }
 
-// Função para criar um card de pedido
 function createOrderCard(order) {
     const card = document.createElement('div');
     card.classList.add('order-card');
@@ -350,16 +376,24 @@ function createOrderCard(order) {
         <div class="order-items">
             <h4>Itens do Pedido:</h4>
             <ul>
-                ${order.orderItems.$values.map(item => `
-                    <li>
-                        <strong>ID do Produto:</strong> ${item.productId} <br>
-                        <strong>Nome:</strong> ${item.product ? item.product.productName : 'Produto não disponível'} <br>
-                        <strong>Descrição:</strong> ${item.product ? item.product.productDescription : 'Descrição não disponível'} <br>
-                        <strong>Quantidade:</strong> ${item.quantity} <br>
-                        <strong>Preço Unitário:</strong> R$ ${item.product && item.product.productPrice ? item.product.productPrice.toFixed(2) : '0.00'} <br>
-                        <strong>Preço Total:</strong> R$ ${(item.quantity * (item.product ? item.product.productPrice : 0)).toFixed(2)}
-                    </li>
-                `).join('')}
+                ${order.orderItems.$values.map(item => {
+                    // Agora os dados são diretamente acessados do item
+                    const productName = item.productName || 'Produto não disponível';
+                    const productDescription = item.productDescription || 'Descrição não disponível';
+                    const productPrice = item.productPrice || 0;
+                    const itemTotal = item.quantity * productPrice;
+
+                    return `
+                        <li>
+                            <strong>ID do Produto:</strong> ${item.productId} <br>
+                            <strong>Nome:</strong> ${productName} <br>
+                            <strong>Descrição:</strong> ${productDescription} <br>
+                            <strong>Quantidade:</strong> ${item.quantity} <br>
+                            <strong>Preço Unitário:</strong> R$ ${productPrice.toFixed(2)} <br>
+                            <strong>Preço Total:</strong> R$ ${itemTotal.toFixed(2)}
+                        </li>
+                    `;
+                }).join('')}
             </ul>
         </div>
         
@@ -375,6 +409,8 @@ function createOrderCard(order) {
 
     return card;
 }
+
+
 
 // Função para editar um pedido
 function editOrder(orderId) {

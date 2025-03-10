@@ -25,8 +25,7 @@ namespace Api.Controllers
         public override async Task<ActionResult<IEnumerable<Order>>> GetAll()
         {
             var orders = await _context.Orders
-                .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Product)
+                .Include(o => o.OrderItems) // Include OrderItems
                 .ToListAsync();
                 
             return Ok(orders);
@@ -38,7 +37,6 @@ namespace Api.Controllers
             ICustomerService customerService, 
             AppDbContext context,
             ILogger<OrderController> logger) : base(orderService)
-
         {
             _orderService = orderService;
             _productService = productService;
@@ -50,8 +48,7 @@ namespace Api.Controllers
         public override async Task<ActionResult<Order>> GetById(Guid id)
         {
             var order = await _context.Orders
-                .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Product) // Include related Product data
+                .Include(o => o.OrderItems) // Include OrderItems
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order != null)
@@ -62,7 +59,6 @@ namespace Api.Controllers
                     .LoadAsync();
             }
 
-                
             if (order == null)
             {
                 _logger.LogWarning($"Pedido com ID {id} não encontrado.");
@@ -80,7 +76,6 @@ namespace Api.Controllers
             _logger.LogDebug($"Detalhes dos itens do pedido: {System.Text.Json.JsonSerializer.Serialize(order.OrderItems, options)}");
 
             return Ok(order);
-
         }
 
         [HttpPost]
@@ -130,7 +125,6 @@ namespace Api.Controllers
                 _logger.LogInformation($"Total do pedido: {order.TotalAmount} para o Cliente ID: {customer.Id}, Endereço: {order.DeliveryAddress}");
 
                 using (var transaction = await _context.Database.BeginTransactionAsync())
-
                 {
                     try
                     {
@@ -158,11 +152,13 @@ namespace Api.Controllers
                             {
                                 ProductId = item.ProductId,
                                 Quantity = item.Quantity,
-                                Price = item.Price,
+                                ProductName = product.ProductName,
+                                ProductDescription = product.ProductDescription,
+                                ProductPrice = product.ProductPrice,
                                 Order = order
                             };
 
-                            _logger.LogInformation($"Adicionando item ao pedido: Produto ID: {item.ProductId}, Quantidade: {item.Quantity}, Preço: {item.Price}");
+                            _logger.LogInformation($"Adicionando item ao pedido: Produto: {orderItem.ProductName}, Quantidade: {item.Quantity}, Preço: {orderItem.ProductPrice}");
 
                             order.OrderItems.Add(orderItem);
                         }
@@ -189,7 +185,5 @@ namespace Api.Controllers
                 return BadRequest("ID de usuário inválido.");
             }
         }
-
-
     }
 }

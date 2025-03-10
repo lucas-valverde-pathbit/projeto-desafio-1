@@ -65,18 +65,20 @@ namespace Infrastructure.Services
                     };
 
                     // Criando o item do pedido
+                    var product = await _productService.GetById(productId);
                     var orderItem = new OrderItem
                     {
                         ProductId = productId,
                         Quantity = quantity,
-                        Price = await _productService.GetPriceById(productId),
+                        ProductName = product.ProductName,
+                        ProductDescription = product.ProductDescription,
+                        ProductPrice = product.ProductPrice,
                         Order = order
                     };
 
                     order.OrderItems.Add(orderItem);
 
                     // Atualizando estoque do produto
-                    var product = await _context.Products.FindAsync(productId);
                     if (product != null)
                     {
                         product.ProductStockQuantity -= quantity;
