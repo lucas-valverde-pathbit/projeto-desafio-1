@@ -2,6 +2,8 @@ const apiBaseUrl = window.location.hostname === "localhost"
     ? "http://localhost:5064"  // URL de desenvolvimento
     : "http://api:5064"; // URL para produção
 
+    getCustomerByEmail();
+
     function filterProducts() {
         const filter = document.getElementById("filterInput").value.toLowerCase();
         const productCards = document.getElementsByClassName("product-item");
@@ -17,7 +19,7 @@ const apiBaseUrl = window.location.hostname === "localhost"
             }
         });
     }
-
+    
     // Função para carregar a lista de produtos (requisição GET)
     function loadProducts() {
         fetch(`${apiBaseUrl}/api/products`) // URL correta da API de produtos
@@ -136,7 +138,7 @@ function closeOrderModal() {
 }
 
 // Função para submeter o pedido
-// Função para submeter o pedido
+
 function submitOrder(event) {
     event.preventDefault();  // Impede o envio padrão do formulário
 
@@ -145,6 +147,23 @@ function submitOrder(event) {
     const deliveryAddress = document.getElementById('deliveryAddress').value;
     const deliveryZipCode = document.getElementById('cep').value;
     const status = document.getElementById('status').value;
+    
+    // Mapeando os status para o formato esperado pelo backend
+    const statusMapping = {
+        "Pendente": 0,
+        "Enviado": 1,
+        "Entregue": 2,
+        "Cancelado": 3
+    };
+
+    // Verifica se o status é válido
+    if (!(status in statusMapping)) {
+        alert('Status inválido! Por favor, selecione um status válido.');
+        return;
+    }
+
+    // Mapeando o status para o valor numérico do enum
+    const orderStatus = statusMapping[status];
 
     // Verificando se os campos obrigatórios foram preenchidos
     if (!deliveryAddress || !status) {
@@ -153,29 +172,26 @@ function submitOrder(event) {
     }
 
     // Acessando os campos de produto
-    const productFields = document.querySelectorAll('#orderDetails .product-field');  // Mudando o seletor para os produtos na comanda
+    const productFields = document.querySelectorAll('#orderDetails .product-field');
     let productSelected = false;
     let orderItems = [];
     let totalAmount = 0;
 
     // Verificando os campos de produto e coletando os dados
     productFields.forEach(field => {
-        const productName = field.querySelector('span:nth-child(1)').textContent;  // Nome do produto (não é input)
-        const productPrice = parseFloat(field.querySelector('span:nth-child(2)').textContent.replace('R$ ', '').replace(',', '.'));  // Garantir que o preço está correto
+        const productName = field.querySelector('span:nth-child(1)').textContent;
+        const productPrice = parseFloat(field.querySelector('span:nth-child(2)').textContent.replace('R$ ', '').replace(',', '.'));
         const quantity = parseInt(field.querySelector('input').value);
 
-        // Verificando se todos os campos foram preenchidos corretamente
         if (productName && productPrice && quantity > 0) {
             productSelected = true;
 
-            // Calculando o total do item e somando no total geral
             const itemTotal = productPrice * quantity;
             totalAmount += itemTotal;
 
-            // Adicionando os itens ao array
-            const productId = field.querySelector('input[type="hidden"]').value;  // ID do produto
+            const productId = field.querySelector('input[type="hidden"]').value;
             orderItems.push({
-                productId: productId,  // ID do produto
+                productId: productId,
                 productName: productName,
                 productPrice: productPrice,
                 quantity: quantity
@@ -183,34 +199,29 @@ function submitOrder(event) {
         }
     });
 
-    // Se nenhum produto foi selecionado, exibe um alerta
     if (!productSelected) {
         alert('Por favor, adicione pelo menos um produto!');
         return;
     }
 
-    // Montando os dados do pedido
     const orderData = {
         CustomerId: userInfo.nameId,
         DeliveryAddress: deliveryAddress,
         DeliveryZipCode: deliveryZipCode,
-        Status: status,
-        TotalAmount: totalAmount,  // Enviando o valor total
-        OrderItems: orderItems  // Enviando os itens do pedido
+        Status: orderStatus,  // Passando o status mapeado
+        TotalAmount: totalAmount,
+        OrderItems: orderItems
     };
 
-    // Verificando os dados do pedido antes de enviar
-    console.log('Dados do pedido a serem enviados:', JSON.stringify(orderData, null, 2));
-
-    // Recuperando o token de autenticação
+    // Envio do pedido
     const token = localStorage.getItem('token');
     fetch(`${apiBaseUrl}/api/orders`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`  // Passando o token de autenticação
+            'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(orderData)  // Enviando os dados do pedido
+        body: JSON.stringify(orderData)
     })
     .then(response => {
         if (!response.ok) {
@@ -220,8 +231,8 @@ function submitOrder(event) {
     })
     .then(newOrder => {
         alert('Pedido criado com sucesso!');
-        closeOrderModal();  // Fechar o modal após a criação do pedido
-        loadOrders();  // Atualizar a lista de pedidos
+        closeOrderModal();
+        loadOrders();
     })
     .catch(error => {
         console.error('Erro ao criar pedido:', error);
@@ -243,10 +254,57 @@ function fetchAddress() {
         })
         .catch(error => console.error('Erro:', error));
 }
+const statusMapping = {
+    0: "Pendente",
+    1: "Enviado",
+    2: "Entregue",
+    3: "Cancelado"
+};
 
-// Função para carregar os pedidos
+// Função para buscar o cliente pelo e-mail armazenado no localStorage e salvar o CustomerId
+function getCustomerByEmail() {
+    // Recupera o e-mail do localStorage a partir do objeto userInfo
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    
+    if (!userInfo || !userInfo.email) {
+        console.error('E-mail do usuário não encontrado no localStorage.');
+        return;
+    }
+    
+    const email = userInfo.email; 
+    
+    // Fazendo a requisição para buscar o cliente pelo email
+    fetch(`${apiBaseUrl}/api/customers/email/${email}`)
+        .then(response => response.json())
+        .then(response => {
+            // Verifica se o cliente foi encontrado
+            if (response && response.id) {  // Verifica se a resposta contém o id do cliente
+                const customerId = response.id;  // Agora estamos acessando o id diretamente
+
+                // Salvando o CustomerId no localStorage
+                localStorage.setItem('customerId', customerId);
+                console.log('CustomerId encontrado:', customerId);
+                
+            } else {
+                console.error('Cliente não encontrado!');
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao buscar o cliente:', error);
+        });
+}
+
 function loadOrders() {
-    fetch(`${apiBaseUrl}/api/orders`) // URL correta da API de pedidos
+    // Recuperando o CustomerId do localStorage
+    const customerId = localStorage.getItem('customerId');
+    
+    if (!customerId) {
+        console.error('CustomerId não encontrado. O usuário precisa estar logado.');
+        return;
+    }
+
+    // Fazendo a requisição para obter apenas os pedidos do cliente logado
+    fetch(`${apiBaseUrl}/api/orders/customerId=${customerId}`) // Adicionando o filtro de CustomerId
         .then(response => response.json())
         .then(response => {
             const container = document.getElementById('ordersList');
@@ -270,6 +328,60 @@ function loadOrders() {
         .catch(error => console.error('Erro ao carregar pedidos:', error));
 }
 
+
+// Função para criar o cartão de cada pedido
+function createOrderCard(order) {
+    const card = document.createElement('div');
+    card.classList.add('order-card');
+    
+    // Convertendo o status numérico para o valor legível
+    const orderStatus = statusMapping[order.status] || "Status desconhecido";  // Caso o status não seja encontrado
+
+    // Exibindo os dados do pedido
+    card.innerHTML = ` 
+        <h3>Pedido ID: ${order.id}</h3>
+        <p><strong>Data do Pedido:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
+        <p><strong>Status:</strong> ${orderStatus}</p>  <!-- Status convertido -->
+        <p><strong>CEP de Entrega:</strong> ${order.deliveryZipCode}</p>
+        <p><strong>Endereço de Entrega:</strong> ${order.deliveryAddress}</p>
+        
+        <div class="order-items">
+            <h4>Itens do Pedido:</h4>
+            <ul>
+                ${order.orderItems.$values.map(item => {
+                    // Agora os dados são diretamente acessados do item
+                    const productName = item.productName || 'Produto não disponível';
+                    const productDescription = item.productDescription || 'Descrição não disponível';
+                    const productPrice = item.productPrice || 0;
+                    const itemTotal = item.quantity * productPrice;
+
+                    return ` 
+                        <li>
+                            <strong>ID do Produto:</strong> ${item.productId} <br>
+                            <strong>Nome:</strong> ${productName} <br>
+                            <strong>Descrição:</strong> ${productDescription} <br>
+                            <strong>Quantidade:</strong> ${item.quantity} <br>
+                            <strong>Preço Unitário:</strong> R$ ${productPrice.toFixed(2)} <br>
+                            <strong>Preço Total:</strong> R$ ${itemTotal.toFixed(2)}
+                        </li>
+                    `;
+                }).join('')}
+            </ul>
+        </div>
+        
+        <div class="order-summary">
+            <p><strong>Total do Pedido:</strong> R$ ${order.totalAmount.toFixed(2)}</p>
+        </div>
+        
+        <div class="actions">
+            <button onclick="editOrder('${order.id}')">Editar</button>
+            <button onclick="deleteOrder('${order.id}')">Excluir</button>
+        </div>
+    `;
+
+    return card;
+}
+
 function createOrderCard(order) {
     const card = document.createElement('div');
     card.classList.add('order-card');
@@ -278,7 +390,7 @@ function createOrderCard(order) {
     card.innerHTML = ` 
         <h3>Pedido ID: ${order.id}</h3>
         <p><strong>Data do Pedido:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
-        <p><strong>Status:</strong> ${order.status === 1 ? 'ENVIADO' : 'PENDENTE'}</p>
+        <p><strong>Status:</strong> ${order.status}</p>
         <p><strong>CEP de Entrega:</strong> ${order.deliveryZipCode}</p>
         <p><strong>Endereço de Entrega:</strong> ${order.deliveryAddress}</p>
         
@@ -342,4 +454,5 @@ function showProductsTab() {
 // Inicializar com a aba de produtos aberta
 showProductsTab(); // Exibe a aba de produtos por padrão
 
-document.addEventListener('DOMContentLoaded', loadProducts); 
+document.addEventListener('DOMContentLoaded', loadProducts);
+document.addEventListener('DOMContentLoaded', loadOrders);

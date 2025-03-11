@@ -13,11 +13,12 @@ namespace Domain.Models
         public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
 
-    public enum OrderStatus
-    {
-        Pendente,
-        Enviado,
-        Entregue,
-        Cancelado
-    }
+public enum OrderStatus
+{
+    Pendente = 0,
+    Enviado = 1,
+    Entregue = 2,
+    Cancelado = 3
+}
+
 }
