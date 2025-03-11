@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos</title>
+    <link rel="stylesheet" href="../css/cliente.css">
+</head>
+<body>
+    <header>
+        <button id="perfilBtn" onclick="showProfile()">Perfil</button>
+        <button id="ordersTabBtn" onclick="showOrdersTab()">Pedidos</button>
+        <button id="productsTabBtn" onclick="showProductsTab()">Produtos</button>
+    </header>
+
+    <div id="profileSection" class="profile-section">
+        <h2>Meu Perfil</h2>
+        <form id="profileForm" onsubmit="updateProfile(event)">
+            <label for="name">Nome:</label>
+            <input type="text" id="name" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" required readonly>
+            <button type="submit">Atualizar</button>
+        </form>
+    </div>
+    
+    <!-- Tabs -->
+    <div id="ordersTab" class="tab-content">
+        <h2>Pedidos</h2>
+        <div id="orderCardContainer">
+            <!-- Pedidos serão carregados aqui -->
+        </div>
+    </div>
+
+    <div id="productsTab" class="tab-content">
+        <h2>Produtos</h2>
+        <div id="productListContainer">
+            <!-- Lista de produtos será carregada aqui -->
+        </div>
+    </div>
+
+    <!-- Modal para Criar Pedido -->
+    <div id="addOrderModal" class="order-modal">
+        <h1>Criar Pedido</h1>
+        <form id="orderForm" onsubmit="saveOrder(event)">
+            <!-- Formulário de Pedido -->
+            <label for="cep">CEP:</label>
+            <input type="text" id="cep" required onblur="fetchAddress()">
+
+            <label for="deliveryAddress">Endereço:</label>
+            <input type="text" id="deliveryAddress" required readonly>
+
+            <label for="status">Status:</label>
+            <select id="status" required>
+                <option value="Pendente">Pendente</option>
+                <option value="Enviado">Enviado</option>
+                <option value="Entregue">Entregue</option>
+                <option value="Cancelado">Cancelado</option>
+            </select>
+
+            <!-- Adicionar produtos ao pedido -->
+            <div id="productFields">
+                <!-- Campos de produto serão adicionados dinamicamente -->
+            </div>
+            
+            <button type="submit">Adicionar Pedido</button>
+        </form>
+    </div>
+
+    <script src="../js/cliente.js"></script>
+</body>
+</html>

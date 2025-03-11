@@ -1,0 +1,199 @@
+/* Estilos gerais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #f9f9f9;
+    color: #333;
+    padding: 20px;
+}
+
+/* Cabeçalho */
+header {
+    background-color: #6a1b9a; /* Roxo escuro */
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    border-radius: 5px;
+}
+
+header button {
+    background-color: #9c4dcc; /* Roxo claro */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+header button:hover {
+    background-color: #7b1fa2; /* Roxo médio */
+}
+
+/* Seções */
+.profile-section, .tab-content {
+    background-color: white;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #6a1b9a; /* Roxo escuro */
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+h3 {
+    color: #6a1b9a;
+    font-size: 20px;
+}
+
+/* Formulários */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+input, select, button {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+}
+
+input[type="text"], input[type="email"], input[type="number"], select {
+    font-size: 16px;
+}
+
+button[type="submit"] {
+    background-color: #6a1b9a;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+    background-color: #7b1fa2;
+}
+
+/* Lista de produtos e pedidos */
+#productListContainer, #orderCardContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.product-item, .order-card {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 300px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s;
+}
+
+.product-item:hover, .order-card:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+button {
+    background-color: #6a1b9a;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #7b1fa2;
+}
+
+/* Modal */
+.order-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.order-modal form {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.order-modal h1 {
+    color: #6a1b9a;
+    margin-bottom: 20px;
+}
+
+/* Adicionar animações e transições */
+.tab-content {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.tab-content.active {
+    display: block;
+    opacity: 1;
+}
+
+#productFields .product-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.product-field input {
+    width: 60px;
+}
+
+.product-field button {
+    background-color: #f44336; /* Vermelho para Remover */
+}
+
+.product-field button:hover {
+    background-color: #d32f2f;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    header button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    .product-item, .order-card {
+        width: 100%;
+        max-width: none;
+    }
+}

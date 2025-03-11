@@ -1,0 +1,102 @@
+/* Estilos gerais */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+/* Estilos da Navbar */
+.navbar {
+    background-color: #333;
+    overflow: hidden;
+}
+
+.navbar li {
+    float: left;
+    list-style-type: none;
+}
+
+.navbar li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.navbar li a:hover {
+    background-color: #575757;
+}
+
+/* Estilos do Container */
+.content-container {
+    padding: 20px;
+}
+
+/* Estilos do Botão de Voltar */
+.back-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.back-btn:hover {
+    background-color: #45a049;
+}
+
+/* Estilos do Formulário */
+.order-modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.order-modal h1 {
+    margin-top: 0;
+}
+
+.order-modal label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+.order-modal input,
+.order-modal select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Estilos do Botão do Formulário */
+.order-modal button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.order-modal button:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos do Container de Pedidos */
+.order-card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+    .navbar li {
+        float: none;
+        width: 100%;
+    }
+}

@@ -5,6 +5,10 @@
       "PackagePath": "staticwebassets/webapp.kxtxn8qnj6.bundle.scp.css"
     },
     {
+      "Id": "/web/wwwroot/css/cliente.css",
+      "PackagePath": "staticwebassets/css/cliente.css"
+    },
+    {
       "Id": "/web/wwwroot/css/customer.css",
       "PackagePath": "staticwebassets/css/customer.css"
     },
@@ -33,6 +37,14 @@
       "PackagePath": "staticwebassets/favicon.ico"
     },
     {
+      "Id": "/web/wwwroot/html/administrador.html",
+      "PackagePath": "staticwebassets/html/administrador.html"
+    },
+    {
+      "Id": "/web/wwwroot/html/cliente.html",
+      "PackagePath": "staticwebassets/html/cliente.html"
+    },
+    {
       "Id": "/web/wwwroot/html/customer.html",
       "PackagePath": "staticwebassets/html/customer.html"
     },
@@ -59,6 +71,10 @@
     {
       "Id": "/web/wwwroot/js/auth.js",
       "PackagePath": "staticwebassets/js/auth.js"
+    },
+    {
+      "Id": "/web/wwwroot/js/cliente.js",
+      "PackagePath": "staticwebassets/js/cliente.js"
     },
     {
       "Id": "/web/wwwroot/js/customer.js",

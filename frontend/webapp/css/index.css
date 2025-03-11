@@ -1,0 +1,69 @@
+/* Estilos gerais para a página index */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+/* Estilos do cabeçalho */
+.header {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+/* Estilos do botão de pedidos e carrinho */
+#ordersButton, #cartButton {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+#ordersButton:hover, #cartButton:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos dos modais e formulários */
+.order-modal {
+    display: none; /* Escondido inicialmente */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos do container de produtos */
+.product-list-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+/* Estilos do cartão de produto */
+.product-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.product-card button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.product-card button:hover {
+    background-color: #218838;
+}
