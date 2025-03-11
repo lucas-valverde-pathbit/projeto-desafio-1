@@ -7,66 +7,73 @@
     <link rel="stylesheet" href="../css/cliente.css">
 </head>
 <body>
-    <header>
-        <button id="perfilBtn" onclick="showProfile()">Perfil</button>
-        <button id="ordersTabBtn" onclick="showOrdersTab()">Pedidos</button>
-        <button id="productsTabBtn" onclick="showProductsTab()">Produtos</button>
-    </header>
-
-    <div id="profileSection" class="profile-section">
-        <h2>Meu Perfil</h2>
-        <form id="profileForm" onsubmit="updateProfile(event)">
-            <label for="name">Nome:</label>
-            <input type="text" id="name" required>
-            <label for="email">Email:</label>
-            <input type="email" id="email" required readonly>
-            <button type="submit">Atualizar</button>
-        </form>
-    </div>
+        <header>
+            <button id="perfilBtn" onclick="showProfile()">Perfil</button>
+            <button id="ordersTabBtn" onclick="showOrdersTab()">Pedidos</button>
+            <button id="productsTabBtn" onclick="showProductsTab()">Produtos</button>
+        </header>
+ <div id="productsTab" class="tab-content">
+        
+        <!-- Conteúdo da aba de produtos -->
+     <div class="ContainerDeProdutos">
+        <!-- Filtro e Botão de Adicionar Produto -->
+        <div class="filter-container">
+            <input type="text" id="filterInput" placeholder="Filtrar produtos..." onkeyup="filterProducts()">
+        </div>
+         <!-- Lista de Produtos -->
+        <div class="products-list" id="productsList">
+            <!-- Os produtos cadastrados serão exibidos aqui -->
+        </div>
+     </div>
     
-    <!-- Tabs -->
-    <div id="ordersTab" class="tab-content">
-        <h2>Pedidos</h2>
-        <div id="orderCardContainer">
-            <!-- Pedidos serão carregados aqui -->
+     <div id="container">
+        <!-- Seção de produtos -->
+        <div id="productFields">
+            <!-- Campos de produto serão adicionados dinamicamente -->
         </div>
-    </div>
-
-    <div id="productsTab" class="tab-content">
-        <h2>Produtos</h2>
-        <div id="productListContainer">
-            <!-- Lista de produtos será carregada aqui -->
-        </div>
-    </div>
-
-    <!-- Modal para Criar Pedido -->
-    <div id="addOrderModal" class="order-modal">
-        <h1>Criar Pedido</h1>
-        <form id="orderForm" onsubmit="saveOrder(event)">
-            <!-- Formulário de Pedido -->
-            <label for="cep">CEP:</label>
-            <input type="text" id="cep" required onblur="fetchAddress()">
-
-            <label for="deliveryAddress">Endereço:</label>
-            <input type="text" id="deliveryAddress" required readonly>
-
-            <label for="status">Status:</label>
-            <select id="status" required>
-                <option value="Pendente">Pendente</option>
-                <option value="Enviado">Enviado</option>
-                <option value="Entregue">Entregue</option>
-                <option value="Cancelado">Cancelado</option>
-            </select>
-
-            <!-- Adicionar produtos ao pedido -->
-            <div id="productFields">
-                <!-- Campos de produto serão adicionados dinamicamente -->
+    
+        <!-- Comanda -->
+        <div id="orderSummary">
+            <h2>Comanda</h2>
+            <div id="orderDetails">
+                <!-- A comanda será exibida aqui -->
             </div>
-            
-            <button type="submit">Adicionar Pedido</button>
-        </form>
-    </div>
+            <button onclick="openOrderModal()">Finalizar Compra</button>
+        </div>
+    
+        <!-- Modal de Finalização do Pedido -->
+        <div id="orderModal" class="order-modal">
+            <h1>Criar Pedido</h1>
+            <form id="orderForm" onsubmit="submitOrder(event)">
+                <label for="cep">CEP:</label>
+                <input type="text" id="cep" required onblur="fetchAddress()">
+    
+                <label for="deliveryAddress">Endereço:</label>
+                <input type="text" id="deliveryAddress" required>
+    
+                <label for="houseNumber">Número da Casa:</label>
+                <input type="text" id="houseNumber" required>
+    
+                <label for="status">Status:</label>
+                <select id="status" required>
+                    <option value="0">Pendente</option>
+                    <option value="1">Enviado</option>
+                    <option value="2">Entregue</option>
+                    <option value="3">Cancelado</option>
+                </select>
+                
+                <button type="submit">Finalizar Pedido</button>
+                <button type="button" onclick="closeOrderModal()">Cancelar</button>
+            </form>
+        </div>
+     </div>
+ </div>
 
+ <div id="ordersTab" class="tab-content">
+    <div class="orders-list" id="ordersList">
+        <!-- as orders cadastrados serão exibidos aqui -->
+    </div>
+ </div>
     <script src="../js/cliente.js"></script>
 </body>
 </html>

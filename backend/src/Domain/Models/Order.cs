@@ -8,7 +8,7 @@ namespace Domain.Models
         public Customer? Customer { get; set; }
         public string? DeliveryAddress { get; set; }
         public string? DeliveryZipCode { get; set; }
-        public OrderStatus Status { get; set; } = OrderStatus.Enviado;
+        public OrderStatus Status { get; set; } = OrderStatus.Pendente;
         public decimal TotalAmount { get; set; }
         public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }

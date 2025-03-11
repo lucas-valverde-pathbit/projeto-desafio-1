@@ -2,97 +2,180 @@ const apiBaseUrl = window.location.hostname === "localhost"
     ? "http://localhost:5064"  // URL de desenvolvimento
     : "http://api:5064"; // URL para produção
 
-// Função para mostrar a tab de pedidos
-function showOrdersTab() {
-    document.getElementById('ordersTab').style.display = 'block';
-    document.getElementById('productsTab').style.display = 'none';
-    loadOrders();  // Carregar pedidos
-}
-
-// Função para mostrar a tab de produtos
-function showProductsTab() {
-    document.getElementById('productsTab').style.display = 'block';
-    document.getElementById('ordersTab').style.display = 'none';
-    loadProducts();  // Carregar produtos
-}
-
-// Função para carregar produtos na lista
-function loadProducts() {
-    fetch(`${apiBaseUrl}/api/products`)
-        .then(response => response.json())
-        .then(products => {
-            const productListContainer = document.getElementById('productListContainer');
-            productListContainer.innerHTML = '';  // Limpar a lista
-
-            products.forEach(product => {
-                const productDiv = document.createElement('div');
-                productDiv.classList.add('product-item');
-                productDiv.innerHTML = `
-                    <strong>${product.productName}</strong> - R$ ${product.productPrice.toFixed(2)}
-                    <button onclick="addProductToOrder('${product.id}', '${product.productName}', ${product.productPrice})">Adicionar</button>
-                `;
-                productListContainer.appendChild(productDiv);
-            });
-        })
-        .catch(error => console.error('Erro ao carregar produtos:', error));
-}
-
-// Função para adicionar o produto ao pedido
-function addProductToOrder(productId, productName, productPrice) {
-    const productFieldsContainer = document.getElementById('productFields');
+    function filterProducts() {
+        const filter = document.getElementById("filterInput").value.toLowerCase();
+        const productCards = document.getElementsByClassName("product-item");
     
-    const productField = document.createElement('div');
-    productField.classList.add('product-field');
+        Array.from(productCards).forEach(card => {
+            const productName = card.querySelector(".product-name").innerText.toLowerCase();
+            const productDescription = card.querySelector(".product-description").innerText.toLowerCase();
     
-    productField.innerHTML = `
-        <input type="text" value="${productName}" readonly>
-        <input type="number" value="1" class="product-quantity">
-        <input type="text" value="R$ ${productPrice.toFixed(2)}" readonly>
-        <input type="hidden" value="${productId}" class="product-id">
-        <button type="button" onclick="removeProductFromOrder(this)">Remover</button>
-    `;
+            if (productName.includes(filter) || productDescription.includes(filter)) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    }
+
+    // Função para carregar a lista de produtos (requisição GET)
+    function loadProducts() {
+        fetch(`${apiBaseUrl}/api/products`) // URL correta da API de produtos
+            .then(response => response.json())
+            .then(response => {
+                const container = document.getElementById('productsList');
+                if (container) {
+                    container.innerHTML = ''; // Limpa a lista antes de adicionar novos produtos
     
-    productFieldsContainer.appendChild(productField);
+                    // Verifica se a resposta tem a estrutura esperada
+                    const products = response.$values || response; // Verifique a estrutura da resposta
+                    if (Array.isArray(products)) {
+                        products.forEach(product => {
+                            const productCard = createProductCard(product);
+                            container.appendChild(productCard);
+                        });
+                    } else {
+                        console.error('A resposta da API não contém uma lista de produtos:', response);
+                    }
+                } else {
+                    console.error('Contêiner de produtos não encontrado.');
+                }
+            })
+            .catch(error => console.error('Erro ao carregar produtos:', error));
+    }
+    
+    function createProductCard(product) {
+        const card = document.createElement('div');
+        card.classList.add('product-item');
+    
+        // Exibindo os dados do produto
+        card.innerHTML = `
+            <h3 class="product-name">${product.productName}</h3>
+            <p class="product-description"><strong>Descrição:</strong> ${product.productDescription || 'Descrição não disponível'}</p>
+            <p><strong>Preço:</strong> R$ ${product.productPrice.toFixed(2)}</p>
+            <div class="actions">
+                <button onclick="addProductToComanda('${product.id}', '${product.productName}', ${product.productPrice})">Adicionar à Comanda</button>
+            </div>
+        `;
+    
+        return card;
+    }
+
+    function addProductToComanda(productId, productName, productPrice) {
+        const orderDetailsContainer = document.getElementById('orderDetails');
+    
+        // Criando o campo do produto na comanda
+        const productField = document.createElement('div');
+        productField.classList.add('product-field');
+    
+        const productNameField = document.createElement('span');
+        productNameField.textContent = productName;
+    
+        const productPriceField = document.createElement('span');
+        productPriceField.textContent = `R$ ${productPrice.toFixed(2)}`;
+    
+        const productQuantityField = document.createElement('input');
+        productQuantityField.setAttribute('type', 'number');
+        productQuantityField.setAttribute('value', 1);
+        productQuantityField.addEventListener('change', updateTotalAmount);
+    
+        const productIdField = document.createElement('input');
+        productIdField.setAttribute('type', 'hidden');
+        productIdField.setAttribute('value', productId);
+    
+        const removeButton = document.createElement('button');
+        removeButton.textContent = 'Remover';
+        removeButton.addEventListener('click', function () {
+            productField.remove();
+            updateTotalAmount();
+        });
+    
+        productField.appendChild(productNameField);
+        productField.appendChild(productPriceField);
+        productField.appendChild(productQuantityField);
+        productField.appendChild(productIdField);
+        productField.appendChild(removeButton);
+    
+        orderDetailsContainer.appendChild(productField);
+    
+        updateTotalAmount();
+    }
+    // Função para atualizar o total da comanda
+function updateTotalAmount() {
+    const orderDetailsContainer = document.getElementById('orderDetails');
+    let total = 0;
+
+    const productFields = orderDetailsContainer.getElementsByClassName('product-field');
+    Array.from(productFields).forEach(productField => {
+        const price = parseFloat(productField.querySelector('span:nth-child(2)').textContent.replace('R$', '').trim());
+        const quantity = productField.querySelector('input').value;
+        total += price * quantity;
+    });
+
+    const totalAmount = document.getElementById('totalAmount');
+    if (!totalAmount) {
+        const totalElement = document.createElement('div');
+        totalElement.id = 'totalAmount';
+        totalElement.textContent = `Total: R$ ${total.toFixed(2)}`;
+        document.getElementById('orderSummary').appendChild(totalElement);
+    } else {
+        totalAmount.textContent = `Total: R$ ${total.toFixed(2)}`;
+    }
 }
 
-// Função para remover um produto do pedido
-function removeProductFromOrder(button) {
-    const productField = button.closest('.product-field');
-    productField.remove();
+// Função para abrir o modal de finalização de pedido
+function openOrderModal() {
+    const modal = document.getElementById('orderModal');
+    modal.style.display = 'flex';  // Exibe o modal
 }
 
-// Função para salvar o pedido
-function saveOrder(event) {
-    event.preventDefault();
+// Função para fechar o modal
+function closeOrderModal() {
+    const modal = document.getElementById('orderModal');
+    modal.style.display = 'none';  // Esconde o modal
+}
 
+// Função para submeter o pedido
+// Função para submeter o pedido
+function submitOrder(event) {
+    event.preventDefault();  // Impede o envio padrão do formulário
+
+    // Obtendo as informações do usuário
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     const deliveryAddress = document.getElementById('deliveryAddress').value;
     const deliveryZipCode = document.getElementById('cep').value;
     const status = document.getElementById('status').value;
 
-    // Verificar se os campos obrigatórios estão preenchidos
+    // Verificando se os campos obrigatórios foram preenchidos
     if (!deliveryAddress || !status) {
         alert('Por favor, preencha todos os campos obrigatórios!');
         return;
     }
 
-    // Coletar os produtos do pedido
-    const productFields = document.querySelectorAll('#productFields .product-field');
+    // Acessando os campos de produto
+    const productFields = document.querySelectorAll('#orderDetails .product-field');  // Mudando o seletor para os produtos na comanda
+    let productSelected = false;
     let orderItems = [];
     let totalAmount = 0;
 
+    // Verificando os campos de produto e coletando os dados
     productFields.forEach(field => {
-        const productId = field.querySelector('.product-id').value;
-        const productName = field.querySelector('input[type="text"]').value;
-        const productPrice = parseFloat(field.querySelector('input[type="text"]:nth-child(3)').value.replace('R$ ', '').replace(',', '.'));
-        const quantity = parseInt(field.querySelector('.product-quantity').value);
+        const productName = field.querySelector('span:nth-child(1)').textContent;  // Nome do produto (não é input)
+        const productPrice = parseFloat(field.querySelector('span:nth-child(2)').textContent.replace('R$ ', '').replace(',', '.'));  // Garantir que o preço está correto
+        const quantity = parseInt(field.querySelector('input').value);
 
+        // Verificando se todos os campos foram preenchidos corretamente
         if (productName && productPrice && quantity > 0) {
+            productSelected = true;
+
+            // Calculando o total do item e somando no total geral
             const itemTotal = productPrice * quantity;
             totalAmount += itemTotal;
 
+            // Adicionando os itens ao array
+            const productId = field.querySelector('input[type="hidden"]').value;  // ID do produto
             orderItems.push({
-                productId: productId,
+                productId: productId,  // ID do produto
                 productName: productName,
                 productPrice: productPrice,
                 quantity: quantity
@@ -100,151 +183,163 @@ function saveOrder(event) {
         }
     });
 
-    if (orderItems.length === 0) {
-        alert('Por favor, adicione ao menos um produto ao pedido!');
+    // Se nenhum produto foi selecionado, exibe um alerta
+    if (!productSelected) {
+        alert('Por favor, adicione pelo menos um produto!');
         return;
     }
 
-    // Montar os dados do pedido
+    // Montando os dados do pedido
     const orderData = {
-        CustomerId: userInfo.customerId,
+        CustomerId: userInfo.nameId,
         DeliveryAddress: deliveryAddress,
         DeliveryZipCode: deliveryZipCode,
         Status: status,
-        TotalAmount: totalAmount,
-        OrderItems: orderItems
+        TotalAmount: totalAmount,  // Enviando o valor total
+        OrderItems: orderItems  // Enviando os itens do pedido
     };
 
-    // Enviar dados para o backend
+    // Verificando os dados do pedido antes de enviar
+    console.log('Dados do pedido a serem enviados:', JSON.stringify(orderData, null, 2));
+
+    // Recuperando o token de autenticação
     const token = localStorage.getItem('token');
     fetch(`${apiBaseUrl}/api/orders`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`  // Passando o token de autenticação
         },
-        body: JSON.stringify(orderData)
+        body: JSON.stringify(orderData)  // Enviando os dados do pedido
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw new Error(err.title); });
+        }
+        return response.json();
+    })
     .then(newOrder => {
         alert('Pedido criado com sucesso!');
-        document.getElementById('addOrderModal').style.display = 'none';  // Fechar modal
-        loadOrders();  // Recarregar pedidos
+        closeOrderModal();  // Fechar o modal após a criação do pedido
+        loadOrders();  // Atualizar a lista de pedidos
     })
-    .catch(error => console.error('Erro ao criar pedido:', error));
+    .catch(error => {
+        console.error('Erro ao criar pedido:', error);
+        alert('Erro ao criar pedido: ' + error.message);
+    });
+}
+function fetchAddress() {
+    const cep = document.getElementById('cep').value;
+    fetch(`${apiBaseUrl}/api/cep/${cep}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao buscar endereço');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Preenche os campos de endereço com os dados retornados
+            document.getElementById('deliveryAddress').value = data.address;
+        })
+        .catch(error => console.error('Erro:', error));
 }
 
-// Função para carregar pedidos
+// Função para carregar os pedidos
 function loadOrders() {
-    fetch(`${apiBaseUrl}/api/orders`)
+    fetch(`${apiBaseUrl}/api/orders`) // URL correta da API de pedidos
         .then(response => response.json())
-        .then(orders => {
-            const container = document.getElementById('orderCardContainer');
-            container.innerHTML = ''; // Limpar a lista
-
-            orders.forEach(order => {
-                const orderCard = document.createElement('div');
-                orderCard.classList.add('order-card');
-                orderCard.innerHTML = `
-                    <h3>Pedido ID: ${order.id}</h3>
-                    <p><strong>Data:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
-                    <p><strong>Status:</strong> ${order.status}</p>
-                    <p><strong>Total:</strong> R$ ${order.totalAmount.toFixed(2)}</p>
-                    <button onclick="viewOrderDetails(${order.id})">Ver Detalhes</button>
-                `;
-                container.appendChild(orderCard);
-            });
+        .then(response => {
+            const container = document.getElementById('ordersList');
+            if (container) {
+                container.innerHTML = ''; // Limpa a lista antes de adicionar novos pedidos
+                
+                // Verifica se a resposta tem a estrutura esperada
+                const orders = response.$values || response; // Verifique a estrutura da resposta
+                if (Array.isArray(orders)) {
+                    orders.forEach(order => {
+                        const orderCard = createOrderCard(order);
+                        container.appendChild(orderCard);
+                    });
+                } else {
+                    console.error('A resposta da API não contém uma lista de pedidos:', response);
+                }
+            } else {
+                console.error('Contêiner de pedidos não encontrado.');
+            }
         })
         .catch(error => console.error('Erro ao carregar pedidos:', error));
 }
 
+function createOrderCard(order) {
+    const card = document.createElement('div');
+    card.classList.add('order-card');
+    
+    // Exibindo os dados do pedido
+    card.innerHTML = ` 
+        <h3>Pedido ID: ${order.id}</h3>
+        <p><strong>Data do Pedido:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
+        <p><strong>Status:</strong> ${order.status === 1 ? 'ENVIADO' : 'PENDENTE'}</p>
+        <p><strong>CEP de Entrega:</strong> ${order.deliveryZipCode}</p>
+        <p><strong>Endereço de Entrega:</strong> ${order.deliveryAddress}</p>
+        
+        <div class="order-items">
+            <h4>Itens do Pedido:</h4>
+            <ul>
+                ${order.orderItems.$values.map(item => {
+                    // Agora os dados são diretamente acessados do item
+                    const productName = item.productName || 'Produto não disponível';
+                    const productDescription = item.productDescription || 'Descrição não disponível';
+                    const productPrice = item.productPrice || 0;
+                    const itemTotal = item.quantity * productPrice;
 
-document.addEventListener("DOMContentLoaded", () => {
-    const profileSection = document.getElementById('profileSection');
-    const ordersSection = document.getElementById('ordersSection');
-
-    // Mostrar perfil do cliente
-    function showProfile() {
-        profileSection.style.display = 'block';
-        ordersSection.style.display = 'none';
-        loadProfile();
-    }
-
-    // Mostrar pedidos do cliente
-    function showOrders() {
-        ordersSection.style.display = 'block';
-        profileSection.style.display = 'none';
-        loadOrders();
-    }
-
-    // Carregar perfil do cliente
-    function loadProfile() {
-        const userId = 123; // Substitua com o ID real do cliente logado
-        fetch(`/api/customers/${userId}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('name').value = data.name;
-                document.getElementById('email').value = data.email;
-            })
-            .catch(error => console.error("Erro ao carregar perfil:", error));
-    }
-
-    // Atualizar perfil do cliente
-    function updateProfile(event) {
-        event.preventDefault();
-        const name = document.getElementById('name').value;
-        const userId = 123; // Substitua com o ID real do cliente logado
-
-        fetch(`/api/customers/${userId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name })
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert("Perfil atualizado com sucesso!");
-        })
-        .catch(error => console.error("Erro ao atualizar perfil:", error));
-    }
-
-    // Carregar pedidos do cliente
-    function loadOrders() {
-        const userId = 123; // Substitua com o ID real do cliente logado
-        fetch(`/api/orders?customerId=${userId}`)
-            .then(response => response.json())
-            .then(data => {
-                const ordersList = document.getElementById('ordersList');
-                ordersList.innerHTML = ''; // Limpar lista antes de carregar
-
-                data.forEach(order => {
-                    const orderItem = document.createElement('div');
-                    orderItem.innerHTML = `
-                        <p>ID: ${order.id} - Status: ${order.status}</p>
-                        <button onclick="deleteOrder(${order.id})" ${order.status !== 'Pendente' ? 'disabled' : ''}>Cancelar Pedido</button>
+                    return `
+                        <li>
+                            <strong>ID do Produto:</strong> ${item.productId} <br>
+                            <strong>Nome:</strong> ${productName} <br>
+                            <strong>Descrição:</strong> ${productDescription} <br>
+                            <strong>Quantidade:</strong> ${item.quantity} <br>
+                            <strong>Preço Unitário:</strong> R$ ${productPrice.toFixed(2)} <br>
+                            <strong>Preço Total:</strong> R$ ${itemTotal.toFixed(2)}
+                        </li>
                     `;
-                    ordersList.appendChild(orderItem);
-                });
-            })
-            .catch(error => console.error("Erro ao carregar pedidos:", error));
-    }
+                }).join('')}
+            </ul>
+        </div>
+        
+        <div class="order-summary">
+            <p><strong>Total do Pedido:</strong> R$ ${order.totalAmount.toFixed(2)}</p>
+        </div>
+        
+        <div class="actions">
+            <button onclick="editOrder('${order.id}')">Editar</button>
+            <button onclick="deleteOrder('${order.id}')">Excluir</button>
+        </div>
+    `;
 
-    // Excluir pedido (somente se estiver com status 'Pendente')
-    function deleteOrder(orderId) {
-        const userId = 123; // Substitua com o ID real do cliente logado
-        fetch(`/api/orders/${orderId}`, {
-            method: 'DELETE'
-        })
-        .then(response => {
-            if (response.ok) {
-                alert('Pedido cancelado com sucesso!');
-                loadOrders(); // Recarregar lista de pedidos
-            }
-        })
-        .catch(error => console.error("Erro ao excluir pedido:", error));
-    }
+    return card;
+}
 
-    // Carregar perfil por padrão
-    showProfile();
-});
+function showOrdersTab() {
+    // Remover a classe 'active' das abas e ocultá-las
+    document.getElementById('productsTab').classList.remove('active');
+    document.getElementById('ordersTab').classList.add('active');
+
+    // Atualizar o estilo dos botões (opcional)
+    document.getElementById('ordersTabBtn').classList.add('active');
+    document.getElementById('productsTabBtn').classList.remove('active');
+}
+
+function showProductsTab() {
+    // Remover a classe 'active' das abas e ocultá-las
+    document.getElementById('ordersTab').classList.remove('active');
+    document.getElementById('productsTab').classList.add('active');
+
+    // Atualizar o estilo dos botões (opcional)
+    document.getElementById('productsTabBtn').classList.add('active');
+    document.getElementById('ordersTabBtn').classList.remove('active');
+}
+
+// Inicializar com a aba de produtos aberta
+showProductsTab(); // Exibe a aba de produtos por padrão
+
+document.addEventListener('DOMContentLoaded', loadProducts); 

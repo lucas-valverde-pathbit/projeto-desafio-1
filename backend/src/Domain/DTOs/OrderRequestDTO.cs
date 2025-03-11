@@ -1,3 +1,4 @@
+using Domain.Models;
 namespace Domain.DTOs
 {
     public class OrderRequestDTO
@@ -5,6 +6,7 @@ namespace Domain.DTOs
         public Guid CustomerId { get; set; }
         public string DeliveryAddress { get; set; }
         public string DeliveryZipCode { get; set; }
+        public OrderStatus Status { get; set; }
         public List<OrderItemDTO> OrderItems { get; set; }
         public decimal TotalAmount { get; set; }
     }

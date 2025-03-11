@@ -117,7 +117,7 @@ namespace Api.Controllers
                     CustomerId = customer.Id,
                     DeliveryAddress = orderRequest.DeliveryAddress,
                     DeliveryZipCode = orderRequest.DeliveryZipCode,
-                    Status = OrderStatus.Enviado,
+                    Status = orderRequest.Status,
                     OrderDate = DateTime.UtcNow,
                     TotalAmount = orderRequest.TotalAmount 
                 };
