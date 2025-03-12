@@ -96,7 +96,7 @@ namespace Infrastructure.Services
                 }
             }
         }
-
+       
         // Implementação de UpdateOrder
         public new async Task<Order?> UpdateOrder(Guid orderId, OrderUpdateDTO orderUpdateDTO)
         {
@@ -171,6 +171,15 @@ namespace Infrastructure.Services
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
             return true;
+        }
+        public async Task<List<Order>> GetByCustomerId(Guid customerId)
+        {
+          
+            var orders = await _context.Orders
+            .Where(order => order.CustomerId == customerId)
+            .Include(order => order.OrderItems) 
+            .ToListAsync();
+            return orders;
         }
     }
 }

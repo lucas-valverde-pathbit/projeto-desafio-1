@@ -100,7 +100,26 @@ namespace Api.Controllers
                 return builder.ToString();
             }
         }
-
+          [HttpPut("{userId}")]
+        public async Task<IActionResult> UpdateUser(
+            Guid userId,
+            string userName,
+            string userEmail,
+            string userPassword,
+            UserRole role,
+            string? customerName = null,
+            string? customerEmail = null)
+        {
+            try
+            {
+                await _userService.UpdateUserAsync(userId, userName, userEmail, userPassword, role, customerName, customerEmail);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         public class LoginRequest
         {
             public required string LoginEmail { get; set; }

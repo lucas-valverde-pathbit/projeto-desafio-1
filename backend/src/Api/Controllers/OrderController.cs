@@ -22,15 +22,6 @@ namespace Api.Controllers
         private readonly AppDbContext _context;
         private readonly ILogger<OrderController> _logger;
 
-        public override async Task<ActionResult<IEnumerable<Order>>> GetAll()
-        {
-            var orders = await _context.Orders
-                .Include(o => o.OrderItems) // Include OrderItems
-                .ToListAsync();
-                
-            return Ok(orders);
-        }
-
         public OrderController(
             IOrderService orderService, 
             IProductService productService, 
@@ -43,6 +34,15 @@ namespace Api.Controllers
             _customerService = customerService;
             _context = context;
             _logger = logger;
+        }
+
+        public override async Task<ActionResult<IEnumerable<Order>>> GetAll()
+        {
+            var orders = await _context.Orders
+                .Include(o => o.OrderItems) // Include OrderItems
+                .ToListAsync();
+                
+            return Ok(orders);
         }
 
         public override async Task<ActionResult<Order>> GetById(Guid id)
@@ -183,6 +183,30 @@ namespace Api.Controllers
             {
                 _logger.LogWarning("ID de usuário inválido.");
                 return BadRequest("ID de usuário inválido.");
+            }
+        }
+
+        // Agora, o método GetByCustomerId está fora do método CreateOrder.
+        [HttpGet("customer/{customerId}")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetByCustomerId(Guid customerId)
+        {
+            try
+            {
+                var orders = await _orderService.GetByCustomerId(customerId);
+
+                if (orders == null || !orders.Any())
+                {
+                    _logger.LogWarning($"Nenhuma ordem encontrada para o Cliente ID {customerId}.");
+                    return NotFound("Nenhuma ordem encontrada para este cliente.");
+                }
+
+                _logger.LogInformation($"Encontradas {orders.Count} ordens para o Cliente ID {customerId}.");
+                return Ok(orders);
+            }   
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro ao buscar ordens para o Cliente ID {customerId}: {ex.Message}");
+                return StatusCode(500, "Erro interno ao buscar as ordens.");
             }
         }
     }

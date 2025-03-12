@@ -12,16 +12,34 @@
             <button id="ordersTabBtn" onclick="showOrdersTab()">Pedidos</button>
             <button id="productsTabBtn" onclick="showProductsTab()">Produtos</button>
         </header>
- <div id="productsTab" class="tab-content">
-        
-        <!-- Conteúdo da aba de produtos -->
-     <div class="ContainerDeProdutos">
-        <!-- Filtro e Botão de Adicionar Produto -->
-        <div class="filter-container">
-            <input type="text" id="filterInput" placeholder="Filtrar produtos..." onkeyup="filterProducts()">
+
+        <div id="profileTab" class="tab-content">
+            <h2>Editar Perfil</h2>
+            <form id="profileForm" onsubmit="submitProfileEdit(event)">
+                <label for="name">Nome:</label>
+                <input type="text" id="name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
+
+                <label for="currentPassword">Senha Atual:</label>
+                <input type="password" id="currentPassword" required>
+
+                <label for="newPassword">Nova Senha:</label>
+                <input type="password" id="newPassword">
+
+                <button type="submit">Salvar Alterações</button>
+            </form>
         </div>
-         <!-- Lista de Produtos -->
-        <div class="products-list" id="productsList">
+
+
+        <div id="productsTab" class="tab-content">
+            <div class="ContainerDeProdutos">
+                <div class="filter-container">
+                    <input type="text" id="filterInput" placeholder="Filtrar produtos..." onkeyup="filterProducts()">
+                </div>
+        
+            <div class="products-list" id="productsList">
             <!-- Os produtos cadastrados serão exibidos aqui -->
         </div>
      </div>

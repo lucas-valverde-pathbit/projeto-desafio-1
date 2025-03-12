@@ -1,4 +1,4 @@
-const apiBaseUrl = window.location.hostname === "localhost" 
+const apiBaseUrl = window.location.hostname === "localhost"
     ? "http://localhost:5064"  // URL de desenvolvimento
     : "http://api:5064"; // URL para produção
 
@@ -7,11 +7,11 @@ const apiBaseUrl = window.location.hostname === "localhost"
     function filterProducts() {
         const filter = document.getElementById("filterInput").value.toLowerCase();
         const productCards = document.getElementsByClassName("product-item");
-    
+
         Array.from(productCards).forEach(card => {
             const productName = card.querySelector(".product-name").innerText.toLowerCase();
             const productDescription = card.querySelector(".product-description").innerText.toLowerCase();
-    
+
             if (productName.includes(filter) || productDescription.includes(filter)) {
                 card.style.display = "";
             } else {
@@ -19,7 +19,7 @@ const apiBaseUrl = window.location.hostname === "localhost"
             }
         });
     }
-    
+
     // Função para carregar a lista de produtos (requisição GET)
     function loadProducts() {
         fetch(`${apiBaseUrl}/api/products`) // URL correta da API de produtos
@@ -28,7 +28,7 @@ const apiBaseUrl = window.location.hostname === "localhost"
                 const container = document.getElementById('productsList');
                 if (container) {
                     container.innerHTML = ''; // Limpa a lista antes de adicionar novos produtos
-    
+
                     // Verifica se a resposta tem a estrutura esperada
                     const products = response.$values || response; // Verifique a estrutura da resposta
                     if (Array.isArray(products)) {
@@ -45,11 +45,11 @@ const apiBaseUrl = window.location.hostname === "localhost"
             })
             .catch(error => console.error('Erro ao carregar produtos:', error));
     }
-    
+
     function createProductCard(product) {
         const card = document.createElement('div');
         card.classList.add('product-item');
-    
+
         // Exibindo os dados do produto
         card.innerHTML = `
             <h3 class="product-name">${product.productName}</h3>
@@ -59,47 +59,47 @@ const apiBaseUrl = window.location.hostname === "localhost"
                 <button onclick="addProductToComanda('${product.id}', '${product.productName}', ${product.productPrice})">Adicionar à Comanda</button>
             </div>
         `;
-    
+
         return card;
     }
 
     function addProductToComanda(productId, productName, productPrice) {
         const orderDetailsContainer = document.getElementById('orderDetails');
-    
+
         // Criando o campo do produto na comanda
         const productField = document.createElement('div');
         productField.classList.add('product-field');
-    
+
         const productNameField = document.createElement('span');
         productNameField.textContent = productName;
-    
+
         const productPriceField = document.createElement('span');
         productPriceField.textContent = `R$ ${productPrice.toFixed(2)}`;
-    
+
         const productQuantityField = document.createElement('input');
         productQuantityField.setAttribute('type', 'number');
         productQuantityField.setAttribute('value', 1);
         productQuantityField.addEventListener('change', updateTotalAmount);
-    
+
         const productIdField = document.createElement('input');
         productIdField.setAttribute('type', 'hidden');
         productIdField.setAttribute('value', productId);
-    
+
         const removeButton = document.createElement('button');
         removeButton.textContent = 'Remover';
         removeButton.addEventListener('click', function () {
             productField.remove();
             updateTotalAmount();
         });
-    
+
         productField.appendChild(productNameField);
         productField.appendChild(productPriceField);
         productField.appendChild(productQuantityField);
         productField.appendChild(productIdField);
         productField.appendChild(removeButton);
-    
+
         orderDetailsContainer.appendChild(productField);
-    
+
         updateTotalAmount();
     }
     // Função para atualizar o total da comanda
@@ -147,7 +147,7 @@ function submitOrder(event) {
     const deliveryAddress = document.getElementById('deliveryAddress').value;
     const deliveryZipCode = document.getElementById('cep').value;
     const status = document.getElementById('status').value;
-    
+
     // Mapeando os status para o formato esperado pelo backend
     const statusMapping = {
         "Pendente": 0,
@@ -265,14 +265,14 @@ const statusMapping = {
 function getCustomerByEmail() {
     // Recupera o e-mail do localStorage a partir do objeto userInfo
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    
+
     if (!userInfo || !userInfo.email) {
         console.error('E-mail do usuário não encontrado no localStorage.');
         return;
     }
-    
-    const email = userInfo.email; 
-    
+
+    const email = userInfo.email;
+
     // Fazendo a requisição para buscar o cliente pelo email
     fetch(`${apiBaseUrl}/api/customers/email/${email}`)
         .then(response => response.json())
@@ -284,7 +284,7 @@ function getCustomerByEmail() {
                 // Salvando o CustomerId no localStorage
                 localStorage.setItem('customerId', customerId);
                 console.log('CustomerId encontrado:', customerId);
-                
+
             } else {
                 console.error('Cliente não encontrado!');
             }
@@ -295,22 +295,21 @@ function getCustomerByEmail() {
 }
 
 function loadOrders() {
-    // Recuperando o CustomerId do localStorage
     const customerId = localStorage.getItem('customerId');
-    
+
     if (!customerId) {
         console.error('CustomerId não encontrado. O usuário precisa estar logado.');
         return;
     }
 
-    // Fazendo a requisição para obter apenas os pedidos do cliente logado
-    fetch(`${apiBaseUrl}/api/orders/customerId=${customerId}`) // Adicionando o filtro de CustomerId
+  
+    fetch(`${apiBaseUrl}/api/orders/customer/${customerId}`) // Adicionando o filtro de CustomerId
         .then(response => response.json())
         .then(response => {
             const container = document.getElementById('ordersList');
             if (container) {
                 container.innerHTML = ''; // Limpa a lista antes de adicionar novos pedidos
-                
+
                 // Verifica se a resposta tem a estrutura esperada
                 const orders = response.$values || response; // Verifique a estrutura da resposta
                 if (Array.isArray(orders)) {
@@ -333,67 +332,18 @@ function loadOrders() {
 function createOrderCard(order) {
     const card = document.createElement('div');
     card.classList.add('order-card');
-    
+
     // Convertendo o status numérico para o valor legível
     const orderStatus = statusMapping[order.status] || "Status desconhecido";  // Caso o status não seja encontrado
 
     // Exibindo os dados do pedido
-    card.innerHTML = ` 
+    card.innerHTML = `
         <h3>Pedido ID: ${order.id}</h3>
         <p><strong>Data do Pedido:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
         <p><strong>Status:</strong> ${orderStatus}</p>  <!-- Status convertido -->
         <p><strong>CEP de Entrega:</strong> ${order.deliveryZipCode}</p>
         <p><strong>Endereço de Entrega:</strong> ${order.deliveryAddress}</p>
-        
-        <div class="order-items">
-            <h4>Itens do Pedido:</h4>
-            <ul>
-                ${order.orderItems.$values.map(item => {
-                    // Agora os dados são diretamente acessados do item
-                    const productName = item.productName || 'Produto não disponível';
-                    const productDescription = item.productDescription || 'Descrição não disponível';
-                    const productPrice = item.productPrice || 0;
-                    const itemTotal = item.quantity * productPrice;
 
-                    return ` 
-                        <li>
-                            <strong>ID do Produto:</strong> ${item.productId} <br>
-                            <strong>Nome:</strong> ${productName} <br>
-                            <strong>Descrição:</strong> ${productDescription} <br>
-                            <strong>Quantidade:</strong> ${item.quantity} <br>
-                            <strong>Preço Unitário:</strong> R$ ${productPrice.toFixed(2)} <br>
-                            <strong>Preço Total:</strong> R$ ${itemTotal.toFixed(2)}
-                        </li>
-                    `;
-                }).join('')}
-            </ul>
-        </div>
-        
-        <div class="order-summary">
-            <p><strong>Total do Pedido:</strong> R$ ${order.totalAmount.toFixed(2)}</p>
-        </div>
-        
-        <div class="actions">
-            <button onclick="editOrder('${order.id}')">Editar</button>
-            <button onclick="deleteOrder('${order.id}')">Excluir</button>
-        </div>
-    `;
-
-    return card;
-}
-
-function createOrderCard(order) {
-    const card = document.createElement('div');
-    card.classList.add('order-card');
-    
-    // Exibindo os dados do pedido
-    card.innerHTML = ` 
-        <h3>Pedido ID: ${order.id}</h3>
-        <p><strong>Data do Pedido:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
-        <p><strong>Status:</strong> ${order.status}</p>
-        <p><strong>CEP de Entrega:</strong> ${order.deliveryZipCode}</p>
-        <p><strong>Endereço de Entrega:</strong> ${order.deliveryAddress}</p>
-        
         <div class="order-items">
             <h4>Itens do Pedido:</h4>
             <ul>
@@ -417,11 +367,60 @@ function createOrderCard(order) {
                 }).join('')}
             </ul>
         </div>
-        
+
         <div class="order-summary">
             <p><strong>Total do Pedido:</strong> R$ ${order.totalAmount.toFixed(2)}</p>
         </div>
-        
+
+        <div class="actions">
+            <button onclick="editOrder('${order.id}')">Editar</button>
+            <button onclick="deleteOrder('${order.id}')">Excluir</button>
+        </div>
+    `;
+
+    return card;
+}
+
+function createOrderCard(order) {
+    const card = document.createElement('div');
+    card.classList.add('order-card');
+
+    // Exibindo os dados do pedido
+    card.innerHTML = `
+        <h3>Pedido ID: ${order.id}</h3>
+        <p><strong>Data do Pedido:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
+        <p><strong>Status:</strong> ${order.status}</p>
+        <p><strong>CEP de Entrega:</strong> ${order.deliveryZipCode}</p>
+        <p><strong>Endereço de Entrega:</strong> ${order.deliveryAddress}</p>
+
+        <div class="order-items">
+            <h4>Itens do Pedido:</h4>
+            <ul>
+                ${order.orderItems.$values.map(item => {
+                    // Agora os dados são diretamente acessados do item
+                    const productName = item.productName || 'Produto não disponível';
+                    const productDescription = item.productDescription || 'Descrição não disponível';
+                    const productPrice = item.productPrice || 0;
+                    const itemTotal = item.quantity * productPrice;
+
+                    return `
+                        <li>
+                            <strong>ID do Produto:</strong> ${item.productId} <br>
+                            <strong>Nome:</strong> ${productName} <br>
+                            <strong>Descrição:</strong> ${productDescription} <br>
+                            <strong>Quantidade:</strong> ${item.quantity} <br>
+                            <strong>Preço Unitário:</strong> R$ ${productPrice.toFixed(2)} <br>
+                            <strong>Preço Total:</strong> R$ ${itemTotal.toFixed(2)}
+                        </li>
+                    `;
+                }).join('')}
+            </ul>
+        </div>
+
+        <div class="order-summary">
+            <p><strong>Total do Pedido:</strong> R$ ${order.totalAmount.toFixed(2)}</p>
+        </div>
+
         <div class="actions">
             <button onclick="editOrder('${order.id}')">Editar</button>
             <button onclick="deleteOrder('${order.id}')">Excluir</button>

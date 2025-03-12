@@ -94,5 +94,52 @@ namespace Infrastructure.Services
             await _dbSet.AddAsync(user);
             await _context.SaveChangesAsync();
         }
+          public async Task UpdateUserAsync(Guid userId, string userName, string userEmail, string password, UserRole role, string? customerName, string? customerEmail)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            // Atualiza as informações do usuário
+            user.UserName = userName;
+            user.UserEmail = userEmail;
+            user.UserPassword = password;
+            user.Role = role;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            // Se for um cliente, também atualiza as informações no Customer
+            if (role == UserRole.CLIENTE)
+            {
+                var customer = await _customerRepository.GetByUserIdAsync(userId);
+                if (customer != null)
+                {
+                    // Atualiza informações do cliente
+                    customer.CustomerName = customerName;
+                    customer.CustomerEmail = customerEmail;
+                }
+                else
+                {
+                    // Se o cliente não existir, cria um novo
+                    customer = new Customer
+                    {
+                        Id = Guid.NewGuid(),
+                        CustomerName = customerName,
+                        CustomerEmail = customerEmail,
+                        UserId = userId,
+                        User = user
+                    };
+                    await _customerRepository.AddAsync(customer);
+                }
+            }
+
+            await _userRepository.UpdateAsync(user);
+
+            if (role == UserRole.CLIENTE)
+            {
+                await _customerRepository.UpdateAsync(customer);
+            }
+        }
     }
 }

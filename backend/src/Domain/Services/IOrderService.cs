@@ -15,5 +15,6 @@ namespace Domain.Services
         Task<bool> ValidateProductStock(Guid productId, int quantity);
         Task<bool> ValidateDeliveryAddress(string deliveryAddress);
         Task<bool> DeleteOrder(Guid orderId);
+        Task<List<Order>> GetByCustomerId(Guid customerId);
     }
 }
