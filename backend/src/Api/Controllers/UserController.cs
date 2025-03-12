@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Domain.DTOs;
 using Domain.Models;
 using Domain.Services;
 using System.Security.Cryptography;
@@ -14,8 +15,7 @@ namespace Api.Controllers
     [Route("api/users")]
     public class UserController : BaseController<User, IUserService>
     {
-        public UserController(IUserService service) : base(service) {}
-
+        public UserController(IUserService service) : base(service){}
         [HttpGet("status")]
         public IActionResult Status()
         {
@@ -25,43 +25,43 @@ namespace Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-         Console.WriteLine($"Tentativa de login para: {request.LoginEmail}");
-    
-         var user = await _service.Authenticate(request.LoginEmail, request.LoginPassword);
-    
-          if (user == null)
-          {
-              Console.WriteLine("Autenticação falhou - usuário não encontrado ou credenciais inválidas");
-              return Unauthorized(new { message = "Erro ao fazer login. Verifique suas credenciais." });
-          }
-    
-          Console.WriteLine($"Login bem-sucedido para: {user.UserEmail}");
+            Console.WriteLine($"Tentativa de login para: {request.LoginEmail}");
+        
+            var user = await _service.Authenticate(request.LoginEmail, request.LoginPassword);
+        
+            if (user == null)
+            {
+                Console.WriteLine("Autenticação falhou - usuário não encontrado ou credenciais inválidas");
+                return Unauthorized(new { message = "Erro ao fazer login. Verifique suas credenciais." });
+            }
+        
+            Console.WriteLine($"Login bem-sucedido para: {user.UserEmail}");
 
-          var tokenHandler = new JwtSecurityTokenHandler();
-          var key = Encoding.ASCII.GetBytes("your_secure_long_key_here_256_bits"); // Alterar para chave segura real
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("your_secure_long_key_here_256_bits"); // Alterar para chave segura real
 
-         var tokenDescriptor = new SecurityTokenDescriptor
-         {
-               Subject = new ClaimsIdentity(new[] 
-              {
-                  new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                  new Claim(ClaimTypes.Email, user.UserEmail),
-                  new Claim(ClaimTypes.Name, user.UserName),
-                  new Claim(ClaimTypes.Role, user.Role.ToString())
-               }),
-               Expires = DateTime.UtcNow.AddHours(1),
-              SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-          };
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] 
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Email, user.UserEmail),
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.Role, user.Role.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddHours(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
 
-         var token = tokenHandler.CreateToken(tokenDescriptor);
-          var tokenString = tokenHandler.WriteToken(token);
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
 
-         return Ok(new { 
-             user.Id,
-             user.UserName,
-             user.UserEmail,
-             Token = tokenString
-         });
+            return Ok(new { 
+                user.Id,
+                user.UserName,
+                user.UserEmail,
+                Token = tokenString
+            });
         }
 
         [HttpPost("signup")]
@@ -100,7 +100,8 @@ namespace Api.Controllers
                 return builder.ToString();
             }
         }
-          [HttpPut("{userId}")]
+
+        [HttpPut("{userId}")]
         public async Task<IActionResult> UpdateUser(
             Guid userId,
             string userName,
@@ -112,7 +113,7 @@ namespace Api.Controllers
         {
             try
             {
-                await _userService.UpdateUserAsync(userId, userName, userEmail, userPassword, role, customerName, customerEmail);
+                await _service.UpdateUserAsync(userId, userName, userEmail, userPassword, role, customerName, customerEmail);
                 return Ok();
             }
             catch (Exception ex)
@@ -120,6 +121,34 @@ namespace Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPut("edit-profile")]
+        public async Task<IActionResult> EditProfile([FromBody] EditProfileDto editProfileDto)
+        {
+            // Validando a entrada
+            if (editProfileDto == null || string.IsNullOrEmpty(editProfileDto.Name) || string.IsNullOrEmpty(editProfileDto.Email))
+            {
+                return BadRequest("Dados inválidos.");
+            }
+
+            try
+            {
+                var userId = Guid.NewGuid(); // Aqui você deve pegar o ID do usuário autenticado, geralmente do JWT ou sessão
+                var result = await _service.EditUserProfileAsync(userId, editProfileDto);
+
+                if (!result)
+                {
+                    return BadRequest("Erro ao atualizar o perfil.");
+                }
+
+                return Ok("Perfil atualizado com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro interno: {ex.Message}");
+            }
+        }
+
         public class LoginRequest
         {
             public required string LoginEmail { get; set; }

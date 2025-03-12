@@ -3,6 +3,8 @@ using System.Security.Cryptography;
 using System.Text;
 using Domain.Models;
 using Domain.Services;
+using Domain.Repositories;
+using Domain.DTOs;
 using Infrastructure.Data;
 
 namespace Infrastructure.Services
@@ -11,8 +13,16 @@ namespace Infrastructure.Services
     {
         private const int MaxFailedAttempts = 5;
         private const int LockoutMinutes = 15;
-        
-        public UserService(AppDbContext context) : base(context) {}
+        private readonly IUserRepository _userRepository;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly IPasswordHasher _passwordHasher;
+
+        public UserService(AppDbContext context, IUserRepository userRepository, ICustomerRepository customerRepository, IPasswordHasher passwordHasher) : base(context)
+        {
+            _userRepository = userRepository;
+            _customerRepository = customerRepository;
+            _passwordHasher = passwordHasher;
+        }
 
         public async Task<User?> Authenticate(string username, string password)
         {
@@ -25,7 +35,6 @@ namespace Infrastructure.Services
                 return null;
             }
 
-    
             if (user.LockoutEnd != null && user.LockoutEnd > DateTime.UtcNow)
             {
                 Console.WriteLine($"Conta bloqueada até {user.LockoutEnd}");
@@ -34,13 +43,12 @@ namespace Infrastructure.Services
 
             Console.WriteLine($"Usuário encontrado: {user.UserEmail}");
 
-
             string hashedPassword = ComputeSha256Hash(password);
-            
+
             Console.WriteLine($"Senha recebida: {password}");
             Console.WriteLine($"Hash gerado: {hashedPassword}");
             Console.WriteLine($"Hash armazenado: {user.UserPassword}");
-            
+
             if (user.UserPassword != hashedPassword)
             {
                 Console.WriteLine("Hashes não coincidem");
@@ -56,9 +64,6 @@ namespace Infrastructure.Services
 
             Console.WriteLine("Autenticação bem-sucedida");
 
-
-
-
             user.FailedLoginAttempts = 0;
             user.LockoutEnd = null;
             await _context.SaveChangesAsync();
@@ -68,9 +73,8 @@ namespace Infrastructure.Services
 
         private string ComputeSha256Hash(string rawData)
         {
-            // Remove espaços em branco no início e fim
             string trimmedData = rawData.Trim();
-            
+
             using (SHA256 sha256Hash = SHA256.Create())
             {
                 byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(trimmedData));
@@ -94,52 +98,78 @@ namespace Infrastructure.Services
             await _dbSet.AddAsync(user);
             await _context.SaveChangesAsync();
         }
-          public async Task UpdateUserAsync(Guid userId, string userName, string userEmail, string password, UserRole role, string? customerName, string? customerEmail)
+
+        public async Task UpdateUserAsync(Guid userId, string userName, string userEmail, string userPassword, UserRole role, string? customerName, string? customerEmail)
         {
+            // Recuperar o usuário
             var user = await _userRepository.GetByIdAsync(userId);
             if (user == null)
             {
-                throw new Exception("User not found.");
+                throw new Exception("Usuário não encontrado.");
             }
 
-            // Atualiza as informações do usuário
+            // Atualizar as informações do usuário
             user.UserName = userName;
             user.UserEmail = userEmail;
-            user.UserPassword = password;
+            if (!string.IsNullOrEmpty(userPassword))
+            {
+                user.UserPassword = _passwordHasher.HashPassword(userPassword); // Lógica para hash da senha
+            }
             user.Role = role;
             user.UpdatedAt = DateTime.UtcNow;
 
-            // Se for um cliente, também atualiza as informações no Customer
-            if (role == UserRole.CLIENTE)
+            // Salvar alterações no usuário
+            await _userRepository.UpdateAsync(user);
+
+            // Se existirem dados do cliente, atualizar também
+            if (!string.IsNullOrEmpty(customerName) || !string.IsNullOrEmpty(customerEmail))
             {
                 var customer = await _customerRepository.GetByUserIdAsync(userId);
                 if (customer != null)
                 {
-                    // Atualiza informações do cliente
                     customer.CustomerName = customerName;
                     customer.CustomerEmail = customerEmail;
-                }
-                else
-                {
-                    // Se o cliente não existir, cria um novo
-                    customer = new Customer
-                    {
-                        Id = Guid.NewGuid(),
-                        CustomerName = customerName,
-                        CustomerEmail = customerEmail,
-                        UserId = userId,
-                        User = user
-                    };
-                    await _customerRepository.AddAsync(customer);
+                    await _customerRepository.UpdateAsync(customer);
                 }
             }
+        }
 
-            await _userRepository.UpdateAsync(user);
-
-            if (role == UserRole.CLIENTE)
+        public async Task<bool> EditUserProfileAsync(Guid userId, EditProfileDto editProfileDto)
+        {
+            // Buscar o usuário
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null)
             {
-                await _customerRepository.UpdateAsync(customer);
+                return false;
             }
+
+            // Verificando a senha atual
+            if (!_passwordHasher.VerifyPassword(editProfileDto.CurrentPassword, user.UserPassword))
+            {
+                return false; // Senha atual incorreta
+            }
+
+            // Atualizando a senha, se houver uma nova
+            if (!string.IsNullOrEmpty(editProfileDto.NewPassword))
+            {
+                user.UserPassword = _passwordHasher.HashPassword(editProfileDto.NewPassword);
+            }
+
+            // Atualizando o perfil no banco de dados
+            var userUpdateResult = await _userRepository.UpdateAsync(user);
+
+            // Atualizando as informações do Customer
+            var customer = await _customerRepository.GetByUserIdAsync(userId);
+            if (customer != null)
+            {
+                customer.CustomerName = editProfileDto.Name;
+                customer.CustomerEmail = editProfileDto.Email;
+
+                var customerUpdateResult = await _customerRepository.UpdateAsync(customer);
+                return userUpdateResult && customerUpdateResult;
+            }
+
+            return false;
         }
     }
 }

@@ -430,28 +430,76 @@ function createOrderCard(order) {
     return card;
 }
 
+
+function submitProfileEdit(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+
+    const requestData = {
+        name: name,
+        email: email,
+        currentPassword: currentPassword,
+        newPassword: newPassword
+    };
+    const token = localStorage.getItem('token');
+    fetch(`${apiBaseUrl}/api/users/edit-profile`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === "Perfil atualizado com sucesso.") {
+            alert('Perfil atualizado!');
+        } else {
+            alert('Erro ao atualizar o perfil.');
+        }
+    })
+    .catch(error => console.error('Erro:', error));
+}
+
 function showOrdersTab() {
     // Remover a classe 'active' das abas e ocultá-las
     document.getElementById('productsTab').classList.remove('active');
     document.getElementById('ordersTab').classList.add('active');
+    document.getElementById('profileTab').classList.remove('active');
 
-    // Atualizar o estilo dos botões (opcional)
-    document.getElementById('ordersTabBtn').classList.add('active');
     document.getElementById('productsTabBtn').classList.remove('active');
+    document.getElementById('ordersTabBtn').classList.add('active');
+    document.getElementById('profileTabBtn').classList.remove('active');
 }
 
 function showProductsTab() {
     // Remover a classe 'active' das abas e ocultá-las
     document.getElementById('ordersTab').classList.remove('active');
     document.getElementById('productsTab').classList.add('active');
-
+    document.getElementById('profileTab').classList.remove('active');
     // Atualizar o estilo dos botões (opcional)
     document.getElementById('productsTabBtn').classList.add('active');
     document.getElementById('ordersTabBtn').classList.remove('active');
+    document.getElementById('profileTabBtn').classList.remove('active');
+}
+function showProfileTab() {
+    // Remover a classe 'active' das abas e ocultá-las
+    document.getElementById('ordersTab').classList.remove('active');
+    document.getElementById('productsTab').classList.remove('active');
+    document.getElementById('profileTab').classList.add('active');
+    // Atualizar o estilo dos botões (opcional)
+    document.getElementById('productsTabBtn').classList.remove('active');
+    document.getElementById('ordersTabBtn').classList.remove('active');
+    document.getElementById('profileTabBtn').classList.add('active');
 }
 
-// Inicializar com a aba de produtos aberta
-showProductsTab(); // Exibe a aba de produtos por padrão
+
+
+showProductsTab();
 
 document.addEventListener('DOMContentLoaded', loadProducts);
 document.addEventListener('DOMContentLoaded', loadOrders);

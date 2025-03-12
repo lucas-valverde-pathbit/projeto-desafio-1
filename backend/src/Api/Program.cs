@@ -13,7 +13,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Infrastructure.Data;
 using Infrastructure.Services;
-using System.Text.Json; // Adicionando a diretiva de namespace para ReferenceHandler
+using Domain.Repositories; 
+using Domain.Services;
+using Infrastructure.Repositories;
+using System.Text.Json;
 
 namespace Api
 {
@@ -23,15 +26,20 @@ namespace Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Configuração do banco de dados
+  
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>(); 
+            builder.Services.AddScoped<ICustomerRepository, CustomerRepository>(); 
+            // builder.Services.AddScoped<IProductRepository, ProductRepository>(); 
+            // builder.Services.AddScoped<IOrderRepository, OrderRepository>(); 
 
             // Serviços de aplicação
-            builder.Services.AddScoped<Domain.Services.IUserService, Infrastructure.Services.UserService>();
-            builder.Services.AddScoped<Domain.Services.IProductService, Infrastructure.Services.ProductService>();
-            builder.Services.AddScoped<Domain.Services.ICustomerService, Infrastructure.Services.CustomerService>();
-            builder.Services.AddScoped<Domain.Services.IOrderService, Infrastructure.Services.OrderService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<ICustomerService, CustomerService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
 
             // Configuração de autenticação JWT
             builder.Services.AddAuthentication(options =>
@@ -49,7 +57,6 @@ namespace Api
                     ValidateAudience = false
                 };
             });
-
 
             // Configuração de HttpClient
             builder.Services.AddHttpClient();
@@ -73,11 +80,6 @@ namespace Api
                 {
                     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve; // Adicionando suporte a ciclos
                 });
-
-            builder.Services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "My API", Version = "v1" });
-            });
 
             // Configuração do Swagger
             builder.Services.AddEndpointsApiExplorer();
@@ -123,7 +125,6 @@ namespace Api
             // Configuração de Autenticação e Autorização
             app.UseAuthentication();
             app.UseAuthorization();
-
 
             // Habilitar arquivos estáticos
             app.UseSwagger();
