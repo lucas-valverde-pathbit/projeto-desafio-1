@@ -29,8 +29,9 @@ namespace Api.Controllers
             }
             return Ok(product);
         }
- [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProduct(string id, [FromBody] Product product)
+    [HttpPut("update/{id}")]
+    public async Task<IActionResult> UpdateProductById(string id, [FromBody] Product product)
+
     {
         if (Guid.TryParse(id, out Guid parsedId) && parsedId != product.Id)
         {

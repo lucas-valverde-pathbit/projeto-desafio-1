@@ -392,12 +392,10 @@ function submitProfileEdit(event) {
     }
 
     const requestData = {
-        userName: name,
-        userEmail: email,
-        userPassword: currentPassword, // Presumindo que 'currentPassword' é a senha atual do usuário
-        newPassword: newPassword,
-        customerName: name, // Se você quer usar o mesmo nome para o customer
-        customerEmail: email // E o mesmo e-mail
+       Name: name,
+        Email: email,
+        CurrentPassword: currentPassword, // Presumindo que 'currentPassword' é a senha atual do usuário
+        NewPassword: newPassword,
     };
 
     const token = localStorage.getItem('token');
@@ -449,14 +447,20 @@ function showProductsTab() {
     document.getElementById('profileTabBtn').classList.remove('active');
 }
 function showProfileTab() {
-    // Remover a classe 'active' das abas e ocultá-las
+    
     document.getElementById('ordersTab').classList.remove('active');
     document.getElementById('productsTab').classList.remove('active');
     document.getElementById('profileTab').classList.add('active');
-    // Atualizar o estilo dos botões (opcional)
+   
     document.getElementById('productsTabBtn').classList.remove('active');
     document.getElementById('ordersTabBtn').classList.remove('active');
     document.getElementById('profileTabBtn').classList.add('active');
+
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    document.getElementById("name").value = userInfo.unique_name;
+    document.getElementById("email").value = userInfo.email;
+    document.getElementById("currentPassword").value = ' ';
+    document.getElementById("newPassword").value = ' ';
 }
 
 

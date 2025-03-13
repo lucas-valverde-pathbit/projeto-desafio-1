@@ -109,7 +109,7 @@ async function updateProduct() {
     console.log("Dados do produto para atualização:", updatedProduct);
 
     try {
-        const response = await fetch(`${apiBaseUrl}/api/products/${productId}`, {
+        const response = await fetch(`${apiBaseUrl}/api/products/update/${productId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

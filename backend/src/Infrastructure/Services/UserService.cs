@@ -24,7 +24,7 @@ namespace Infrastructure.Services
             _passwordHasher = passwordHasher;
         }
 
-public async Task<User> Authenticate(string username, string password)
+       public async Task<User> Authenticate(string username, string password)
 
         {
             var user = await _dbSet
