@@ -27,48 +27,60 @@ namespace Api.Controllers
             _customerRepository = customerRepository;
         }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+       [HttpPost("login")]
+public async Task<IActionResult> Login([FromBody] LoginRequest request)
+{
+    Console.WriteLine($"Tentativa de login para: {request.LoginEmail}");
+    
+    // Recupera o usuário pelo email
+    var user = await _service.GetByEmail(request.LoginEmail);
+    
+    // Se o usuário não existir ou não for encontrado
+    if (user == null)
+    {
+        Console.WriteLine("Autenticação falhou - usuário não encontrado ou credenciais inválidas");
+        return Unauthorized(new { message = "Erro ao fazer login. Verifique suas credenciais." });
+    }
+
+    // Verifica se a senha fornecida corresponde ao hash armazenado
+    var isPasswordValid = _passwordHasher.VerifyPassword(request.LoginPassword, user.UserPassword);
+    
+    // Se a senha for inválida
+    if (!isPasswordValid)
+    {
+        Console.WriteLine("Autenticação falhou - senha inválida");
+        return Unauthorized(new { message = "Erro ao fazer login. Verifique suas credenciais." });
+    }
+
+    Console.WriteLine($"Login bem-sucedido para: {user.UserEmail}");
+
+    // Geração do token JWT
+    var tokenHandler = new JwtSecurityTokenHandler();
+    var key = Encoding.ASCII.GetBytes("your_secure_long_key_here_256_bits"); // Alterar para chave segura real
+
+    var tokenDescriptor = new SecurityTokenDescriptor
+    {
+        Subject = new ClaimsIdentity(new[] 
         {
-            Console.WriteLine($"Tentativa de login para: {request.LoginEmail}");
-        
-            var user = await _service.Authenticate(request.LoginEmail, request.LoginPassword);
-        
-            if (user == null)
-            {
-                Console.WriteLine("Autenticação falhou - usuário não encontrado ou credenciais inválidas");
-                return Unauthorized(new { message = "Erro ao fazer login. Verifique suas credenciais." });
-            }
-        
-            Console.WriteLine($"Login bem-sucedido para: {user.UserEmail}");
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.UserEmail),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Role, user.Role.ToString())
+        }),
+        Expires = DateTime.UtcNow.AddHours(1),
+        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+    };
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("your_secure_long_key_here_256_bits"); // Alterar para chave segura real
+    var token = tokenHandler.CreateToken(tokenDescriptor);
+    var tokenString = tokenHandler.WriteToken(token);
 
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[] 
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Email, user.UserEmail),
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.Role, user.Role.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddHours(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
-
-            return Ok(new { 
-                user.Id,
-                user.UserName,
-                user.UserEmail,
-                Token = tokenString
-            });
-        }
-
+    return Ok(new { 
+        user.Id,
+        user.UserName,
+        user.UserEmail,
+        Token = tokenString
+    });
+}
         [HttpPost("signup")]
         public async Task<IActionResult> Signup([FromBody] SignupRequest request)
         {
@@ -85,7 +97,7 @@ namespace Api.Controllers
          {
                 UserName = request.SignupName,
                 UserEmail = request.SignupEmail,
-                UserPassword = _passwordHasher.HashPassword(request.SignupPassword), // Usando PasswordHasher para gerar o hash
+                UserPassword = _passwordHasher.HashPassword(request.SignupPassword),
                 Role = request.SignupRole
          };
 
@@ -96,11 +108,10 @@ namespace Api.Controllers
                 {
                  CustomerName = request.SignupName,
                  CustomerEmail = request.SignupEmail,
-                   // Após o usuário ser criado, o ID do usuário será atribuído ao cliente
-                 // Criar o cliente no banco de dados
+
                 };
 
-                // Salvar o cliente no banco de dados
+   
              await _customerRepository.AddAsync(newCustomer); // Certifique-se de ter um repositório de clientes
          }
 

@@ -6,29 +6,27 @@ namespace Domain.Services
 {
     public class PasswordHasher : IPasswordHasher
     {
+        // Método para hash da senha sem Salt
         public string HashPassword(string password)
         {
-        using (var sha256 = SHA256.Create())
-        {
-            var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(hashBytes);
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+                byte[] hashBytes = sha256.ComputeHash(passwordBytes);
+
+                // Converter o hash para uma string em base64
+                return Convert.ToBase64String(hashBytes); 
+            }
         }
 
-        }
-
+        // Método para verificar a senha fornecida sem Salt
         public bool VerifyPassword(string password, string hashedPassword)
         {
-            var hashBytes = Convert.FromBase64String(hashedPassword);
-            using (var sha256 = SHA256.Create())
-            {
-                var computedHash = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                for (int i = 0; i < computedHash.Length; i++)
-                {
-                    if (computedHash[i] != hashBytes[i]) return false;
-                }
-            }
+            // Gerar o hash da senha fornecida
+            string hashedInputPassword = HashPassword(password);
 
-            return true;
+            // Comparar o hash gerado com o hash armazenado
+            return hashedInputPassword == hashedPassword;
         }
     }
 }
