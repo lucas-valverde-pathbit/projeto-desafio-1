@@ -15,8 +15,7 @@ namespace Domain.Services
         Task DeleteProduct(Guid productId);
         Task<bool> ValidateProductStock(Guid productId, int quantity);
         Task<bool> ValidateDeliveryAddress(string deliveryAddress);
-
-        // Adicione o método GetPriceById na interface
         Task<decimal> GetPriceById(Guid productId);
+        Task SaveChangesAsync(); // Método adicionado corretamente
     }
 }

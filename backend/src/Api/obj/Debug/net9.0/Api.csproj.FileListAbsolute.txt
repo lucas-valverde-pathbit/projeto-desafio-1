@@ -473,3 +473,12 @@ C:/Users/Lucas/Desktop/projeto-final/backend/src/api/bin/Debug/net9.0/Newtonsoft
 /api/api/obj/Debug/net9.0/Api.pdb
 /api/api/obj/Debug/net9.0/Api.genruntimeconfig.cache
 /api/api/obj/Debug/net9.0/ref/Api.dll
+/api/api/bin/Debug/net9.0/Microsoft.Extensions.Caching.Abstractions.dll
+/api/api/bin/Debug/net9.0/Microsoft.Extensions.Caching.Memory.dll
+/api/api/bin/Debug/net9.0/Microsoft.Extensions.Configuration.Abstractions.dll
+/api/api/bin/Debug/net9.0/Microsoft.Extensions.DependencyInjection.dll
+/api/api/bin/Debug/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll
+/api/api/bin/Debug/net9.0/Microsoft.Extensions.Logging.dll
+/api/api/bin/Debug/net9.0/Microsoft.Extensions.Logging.Abstractions.dll
+/api/api/bin/Debug/net9.0/Microsoft.Extensions.Options.dll
+/api/api/bin/Debug/net9.0/Microsoft.Extensions.Primitives.dll

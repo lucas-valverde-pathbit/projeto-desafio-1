@@ -15,32 +15,32 @@ services:
   # Development API
   api-dev:
     build:
-      context: .  # Contexto do build
-      dockerfile: Dockerfile.api.dev  # Dockerfile do backend
+      context: .  
+      dockerfile: Dockerfile.api.dev  
     container_name: api-dev
     depends_on:
       - db
     ports:
       - "5064:5064"
     volumes:
-      - ./backend/src:/api  # Volume para mapear código fonte do backend
+      - ./backend/src:/api 
     networks:
       - test-docker-sample-net
     environment:
       PG_CONNECTION_STRING: "postgresql://meuusuario:minhasenha@db:5432/meubanco"
     tty: true
     stdin_open: true
-    command: ["tail", "-f", "/dev/null"]  # Inicia o servidor web com monitoramento de alterações
+    command: ["tail", "-f", "/dev/null"] 
 
-  # Development Web
+  
   web-dev:
     build:
-      context: .  # Contexto do build
-      dockerfile: Dockerfile.web.dev  # Dockerfile do frontend
+      context: .
+      dockerfile: Dockerfile.web.dev 
     container_name: web-dev
     tty: true
     stdin_open: true
-    command: ["tail", "-f", "/dev/null"]  # Comando para rodar o frontend com watch
+    command: ["tail", "-f", "/dev/null"]  
     ports:
       - "8080:8080"  
     depends_on:

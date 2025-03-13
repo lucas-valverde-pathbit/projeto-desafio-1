@@ -101,53 +101,23 @@ namespace Api.Controllers
             }
         }
 
-        [HttpPut("{userId}")]
-        public async Task<IActionResult> UpdateUser(
-            Guid userId,
-            string userName,
-            string userEmail,
-            string userPassword,
-            UserRole role,
-            string? customerName = null,
-            string? customerEmail = null)
+         [HttpPut("update/{userId}")]
+        public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] EditProfileDto editProfileDto)
         {
             try
             {
-                await _service.UpdateUserAsync(userId, userName, userEmail, userPassword, role, customerName, customerEmail);
-                return Ok();
+  
+                UserRole userRole = UserRole.CLIENTE; 
+                await _service.UpdateUserAsync(userId, editProfileDto, userRole);
+
+                return Ok(new { message = "Perfil atualizado com sucesso." });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
 
-        [HttpPut("edit-profile")]
-        public async Task<IActionResult> EditProfile([FromBody] EditProfileDto editProfileDto)
-        {
-            // Validando a entrada
-            if (editProfileDto == null || string.IsNullOrEmpty(editProfileDto.Name) || string.IsNullOrEmpty(editProfileDto.Email))
-            {
-                return BadRequest("Dados inválidos.");
-            }
-
-            try
-            {
-                var userId = Guid.NewGuid(); // Aqui você deve pegar o ID do usuário autenticado, geralmente do JWT ou sessão
-                var result = await _service.EditUserProfileAsync(userId, editProfileDto);
-
-                if (!result)
-                {
-                    return BadRequest("Erro ao atualizar o perfil.");
-                }
-
-                return Ok("Perfil atualizado com sucesso.");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Erro interno: {ex.Message}");
-            }
-        }
 
         public class LoginRequest
         {

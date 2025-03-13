@@ -24,7 +24,8 @@ namespace Infrastructure.Services
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<User?> Authenticate(string username, string password)
+public async Task<User> Authenticate(string username, string password)
+
         {
             var user = await _dbSet
                 .FirstOrDefaultAsync(u => u.UserEmail == username);
@@ -99,40 +100,46 @@ namespace Infrastructure.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateUserAsync(Guid userId, string userName, string userEmail, string userPassword, UserRole role, string? customerName, string? customerEmail)
-        {
-            // Recuperar o usuário
-            var user = await _userRepository.GetByIdAsync(userId);
-            if (user == null)
-            {
-                throw new Exception("Usuário não encontrado.");
-            }
+public async Task UpdateUserAsync(Guid userId, EditProfileDto editProfileDto, UserRole role)
 
-            // Atualizar as informações do usuário
-            user.UserName = userName;
-            user.UserEmail = userEmail;
-            if (!string.IsNullOrEmpty(userPassword))
-            {
-                user.UserPassword = _passwordHasher.HashPassword(userPassword); // Lógica para hash da senha
-            }
-            user.Role = role;
-            user.UpdatedAt = DateTime.UtcNow;
 
-            // Salvar alterações no usuário
-            await _userRepository.UpdateAsync(user);
+{
+    // Recuperar o usuário
+    var user = await _userRepository.GetByIdAsync(userId);
+    if (user == null)
+    {
+        throw new Exception("Usuário não encontrado.");
+    }
 
-            // Se existirem dados do cliente, atualizar também
-            if (!string.IsNullOrEmpty(customerName) || !string.IsNullOrEmpty(customerEmail))
-            {
-                var customer = await _customerRepository.GetByUserIdAsync(userId);
-                if (customer != null)
-                {
-                    customer.CustomerName = customerName;
-                    customer.CustomerEmail = customerEmail;
-                    await _customerRepository.UpdateAsync(customer);
-                }
-            }
-        }
+    // Atualizar as informações do usuário
+    user.UserName = editProfileDto.Name;
+    user.UserEmail = editProfileDto.Email;
+    
+    // Se a senha for fornecida, atualize a senha do usuário
+    if (!string.IsNullOrEmpty(editProfileDto.NewPassword))
+    {
+        user.UserPassword = _passwordHasher.HashPassword(editProfileDto.NewPassword); // Lógica para hash da senha
+    }
+
+     user.Role = UserRole.CLIENTE;  // Atribuindo o novo papel do usuário
+
+    user.UpdatedAt = DateTime.UtcNow;
+
+    // Salvar alterações no usuário
+    await _userRepository.UpdateAsync(user);
+
+    // Atualizar os dados do cliente se houver
+    var customerName = editProfileDto.Name;  // CustomerName igual a UserName
+    var customerEmail = editProfileDto.Email;  // CustomerEmail igual a UserEmail
+
+    var customer = await _customerRepository.GetByUserIdAsync(userId);
+    if (customer != null)
+    {
+        customer.CustomerName = customerName;
+        customer.CustomerEmail = customerEmail;
+        await _customerRepository.UpdateAsync(customer);
+    }
+}
 
         public async Task<bool> EditUserProfileAsync(Guid userId, EditProfileDto editProfileDto)
         {

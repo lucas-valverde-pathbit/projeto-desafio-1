@@ -13,7 +13,7 @@ namespace Domain.Services
         Task<User> Authenticate(string username, string password);
         Task<User?> GetByEmail(string email);
         Task Create(User user);
-        Task UpdateUserAsync(Guid userId, string userName, string userEmail, string userPassword, UserRole role, string? customerName, string? customerEmail);
+        Task UpdateUserAsync(Guid userId, EditProfileDto editProfileDto, UserRole role);
         Task<bool> EditUserProfileAsync(Guid userId, EditProfileDto editProfileDto);
     }
 

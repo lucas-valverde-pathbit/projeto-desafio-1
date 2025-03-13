@@ -7,25 +7,23 @@
     <link rel="stylesheet" href="../css/product.css">
 </head>
 <body>
-
-
-     <div class="container">
-        <!-- Filtro e Botão de Adicionar Produto -->
-        <div class="filter-container">
-            <input type="text" id="filterInput" placeholder="Filtrar produtos..." onkeyup="filterProducts()">
-            <button id="addProductBtn" onclick="showAddProductForm()">Adicionar Produto</button>
-        </div>
-
-        <!-- Lista de Produtos -->
-        <div class="products-list" id="productsList">
+    <!-- Botão de Voltar -->
+    <div class="back-button">
+        <a href="administrador.html">
+            <button class="back-btn">Voltar para Seleção</button>
+        </a>
+    </div>
+        <div id="productsTab" class="tab-content">
+            <div class="ContainerDeProdutos">
+                <div class="filter-container">
+                    <input type="text" id="filterInput" placeholder="Filtrar produtos..." onkeyup="filterProducts()">
+                    <button id="addOrderBtn" onclick="showAddProductForm()">Adicionar Ordem</button>
+                </div>
+        
+            <div class="products-list" id="productsList">
             <!-- Os produtos cadastrados serão exibidos aqui -->
         </div>
 
-       
-        <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-                     <!-- Se Usuario for do tipo administrador -->
-        <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-           <!-- Formulário Flutuante para Cadastro de Produto -->
         <div id="addProductModal" class="product-modal">
             <h3>Cadastrar Produto</h3>
             <form id="productForm" onsubmit="saveProduct(event);">
@@ -75,9 +73,6 @@
                 <button type="button" onclick="closeForm()">Cancelar</button>
             </form>
         </div>
-        <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-                     <!-- Se Usuario for do tipo administrador -->
-        <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
     </div>
 
     <script src="../js/product.js"></script>

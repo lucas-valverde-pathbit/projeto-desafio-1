@@ -327,60 +327,6 @@ function loadOrders() {
         .catch(error => console.error('Erro ao carregar pedidos:', error));
 }
 
-
-// Função para criar o cartão de cada pedido
-function createOrderCard(order) {
-    const card = document.createElement('div');
-    card.classList.add('order-card');
-
-    // Convertendo o status numérico para o valor legível
-    const orderStatus = statusMapping[order.status] || "Status desconhecido";  // Caso o status não seja encontrado
-
-    // Exibindo os dados do pedido
-    card.innerHTML = `
-        <h3>Pedido ID: ${order.id}</h3>
-        <p><strong>Data do Pedido:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
-        <p><strong>Status:</strong> ${orderStatus}</p>  <!-- Status convertido -->
-        <p><strong>CEP de Entrega:</strong> ${order.deliveryZipCode}</p>
-        <p><strong>Endereço de Entrega:</strong> ${order.deliveryAddress}</p>
-
-        <div class="order-items">
-            <h4>Itens do Pedido:</h4>
-            <ul>
-                ${order.orderItems.$values.map(item => {
-                    // Agora os dados são diretamente acessados do item
-                    const productName = item.productName || 'Produto não disponível';
-                    const productDescription = item.productDescription || 'Descrição não disponível';
-                    const productPrice = item.productPrice || 0;
-                    const itemTotal = item.quantity * productPrice;
-
-                    return `
-                        <li>
-                            <strong>ID do Produto:</strong> ${item.productId} <br>
-                            <strong>Nome:</strong> ${productName} <br>
-                            <strong>Descrição:</strong> ${productDescription} <br>
-                            <strong>Quantidade:</strong> ${item.quantity} <br>
-                            <strong>Preço Unitário:</strong> R$ ${productPrice.toFixed(2)} <br>
-                            <strong>Preço Total:</strong> R$ ${itemTotal.toFixed(2)}
-                        </li>
-                    `;
-                }).join('')}
-            </ul>
-        </div>
-
-        <div class="order-summary">
-            <p><strong>Total do Pedido:</strong> R$ ${order.totalAmount.toFixed(2)}</p>
-        </div>
-
-        <div class="actions">
-            <button onclick="editOrder('${order.id}')">Editar</button>
-            <button onclick="deleteOrder('${order.id}')">Excluir</button>
-        </div>
-    `;
-
-    return card;
-}
-
 function createOrderCard(order) {
     const card = document.createElement('div');
     card.classList.add('order-card');
@@ -439,14 +385,26 @@ function submitProfileEdit(event) {
     const currentPassword = document.getElementById('currentPassword').value;
     const newPassword = document.getElementById('newPassword').value;
 
+    // Validação de campos (simples)
+    if (!name || !email || !currentPassword || !newPassword) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+    }
+
     const requestData = {
-        name: name,
-        email: email,
-        currentPassword: currentPassword,
-        newPassword: newPassword
+        userName: name,
+        userEmail: email,
+        userPassword: currentPassword, // Presumindo que 'currentPassword' é a senha atual do usuário
+        newPassword: newPassword,
+        customerName: name, // Se você quer usar o mesmo nome para o customer
+        customerEmail: email // E o mesmo e-mail
     };
+
     const token = localStorage.getItem('token');
-    fetch(`${apiBaseUrl}/api/users/edit-profile`, {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    const userId = userInfo.nameid;
+
+    fetch(`${apiBaseUrl}/api/users/update/${userId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -458,11 +416,15 @@ function submitProfileEdit(event) {
     .then(data => {
         if (data.message === "Perfil atualizado com sucesso.") {
             alert('Perfil atualizado!');
+            // Redirecionar ou atualizar a UI conforme necessário
         } else {
-            alert('Erro ao atualizar o perfil.');
+            alert('Erro ao atualizar o perfil: ' + data.message);
         }
     })
-    .catch(error => console.error('Erro:', error));
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao atualizar o perfil. Tente novamente.');
+    });
 }
 
 function showOrdersTab() {

@@ -7,7 +7,7 @@ window.onload = () => {
 
     // Verificar se o usuário já está autenticado
     if (checkToken()) {
-        window.location.href = 'home.html'; // Redirecionar para home.html se o token estiver presente
+        window.location.href = 'administrador.html'; // Redirecionar para home.html se o token estiver presente
     }
 
     // Função para fazer login

@@ -18,10 +18,12 @@ namespace Infrastructure.Services
             _httpClient = httpClient; // Inicializando o HttpClient
         }
 
-        public async Task<IEnumerable<Product>> GetAll()
+        public async Task SaveChangesAsync()
         {
-            return await _context.Products.ToListAsync();
+            await _context.SaveChangesAsync();
         }
+
+
 
         public async Task<Product?> GetByName(string name)
         {
