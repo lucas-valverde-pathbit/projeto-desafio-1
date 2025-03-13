@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
 
         public async Task<Customer> GetByUserIdAsync(Guid userId)
         {
-            return await _context.Customers.FirstOrDefaultAsync(c => c.Id == userId);
+            return await _context.Customers.FirstOrDefaultAsync(c => c.UserId == userId);
         }
 
         public async Task<bool> UpdateAsync(Customer customer)
@@ -38,11 +38,18 @@ namespace Infrastructure.Repositories
             return await _context.Customers.ToListAsync();
         }
 
-        public async Task<Customer> Add(Customer entity)
+        // Correção do método AddAsync
+        public async Task<Customer> AddAsync(Customer entity)
         {
+            // Adiciona o cliente no contexto
             await _context.Customers.AddAsync(entity);
-            await _context.SaveChangesAsync();
-            return entity;
+            await _context.SaveChangesAsync(); // Salva as mudanças no banco de dados
+            return entity; // Retorna a entidade Customer após ser salva
+        }
+
+        public async Task<Customer> GetByEmailAsync(string email)
+        {
+            return await _context.Customers.FirstOrDefaultAsync(c => c.CustomerEmail == email);
         }
 
         public async Task<bool> Delete(Guid id)

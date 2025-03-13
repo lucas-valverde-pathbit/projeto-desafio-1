@@ -9,5 +9,7 @@ namespace Domain.Repositories
         Task<Customer> GetByUserIdAsync(Guid userId);
         Task<bool> UpdateAsync(Customer customer);
         Task<IEnumerable<Customer>> GetAllAsync();
+        Task<Customer> AddAsync(Customer entity);
+        Task<Customer?> GetByEmailAsync(string email);
     }
 }

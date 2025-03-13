@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Domain.DTOs;
 using Domain.Models;
 using Domain.Services;
+using Domain.Repositories;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
@@ -11,15 +12,19 @@ using System.Security.Claims;
 
 namespace Api.Controllers
 {
-    [ApiController]
+        [ApiController]
     [Route("api/users")]
     public class UserController : BaseController<User, IUserService>
     {
-        public UserController(IUserService service) : base(service){}
-        [HttpGet("status")]
-        public IActionResult Status()
+        // Injeção de dependências para o PasswordHasher e CustomerRepository
+        private readonly IPasswordHasher _passwordHasher;
+        private readonly ICustomerRepository _customerRepository;
+
+        public UserController(IUserService service, IPasswordHasher passwordHasher, ICustomerRepository customerRepository) 
+            : base(service)
         {
-            return Ok(new { status = "API está online e funcionando" });
+            _passwordHasher = passwordHasher;
+            _customerRepository = customerRepository;
         }
 
         [HttpPost("login")]
@@ -67,24 +72,54 @@ namespace Api.Controllers
         [HttpPost("signup")]
         public async Task<IActionResult> Signup([FromBody] SignupRequest request)
         {
-            var existingUser = await _service.GetByEmail(request.SignupEmail);
+         // Verifica se já existe um usuário com o email informado
+         var existingUser = await _service.GetByEmail(request.SignupEmail);
 
-            if (existingUser != null)
-            {
+         if (existingUser != null)
+         {
                 return BadRequest(new { message = "Email já cadastrado." });
-            }
+        }
 
-            var newUser = new User
-            {
+         // Cria um novo usuário
+         var newUser = new User
+         {
                 UserName = request.SignupName,
                 UserEmail = request.SignupEmail,
-                UserPassword = ComputeSha256Hash(request.SignupPassword),
+                UserPassword = _passwordHasher.HashPassword(request.SignupPassword), // Usando PasswordHasher para gerar o hash
                 Role = request.SignupRole
-            };
+         };
 
-            await _service.Create(newUser);
+            // Criação do novo cliente se a role for CLIENTE (enum 1)
+         if (request.SignupRole == UserRole.CLIENTE)
+         {
+              var newCustomer = new Customer
+                {
+                 CustomerName = request.SignupName,
+                 CustomerEmail = request.SignupEmail,
+                   // Após o usuário ser criado, o ID do usuário será atribuído ao cliente
+                 // Criar o cliente no banco de dados
+                };
 
-            return Ok(new { message = "Usuário cadastrado com sucesso!" });
+                // Salvar o cliente no banco de dados
+             await _customerRepository.AddAsync(newCustomer); // Certifique-se de ter um repositório de clientes
+         }
+
+         // Salva o novo usuário no banco de dados
+         await _service.Create(newUser); // Assumindo que _service.Create cria o usuário e o salva no banco
+
+          // Caso a role seja CLIENTE, você pode associar o UserId ao Customer
+          if (request.SignupRole == UserRole.CLIENTE)
+          {
+                var customer = await _customerRepository.GetByEmailAsync(request.SignupEmail);
+                if (customer != null)
+                {
+                   customer.UserId = newUser.Id; // Associando o UserId ao Customer
+                    await _customerRepository.UpdateAsync(customer); // Atualizando o cliente no banco de dados
+               }
+          }
+
+          
+            return Ok(new { message = "Usuário e Cliente cadastrados com sucesso!" });
         }
 
         private string ComputeSha256Hash(string rawData)
