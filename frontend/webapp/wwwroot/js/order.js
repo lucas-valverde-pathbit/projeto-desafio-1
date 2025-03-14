@@ -90,7 +90,7 @@ function createOrderCard(order) {
     return card;
 }
 
-// Função para atualizar o status do pedido
+
 async function updateOrderStatus(orderId, status) {
     const statusMapping = {
         1: 'Enviado',
@@ -102,20 +102,19 @@ async function updateOrderStatus(orderId, status) {
 
     if (confirmAction) {
         try {
-            const response = await fetch(`${apiBaseUrl}/api/orders/${orderId}`, {
+            const response = await fetch(`${apiBaseUrl}/api/orders/update-status/${orderId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    status: status
-                })
+                body: JSON.stringify(status) // Passando o status diretamente
             });
 
             if (!response.ok) {
                 throw new Error('Erro ao atualizar o status do pedido');
             }
 
+            // Atualizar a lista de pedidos ou qualquer outro processo necessário
             loadOrders();
         } catch (error) {
             console.error("Erro ao atualizar status:", error);

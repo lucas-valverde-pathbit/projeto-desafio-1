@@ -39,7 +39,7 @@ namespace Api.Controllers
         public override async Task<ActionResult<IEnumerable<Order>>> GetAll()
         {
             var orders = await _context.Orders
-                .Include(o => o.OrderItems) // Include OrderItems
+                .Include(o => o.OrderItems) 
                 .ToListAsync();
                 
             return Ok(orders);
@@ -186,6 +186,7 @@ namespace Api.Controllers
             }
         }
 
+
         // Agora, o método GetByCustomerId está fora do método CreateOrder.
         [HttpGet("customer/{customerId}")]
         public async Task<ActionResult<IEnumerable<Order>>> GetByCustomerId(Guid customerId)
@@ -209,5 +210,24 @@ namespace Api.Controllers
                 return StatusCode(500, "Erro interno ao buscar as ordens.");
             }
         }
+        // Exemplo no controlador onde o status é atualizado
+        [HttpPut("update-status/{orderId}")]
+        public async Task<ActionResult<Order>> UpdateOrderStatus(Guid orderId, [FromBody] int status)
+        {
+            try
+            {
+                var updatedOrder = await _orderService.UpdateOrderStatus(orderId, status);
+                if (updatedOrder == null)
+                {
+                    return NotFound("Pedido não encontrado.");
+                }
+                return Ok(updatedOrder);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro ao atualizar o status do pedido: {ex.Message}");
+            }
+        }
+
     }
 }

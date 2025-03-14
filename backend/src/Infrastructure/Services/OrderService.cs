@@ -96,7 +96,25 @@ namespace Infrastructure.Services
                 }
             }
         }
-       
+        
+       public async Task<Order?> UpdateOrderStatus(Guid orderId, int status)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null) 
+                return null;
+
+            // Verificando se o status é válido
+            if (Enum.IsDefined(typeof(OrderStatus), status))
+            {
+                order.Status = (OrderStatus)status;  // Convertendo int para enum OrderStatus
+                await _context.SaveChangesAsync();   // Salva as mudanças no banco de dados
+                return order;
+            }
+            else
+            {
+                throw new Exception("Status inválido.");
+            }
+        }
         // Implementação de UpdateOrder
         public new async Task<Order?> UpdateOrder(Guid orderId, OrderUpdateDTO orderUpdateDTO)
         {
