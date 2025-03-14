@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     SignupName: name,
                     SignupEmail: email,
                     SignupPassword: password,
-                    SignupRole: role === 'ADMINISTRADOR' ? 1 : 0 // ADMINISTRADOR = 1, CLIENTE = 0
+                    SignupRole: role === 'ADMINISTRADOR' ? 0 : 1 
                 })
 
 
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 console.log('Cadastro realizado com sucesso:', data);
                 alert(data.message);
-                window.location.href = 'index.html'; // Redireciona para a página de login após o cadastro
+                window.location.href = 'login.html';
             } else {
                 console.error('Erro no cadastro:', data);
                 alert(data.message || 'Erro ao cadastrar usuário. Verifique os dados informados.');

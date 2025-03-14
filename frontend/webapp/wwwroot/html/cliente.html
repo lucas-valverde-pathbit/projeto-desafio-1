@@ -30,6 +30,8 @@
 
                 <button type="submit">Salvar Alterações</button>
             </form>
+                <button onclick="deleteCustomer()">Excluir Conta</button>
+                <button onclick="closePage()">Sair</button>
         </div>
 
 
@@ -72,14 +74,6 @@
                 <label for="houseNumber">Número da Casa:</label>
                 <input type="text" id="houseNumber" required>
     
-                <label for="status">Status:</label>
-                <select id="status" required>
-                    <option value="Pendente">Pendente</option>
-                    <option value="Enviado">Enviado</option>
-                    <option value="Entregue">Entregue</option>
-                    <option value="Cancelado">Cancelado</option>
-                </select>
-                
                 <button type="submit">Finalizar Pedido</button>
                 <button type="button" onclick="closeOrderModal()">Cancelar</button>
             </form>

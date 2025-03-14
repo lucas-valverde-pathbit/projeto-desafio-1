@@ -1,3 +1,14 @@
+window.addEventListener('DOMContentLoaded', () => {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
+    if (!userInfo || userInfo.role !== 'CLIENTE') {
+        window.location.href = 'sem-permissao.html';
+    }
+    loadOrders();
+    loadProducts();
+    getCustomerByEmail();
+});
+
 const apiBaseUrl = window.location.hostname === "localhost"
     ? "http://localhost:5064"  // URL de desenvolvimento
     : "http://api:5064"; // URL para produção
@@ -146,7 +157,7 @@ function submitOrder(event) {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     const deliveryAddress = document.getElementById('deliveryAddress').value;
     const deliveryZipCode = document.getElementById('cep').value;
-    const status = document.getElementById('status').value;
+    const status = "Pendente";
 
     // Mapeando os status para o formato esperado pelo backend
     const statusMapping = {
@@ -208,7 +219,7 @@ function submitOrder(event) {
         CustomerId: userInfo.nameId,
         DeliveryAddress: deliveryAddress,
         DeliveryZipCode: deliveryZipCode,
-        Status: orderStatus,  // Passando o status mapeado
+        Status: orderStatus,
         TotalAmount: totalAmount,
         OrderItems: orderItems
     };
@@ -254,12 +265,6 @@ function fetchAddress() {
         })
         .catch(error => console.error('Erro:', error));
 }
-const statusMapping = {
-    0: "Pendente",
-    1: "Enviado",
-    2: "Entregue",
-    3: "Cancelado"
-};
 
 // Função para buscar o cliente pelo e-mail armazenado no localStorage e salvar o CustomerId
 function getCustomerByEmail() {
@@ -331,11 +336,17 @@ function createOrderCard(order) {
     const card = document.createElement('div');
     card.classList.add('order-card');
 
-    // Exibindo os dados do pedido
+    const statusMapping = {
+        0: "Pendente",
+        1: "Enviado",
+        2: "Entregue",
+        3: "Cancelado"
+    };
+    const Status = statusMapping[order.status];
     card.innerHTML = `
         <h3>Pedido ID: ${order.id}</h3>
         <p><strong>Data do Pedido:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
-        <p><strong>Status:</strong> ${order.status}</p>
+        <p><strong>Status:</strong> ${Status}</p>
         <p><strong>CEP de Entrega:</strong> ${order.deliveryZipCode}</p>
         <p><strong>Endereço de Entrega:</strong> ${order.deliveryAddress}</p>
 
@@ -368,8 +379,7 @@ function createOrderCard(order) {
         </div>
 
         <div class="actions">
-            <button onclick="editOrder('${order.id}')">Editar</button>
-            <button onclick="deleteOrder('${order.id}')">Excluir</button>
+            ${Status === "Pendente" ? `<button onclick="deleteOrder('${order.id}')">Excluir</button>` : ''}
         </div>
     `;
 
@@ -377,56 +387,154 @@ function createOrderCard(order) {
 }
 
 
-function submitProfileEdit(event) {
-    event.preventDefault();
-    
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const currentPassword = document.getElementById('currentPassword').value;
-    const newPassword = document.getElementById('newPassword').value;
+async function updateProduct(event) {
+    const productId = document.getElementById("editProductId").value; // ID do produto a ser atualizado
+    const updatedProduct = {
+        productName: document.getElementById("editProductName").value,
+        productDescription: document.getElementById("editProductDescription").value,
+        productPrice: parseFloat(document.getElementById("editProductPrice").value),
+        productStockQuantity: parseInt(document.getElementById("editProductStockQuantity").value)
+    };
 
-    // Validação de campos (simples)
-    if (!name || !email || !currentPassword || !newPassword) {
-        alert("Por favor, preencha todos os campos.");
+    // Validação simples para garantir que todos os campos estejam preenchidos corretamente
+    if (!updatedProduct.productName || !updatedProduct.productDescription || isNaN(updatedProduct.productPrice) || isNaN(updatedProduct.productStockQuantity)) {
+        alert("Por favor, preencha todos os campos corretamente.");
         return;
     }
 
-    const requestData = {
-       Name: name,
-        Email: email,
-        CurrentPassword: currentPassword, // Presumindo que 'currentPassword' é a senha atual do usuário
-        NewPassword: newPassword,
-    };
+    console.log("Dados do produto para atualização:", updatedProduct);
 
-    const token = localStorage.getItem('token');
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    const userId = userInfo.nameid;
+    try {
+        // Enviar a requisição PUT para a API, com o ID do produto na URL
+        const response = await fetch(`${apiBaseUrl}/api/products/update/${productId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedProduct)
+        });
+        
+        const result = await response.json();
+        
+        // Log para verificar o status da resposta
+        console.log('Resposta da API:', response);
+        console.log('Resultado da API:', result);
+        
+        if (!response.ok) {
+            throw new Error('Erro ao atualizar produto.');
+        }
 
-    fetch(`${apiBaseUrl}/api/users/update/${userId}`, {
-        method: 'PUT',
+        // Exibir uma mensagem de sucesso
+        alert('Produto atualizado com sucesso!');
+        
+        closeForm();
+        reloadProductList();
+
+    } catch (error) {
+        console.error("Erro ao atualizar produto:", error);
+        alert("Erro ao atualizar produto. Por favor, tente novamente.");
+    }
+}
+
+function deleteOrder(orderId) {
+    const token = localStorage.getItem('token'); // Pegue o token de onde ele está armazenado (ex: localStorage, sessionStorage)
+
+    // Verifique se o token existe
+    if (!token) {
+        console.error('Token de autenticação não encontrado.');
+        return;
+    }
+
+    // Defina a URL da API para excluir o pedido
+    const url = `${apiBaseUrl}/api/orders/${orderId}`; // Ajuste para o seu endpoint real
+
+    // Envie a requisição DELETE
+    fetch(url, {
+        method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(requestData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message === "Perfil atualizado com sucesso.") {
-            alert('Perfil atualizado!');
-            // Redirecionar ou atualizar a UI conforme necessário
-        } else {
-            alert('Erro ao atualizar o perfil: ' + data.message);
         }
     })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Erro ao excluir o pedido.');
+        }
+
+        if (response.status === 204) {
+            console.log("Pedido excluído com sucesso");
+            return;
+        }
+
+        return response.json();
+    })
+    .then(data => {
+        if (data) {
+            console.log('Pedido excluído com sucesso:', data);
+            location.reload();
+        }
+
+    })
     .catch(error => {
-        console.error('Erro:', error);
-        alert('Erro ao atualizar o perfil. Tente novamente.');
+        console.error('Erro ao tentar excluir o pedido:', error);
     });
 }
 
+function deleteCustomer() {
+    const token = localStorage.getItem('token'); 
+    const customerId = localStorage.getItem('customerId');
+    const userId = JSON.parse(userinfo).nameid; 
+    if (!token || !customerId || !userId) {
+        console.error('Token de autenticação ou IDs não encontrados.');
+        return;
+    }
+
+    const customerUrl = `${apiBaseUrl}/api/customers/${customerId}`; 
+    fetch(customerUrl, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Erro ao excluir o cliente.');
+        }
+
+        console.log('Cliente excluído com sucesso');
+
+        // Se a exclusão do cliente for bem-sucedida, então exclua o usuário
+        const userUrl = `${apiBaseUrl}/api/users/${userId}`; // URL para excluir o user
+        return fetch(userUrl, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Erro ao excluir o usuário.');
+        }
+
+        console.log('Usuário excluído com sucesso');
+
+    
+        location.reload();
+    })
+    .catch(error => {
+        console.error('Erro ao tentar excluir o cliente e/ou usuário:', error);
+    });
+}
+
+function closePage(){
+    localStorage.clear();
+    location.reload();
+}
+
 function showOrdersTab() {
-    // Remover a classe 'active' das abas e ocultá-las
     document.getElementById('productsTab').classList.remove('active');
     document.getElementById('ordersTab').classList.add('active');
     document.getElementById('profileTab').classList.remove('active');
@@ -437,11 +545,10 @@ function showOrdersTab() {
 }
 
 function showProductsTab() {
-    // Remover a classe 'active' das abas e ocultá-las
     document.getElementById('ordersTab').classList.remove('active');
     document.getElementById('productsTab').classList.add('active');
     document.getElementById('profileTab').classList.remove('active');
-    // Atualizar o estilo dos botões (opcional)
+
     document.getElementById('productsTabBtn').classList.add('active');
     document.getElementById('ordersTabBtn').classList.remove('active');
     document.getElementById('profileTabBtn').classList.remove('active');
@@ -463,9 +570,6 @@ function showProfileTab() {
     document.getElementById("newPassword").value = ' ';
 }
 
-
-
 showProductsTab();
 
-document.addEventListener('DOMContentLoaded', loadProducts);
-document.addEventListener('DOMContentLoaded', loadOrders);
+

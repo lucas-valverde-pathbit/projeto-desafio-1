@@ -1,3 +1,14 @@
+window.addEventListener('DOMContentLoaded', () => {
+    // Recupera as informações do usuário do localStorage
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
+    // Se o usuário não estiver logado ou não for um administrador, redireciona para o login
+    if (!userInfo || userInfo.role !== 'ADMINISTRADOR') {
+        // Redireciona para a página de login
+        window.location.href = 'sem-permissao.html';
+    }
+});
+
 const apiBaseUrl = window.location.hostname === "localhost"
     ? "http://localhost:5064"
     : "http://api:5064";       
@@ -51,6 +62,7 @@ function createProductCard(product) {
 
     // Exibindo os dados do produto
     card.innerHTML = `
+     <div>
         <h3 class="product-name">${product.productName}</h3>
         <p class="product-description"><strong>Descrição:</strong> ${product.productDescription || 'Descrição não disponível'}</p>
         <p><strong>Preço:</strong> R$ ${product.productPrice.toFixed(2)}</p>
@@ -58,6 +70,7 @@ function createProductCard(product) {
         <div class="actions">
             <button class="edit-button" onclick="editProduct('${product.id}')">Editar</button>
         </div>
+     <div>
     `;
 
     return card;
@@ -97,7 +110,8 @@ async function editProduct(productId) {
 }
 
 
-async function updateProduct() {
+async function updateProduct(event) {
+    // Coleta os dados do produto a partir dos campos do formulário
     const productId = document.getElementById("editProductId").value;
     const updatedProduct = {
         productName: document.getElementById("editProductName").value,
@@ -106,9 +120,17 @@ async function updateProduct() {
         productStockQuantity: parseInt(document.getElementById("editProductStockQuantity").value)
     };
 
+    // Verificação simples para garantir que os campos obrigatórios não estejam vazios
+    if (!updatedProduct.productName || !updatedProduct.productDescription || isNaN(updatedProduct.productPrice) || isNaN(updatedProduct.productStockQuantity)) {
+        alert("Por favor, preencha todos os campos corretamente.");
+        return;
+    }
+
+    // Exibe os dados para fins de depuração (remova em produção)
     console.log("Dados do produto para atualização:", updatedProduct);
 
     try {
+        // Chama a API para atualizar o produto
         const response = await fetch(`${apiBaseUrl}/api/products/update/${productId}`, {
             method: 'PUT',
             headers: {
@@ -117,6 +139,7 @@ async function updateProduct() {
             body: JSON.stringify(updatedProduct)  // Envia os dados do produto como JSON
         });
 
+        // Verifica se a resposta da API foi bem-sucedida
         if (!response.ok) {
             throw new Error('Erro ao atualizar produto.');
         }
@@ -124,11 +147,14 @@ async function updateProduct() {
         const result = await response.json();
         console.log("Produto atualizado com sucesso:", result);
 
-        // Fechar o formulário e recarregar a lista de produtos
-        loadProducts(); 
+        // Exibir uma mensagem de sucesso
+        alert('Produto atualizado com sucesso!');
+        
+        location.reload();
         closeForm();
     } catch (error) {
         console.error("Erro ao atualizar produto:", error);
+        alert("Erro ao atualizar produto. Por favor, tente novamente.");
     }
 }
 
@@ -146,9 +172,7 @@ async function deleteProduct() {
         if (!response.ok) {
             throw new Error('Erro ao excluir produto.');
         }
-
-        console.log("Produto excluído com sucesso");
-
+        location.reload();
         closeForm();
 
     } catch (error) {
@@ -178,8 +202,7 @@ async function saveProduct(event) {
         if (!response.ok) {
             throw new Error("Erro ao salvar produto.");
         }
-
-        loadProducts(); 
+        location.reload();
         closeForm();
     } catch (error) {
         console.error('Erro ao salvar produto:', error);

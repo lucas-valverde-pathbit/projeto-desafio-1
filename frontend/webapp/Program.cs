@@ -17,7 +17,7 @@ app.UseHttpsRedirection();
 // Permitir servir arquivos estáticos
 app.UseStaticFiles();
 
-app.MapGet("/", () => Results.Redirect("/html/home.html")); 
+app.MapGet("/", () => Results.Redirect("/html/login.html")); 
 
 
 // Mapeia Razor Pages, se necessário

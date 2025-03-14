@@ -17,7 +17,7 @@
             <div class="ContainerDeProdutos">
                 <div class="filter-container">
                     <input type="text" id="filterInput" placeholder="Filtrar produtos..." onkeyup="filterProducts()">
-                    <button id="addOrderBtn" onclick="showAddProductForm()">Adicionar Ordem</button>
+                    <button id="addProductBtn" onclick="showAddProductForm()">Adicionar Produto</button>
                 </div>
         
             <div class="products-list" id="productsList">
@@ -64,7 +64,7 @@
                 <label for="editProductStockQuantity">Quantidade em Estoque:</label>
                 <input type="number" id="editProductStockQuantity" required>
 
-                <!-- Botão de Salvar Alterações -->
+             
                 <button type="submit">Salvar Alterações</button>
 
                 <!-- Botão de Excluir Produto -->
@@ -76,6 +76,5 @@
     </div>
 
     <script src="../js/product.js"></script>
-    <!-- <script type="module" src="../js/auth.js"></script> -->
 </body>
 </html>

@@ -7,61 +7,26 @@
     <title>Criar Pedido</title>
 </head>
 <body>
-    <!-- Botão de Voltar -->
+<div class="container">
     <div class="back-button">
         <a href="administrador.html">
             <button class="back-btn">Voltar para Seleção</button>
         </a>
     </div>
 
-    <div class="container">
-        <!-- Filtro e Botão de Adicionar Ordens -->
+    
         <div class="filter-container">
             <input type="text" id="filterInput" placeholder="Filtrar Ordens..." onkeyup="filterOrders()">
-            <button id="addOrderBtn" onclick="showAddOrderForm()">Adicionar Ordem</button>
         </div>
-        <div id="orderCardContainer"></div>
-        <!-- Modal para Adicionar Pedido -->
-        <div id="addOrderModal" class="order-modal">
-            <h1>Criar Pedido</h1>
-            <form id="orderForm" onsubmit="saveOrder(event)">
-                <!-- Campos do formulário -->
-                <label for="cep">CEP:</label>
-                <input type="text" id="cep" required onblur="fetchAddress()">
+    
 
-                <label for="deliveryAddress">Endereço:</label>
-                <input type="text" id="deliveryAddress" required readonly>
 
-                <label for="houseNumber">Número da Casa:</label>
-                <input type="text" id="houseNumber" required>
-
-                <label for="status">Status:</label>
-                <select id="status" required>
-                    <option value="">Selecione o status</option>
-                    <option value="Pendente">Pendente</option>
-                    <option value="Enviado">Enviado</option>
-                    <option value="Entregue">Entregue</option>
-                    <option value="Cancelado">Cancelado</option>
-                </select>
-
-                <div id="productFields">
-                    <!-- Campos de produto serão adicionados dinamicamente -->
-                </div>
-
-                <button type="button" onclick="addProductField()">Adicionar Produto</button>
-
-                <button type="submit">Adicionar Pedido</button>
-            </form>
+    <div id="ordersTab" class="tab-content">
+        <div class="orders-list" id="ordersList">
+            <!-- as orders cadastrados serão exibidos aqui -->
         </div>
-
-        <!-- Modal de Seleção de Produto -->
-        <div id="productSelectionModal" class="order-modal" style="display:none;">
-            <h3>Selecionar Produto</h3>
-            <div id="productListContainer"></div>
-            <button type="button" onclick="closeProductSelection()">Fechar</button>
-        </div>
-    </div>
-
+     </div>
+</div>
     <script src="../js/order.js"></script>
 </body>
 </html>

@@ -137,7 +137,7 @@ namespace Api
             app.UseStaticFiles(); 
 
             // Redirecionar a rota raiz para index.html
-            app.MapGet("/", () => Results.Redirect("/html/home.html")); 
+            app.MapGet("/", () => Results.Redirect("/html/login.html")); 
             app.MapControllers();
 
             // Iniciar o servidor
