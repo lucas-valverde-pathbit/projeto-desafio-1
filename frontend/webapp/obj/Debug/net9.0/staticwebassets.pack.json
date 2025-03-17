@@ -5,6 +5,10 @@
       "PackagePath": "staticwebassets/webapp.kxtxn8qnj6.bundle.scp.css"
     },
     {
+      "Id": "/web/wwwroot/css/administrador.css",
+      "PackagePath": "staticwebassets/css/administrador.css"
+    },
+    {
       "Id": "/web/wwwroot/css/cliente.css",
       "PackagePath": "staticwebassets/css/cliente.css"
     },

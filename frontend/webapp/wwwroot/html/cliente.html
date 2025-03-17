@@ -7,85 +7,78 @@
     <link rel="stylesheet" href="../css/cliente.css">
 </head>
 <body>
-        <header>
-            <button id="profileTabBtn" onclick="showProfileTab()">Perfil</button>
-            <button id="ordersTabBtn" onclick="showOrdersTab()">Pedidos</button>
-            <button id="productsTabBtn" onclick="showProductsTab()">Produtos</button>
-        </header>
+    <header>
+        <button id="profileTabBtn" onclick="showProfileTab()">Perfil</button>
+        <button id="ordersTabBtn" onclick="showOrdersTab()">Pedidos</button>
+        <button id="productsTabBtn" onclick="showProductsTab()">Produtos</button>
+    </header>
 
-        <div id="profileTab" class="tab-content">
-            <h2>Editar Perfil</h2>
-            <form id="profileForm" onsubmit="submitProfileEdit(event)">
-                <label for="name">Nome:</label>
-                <input type="text" id="name" required>
+    <div id="profileTab" class="tab-content">
+        <h2>Editar Perfil</h2>
+        <form id="profileForm" onsubmit="submitProfileEdit(event)">
+            <label for="name">Nome:</label>
+            <input type="text" id="name" required>
 
-                <label for="email">Email:</label>
-                <input type="email" id="email" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
 
-                <label for="currentPassword">Senha Atual:</label>
-                <input type="password" id="currentPassword" required>
+            <label for="currentPassword">Senha Atual:</label>
+            <input type="password" id="currentPassword" required>
 
-                <label for="newPassword">Nova Senha:</label>
-                <input type="password" id="newPassword">
+            <label for="newPassword">Nova Senha:</label>
+            <input type="password" id="newPassword">
 
-                <button type="submit">Salvar Alterações</button>
-            </form>
-                <button onclick="deleteCustomer()">Excluir Conta</button>
-                <button onclick="closePage()">Sair</button>
-        </div>
-
-
-        <div id="productsTab" class="tab-content">
-            <div class="ContainerDeProdutos">
-                <div class="filter-container">
-                    <input type="text" id="filterInput" placeholder="Filtrar produtos..." onkeyup="filterProducts()">
-                </div>
-        
-            <div class="products-list" id="productsList">
-            <!-- Os produtos cadastrados serão exibidos aqui -->
-        </div>
-       </div>
-    
-     <div id="container">
-        <!-- Seção de produtos -->
-        <div id="productFields">
-            <!-- Campos de produto serão adicionados dinamicamente -->
-        </div>
-    
-        <!-- Comanda -->
-        <div id="orderSummary">
-            <h2>Comanda</h2>
-            <div id="orderDetails">
-                <!-- A comanda será exibida aqui -->
-            </div>
-            <button onclick="openOrderModal()">Finalizar Compra</button>
-        </div>
-    
-        <!-- Modal de Finalização do Pedido -->
-        <div id="orderModal" class="order-modal">
-            <h1>Criar Pedido</h1>
-            <form id="orderForm" onsubmit="submitOrder(event)">
-                <label for="cep">CEP:</label>
-                <input type="text" id="cep" required onblur="fetchAddress()">
-    
-                <label for="deliveryAddress">Endereço:</label>
-                <input type="text" id="deliveryAddress" required>
-    
-                <label for="houseNumber">Número da Casa:</label>
-                <input type="text" id="houseNumber" required>
-    
-                <button type="submit">Finalizar Pedido</button>
-                <button type="button" onclick="closeOrderModal()">Cancelar</button>
-            </form>
-        </div>
-     </div>
- </div>
-
- <div id="ordersTab" class="tab-content">
-    <div class="orders-list" id="ordersList">
-        <!-- as orders cadastrados serão exibidos aqui -->
+            <button type="submit">Salvar Alterações</button>
+        </form>
+        <button onclick="deleteCustomer()">Excluir Conta</button>
+        <button onclick="closePage()">Sair</button>
     </div>
- </div>
+
+    <div id="productsTab" class="tab-content">
+        <div class="ContainerDeProdutos">
+            <div class="filter-container">
+                <input type="text" id="filterInput" placeholder="Filtrar produtos..." onkeyup="filterProducts()">
+            </div>
+
+            <div class="main-container">
+                <div class="products-list" id="productsList">
+                    <!-- Os produtos cadastrados serão exibidos aqui -->
+                </div>
+
+                <div id="orderSummary">
+                    <h2>Comanda</h2>
+                    <div id="orderDetails">
+                        <!-- A comanda será exibida aqui -->
+                    </div>
+                    <button onclick="openOrderModal()">Finalizar Compra</button>
+                </div>
+            </div>
+
+            <!-- Modal de Finalização do Pedido -->
+            <div id="orderModal" class="order-modal">
+                <h1>Criar Pedido</h1>
+                <form id="orderForm" onsubmit="submitOrder(event)">
+                    <label for="cep">CEP:</label>
+                    <input type="text" id="cep" required onblur="fetchAddress()">
+
+                    <label for="deliveryAddress">Endereço:</label>
+                    <input type="text" id="deliveryAddress" required>
+
+                    <label for="houseNumber">Número da Casa:</label>
+                    <input type="text" id="houseNumber" required>
+
+                    <button type="submit">Finalizar Pedido</button>
+                    <button type="button" onclick="closeOrderModal()">Cancelar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="ordersTab" class="tab-content">
+        <div class="orders-list" id="ordersList">
+            <!-- as orders cadastrados serão exibidos aqui -->
+        </div>
+    </div>
     <script src="../js/cliente.js"></script>
 </body>
 </html>

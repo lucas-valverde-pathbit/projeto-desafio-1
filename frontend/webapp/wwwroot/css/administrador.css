@@ -1,0 +1,63 @@
+/* Estilos gerais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #f9f9f9;
+    color: #333;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Título */
+h1 {
+    color: #6a1b9a; /* Roxo escuro */
+    font-size: 28px;
+    margin-bottom: 30px;
+}
+
+/* Contêiner de navegação */
+.nav-container {
+    display: flex;
+    justify-content: center; /* Centraliza os botões */
+    align-items: center;
+    height: 60vh; /* Faz com que a navegação ocupe uma boa parte da tela */
+}
+
+/* Estilo da lista de navegação */
+ul {
+    list-style-type: none;
+    display: flex;
+    gap: 20px; /* Espaço entre os botões */
+}
+
+/* Estilo dos botões de navegação */
+.nav-btn {
+    background-color: #6a1b9a; /* Roxo escuro */
+    color: white;
+    border: none;
+    padding: 50px 0; /* Botões quadrados */
+    width: 150px;
+    height: 150px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+/* Efeito de hover no botão */
+.nav-btn:hover {
+    background-color: #7b1fa2; /* Roxo médio */
+    transform: scale(1.1); /* Aumenta o botão levemente */
+}
+
+/* Adicionando animação de foco */
+.nav-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(106, 27, 154, 0.6); /* Efeito de foco para acessibilidade */
+}

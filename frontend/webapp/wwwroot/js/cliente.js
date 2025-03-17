@@ -378,9 +378,12 @@ function createOrderCard(order) {
             <p><strong>Total do Pedido:</strong> R$ ${order.totalAmount.toFixed(2)}</p>
         </div>
 
-        <div class="actions">
-            ${Status === "Pendente" ? `<button onclick="deleteOrder('${order.id}')">Excluir</button>` : ''}
-        </div>
+           <div class="actions">
+             ${ (Status === "Pendente" || Status === "Cancelado") ? 
+                 `<button onclick="deleteOrder('${order.id}')">Excluir</button>` : 
+             '' 
+             }
+           </div>
     `;
 
     return card;
