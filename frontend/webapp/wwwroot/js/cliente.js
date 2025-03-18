@@ -485,8 +485,56 @@ function deleteCustomer() {
 function closePage(){
     localStorage.clear();
     location.reload();
-}
 
+}
+function submitProfileEdit(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+
+    // Validação de campos (simples)
+    if (!name || !email || !currentPassword || !newPassword) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+    }
+
+    const requestData = {
+       Name: name,
+       Email: email,
+       CurrentPassword: currentPassword, 
+       NewPassword: newPassword,
+    };
+
+    const token = localStorage.getItem('token');
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    const userId = userInfo.nameid;
+
+    fetch(`${apiBaseUrl}/api/users/update/${userId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === "Perfil atualizado com sucesso.") {
+            alert('Perfil atualizado!');
+            localStorage.clear();
+            location.reload();
+        } else {
+            alert('Erro ao atualizar o perfil: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao atualizar o perfil. Tente novamente.');
+    });
+}
 
 function showOrdersTab() {
     document.getElementById('productsTab').classList.remove('active');
@@ -525,5 +573,3 @@ function showProfileTab() {
 }
 
 showProductsTab();
-
-

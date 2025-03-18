@@ -130,7 +130,7 @@ public async Task<IActionResult> Login([FromBody] LoginRequest request)
           }
 
           
-            return Ok(new { message = "Usuário cadastrado com sucesso!" });
+            return Ok(new { message = "Usuário e Cliente cadastrados com sucesso!" });
         }
 
         private string ComputeSha256Hash(string rawData)

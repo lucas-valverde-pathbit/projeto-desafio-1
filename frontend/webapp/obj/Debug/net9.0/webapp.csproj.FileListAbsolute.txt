@@ -228,5 +228,5 @@ C:/Users/Lucas/Desktop/projeto-final/frontend/webapp/obj/Debug/net9.0/ref/webapp
 /web/obj/Debug/net9.0/compressed/xi1q3laagh-tpnhq8w96i.gz
 /web/obj/Debug/net9.0/compressed/ab6gg2fw5t-65jtfemmwv.gz
 /web/obj/Debug/net9.0/compressed/meyma2nozw-agbxgiht4a.gz
-/web/obj/Debug/net9.0/compressed/wtz1xtjzka-ztny96j1zm.gz
 /web/obj/Debug/net9.0/compressed/t5wy6fix6t-6twkhphbgh.gz
+/web/obj/Debug/net9.0/compressed/wtz1xtjzka-15mudu6jrx.gz
