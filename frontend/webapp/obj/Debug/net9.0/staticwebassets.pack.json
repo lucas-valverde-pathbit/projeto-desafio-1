@@ -9,10 +9,6 @@
       "PackagePath": "staticwebassets/css/cliente.css"
     },
     {
-      "Id": "/web/wwwroot/css/customer.css",
-      "PackagePath": "staticwebassets/css/customer.css"
-    },
-    {
       "Id": "/web/wwwroot/css/home.css",
       "PackagePath": "staticwebassets/css/home.css"
     },
