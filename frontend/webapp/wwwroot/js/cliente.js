@@ -387,54 +387,54 @@ function createOrderCard(order) {
 }
 
 
-async function updateProduct(event) {
-    const productId = document.getElementById("editProductId").value; // ID do produto a ser atualizado
-    const updatedProduct = {
-        productName: document.getElementById("editProductName").value,
-        productDescription: document.getElementById("editProductDescription").value,
-        productPrice: parseFloat(document.getElementById("editProductPrice").value),
-        productStockQuantity: parseInt(document.getElementById("editProductStockQuantity").value)
-    };
+// async function updateProduct(event) {
+//     const productId = document.getElementById("editProductId").value; // ID do produto a ser atualizado
+//     const updatedProduct = {
+//         productName: document.getElementById("editProductName").value,
+//         productDescription: document.getElementById("editProductDescription").value,
+//         productPrice: parseFloat(document.getElementById("editProductPrice").value),
+//         productStockQuantity: parseInt(document.getElementById("editProductStockQuantity").value)
+//     };
 
-    // Validação simples para garantir que todos os campos estejam preenchidos corretamente
-    if (!updatedProduct.productName || !updatedProduct.productDescription || isNaN(updatedProduct.productPrice) || isNaN(updatedProduct.productStockQuantity)) {
-        alert("Por favor, preencha todos os campos corretamente.");
-        return;
-    }
+//     // Validação simples para garantir que todos os campos estejam preenchidos corretamente
+//     if (!updatedProduct.productName || !updatedProduct.productDescription || isNaN(updatedProduct.productPrice) || isNaN(updatedProduct.productStockQuantity)) {
+//         alert("Por favor, preencha todos os campos corretamente.");
+//         return;
+//     }
 
-    console.log("Dados do produto para atualização:", updatedProduct);
+//     console.log("Dados do produto para atualização:", updatedProduct);
 
-    try {
-        // Enviar a requisição PUT para a API, com o ID do produto na URL
-        const response = await fetch(`${apiBaseUrl}/api/products/update/${productId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedProduct)
-        });
+//     try {
+//         // Enviar a requisição PUT para a API, com o ID do produto na URL
+//         const response = await fetch(`${apiBaseUrl}/api/products/update/${productId}`, {
+//             method: 'PUT',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify(updatedProduct)
+//         });
         
-        const result = await response.json();
+//         const result = await response.json();
         
-        // Log para verificar o status da resposta
-        console.log('Resposta da API:', response);
-        console.log('Resultado da API:', result);
+//         // Log para verificar o status da resposta
+//         console.log('Resposta da API:', response);
+//         console.log('Resultado da API:', result);
         
-        if (!response.ok) {
-            throw new Error('Erro ao atualizar produto.');
-        }
+//         if (!response.ok) {
+//             throw new Error('Erro ao atualizar produto.');
+//         }
 
-        // Exibir uma mensagem de sucesso
-        alert('Produto atualizado com sucesso!');
+//         // Exibir uma mensagem de sucesso
+//         alert('Produto atualizado com sucesso!');
         
-        closeForm();
-        reloadProductList();
+//         closeForm();
+//         reloadProductList();
 
-    } catch (error) {
-        console.error("Erro ao atualizar produto:", error);
-        alert("Erro ao atualizar produto. Por favor, tente novamente.");
-    }
-}
+//     } catch (error) {
+//         console.error("Erro ao atualizar produto:", error);
+//         alert("Erro ao atualizar produto. Por favor, tente novamente.");
+//     }
+// }
 
 function deleteOrder(orderId) {
     const token = localStorage.getItem('token'); // Pegue o token de onde ele está armazenado (ex: localStorage, sessionStorage)
@@ -533,6 +533,7 @@ function closePage(){
     localStorage.clear();
     location.reload();
 }
+
 
 function showOrdersTab() {
     document.getElementById('productsTab').classList.remove('active');
