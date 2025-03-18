@@ -49,10 +49,6 @@
       "PackagePath": "staticwebassets/html/cliente.html"
     },
     {
-      "Id": "/web/wwwroot/html/customer.html",
-      "PackagePath": "staticwebassets/html/customer.html"
-    },
-    {
       "Id": "/web/wwwroot/html/login.html",
       "PackagePath": "staticwebassets/html/login.html"
     },
@@ -79,10 +75,6 @@
     {
       "Id": "/web/wwwroot/js/cliente.js",
       "PackagePath": "staticwebassets/js/cliente.js"
-    },
-    {
-      "Id": "/web/wwwroot/js/customer.js",
-      "PackagePath": "staticwebassets/js/customer.js"
     },
     {
       "Id": "/web/wwwroot/js/login.js",

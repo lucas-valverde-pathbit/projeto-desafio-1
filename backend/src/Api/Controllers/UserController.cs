@@ -133,37 +133,38 @@ public async Task<IActionResult> Login([FromBody] LoginRequest request)
             return Ok(new { message = "Usuário e Cliente cadastrados com sucesso!" });
         }
 
-        private string ComputeSha256Hash(string rawData)
+ [HttpPut("update/{userId}")]
+public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] EditProfileDto editProfileDto)
+{
+    try
+    {
+        var user = await _service.GetById(userId);
+
+        if (user == null)
         {
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-                StringBuilder builder = new StringBuilder();
-                foreach (byte b in bytes)
-                {
-                    builder.Append(b.ToString("x2"));
-                }
-                return builder.ToString();
-            }
+            return NotFound(new { message = "Usuário não encontrado." });
         }
 
-         [HttpPut("update/{userId}")]
-        public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] EditProfileDto editProfileDto)
+        
+        if (!_passwordHasher.VerifyPassword(editProfileDto.CurrentPassword, user.UserPassword))
         {
-            try
-            {
+            return BadRequest(new { message = "Senha atual inválida." });
+        }
+
   
-                UserRole userRole = UserRole.CLIENTE; 
-                await _service.UpdateUserAsync(userId, editProfileDto, userRole);
-
-                return Ok(new { message = "Perfil atualizado com sucesso." });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+        if (!string.IsNullOrEmpty(editProfileDto.NewPassword))
+        {
+            user.UserPassword = _passwordHasher.HashPassword(editProfileDto.NewPassword);
+            await _service.UpdateUserAsync(userId, editProfileDto, user.Role);
         }
 
+        return Ok(new { message = "Perfil atualizado com sucesso." });
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new { message = ex.Message });
+    }
+}
 
         public class LoginRequest
         {
