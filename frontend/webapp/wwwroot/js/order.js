@@ -10,7 +10,23 @@ const apiBaseUrl = window.location.hostname === "localhost"
     ? "http://localhost:5064" 
     : "http://api:5064"; 
 
-// Função para carregar os pedidos
+
+    function filterOrders() {
+        const filter = document.getElementById("filterInput").value.toLowerCase();
+        const orderCards = document.getElementsByClassName("order-card");
+    
+        Array.from(orderCards).forEach(card => {
+            const orderId = card.querySelector(".order-id").innerText.toLowerCase();
+            const orderStatus = card.querySelector(".order-status").innerText.toLowerCase();
+    
+            if (orderId.includes(filter) || orderStatus.includes(filter)) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    }
+
 function loadOrders() {
     fetch(`${apiBaseUrl}/api/orders`)
         .then(response => response.json())
@@ -47,9 +63,9 @@ function createOrderCard(order) {
     };
     const Status = statusMapping[order.status];
     card.innerHTML = `
-        <h3>Pedido ID: ${order.id}</h3>
+        <h3 class="order-id">Pedido ID: ${order.id}</h3>
         <p><strong>Data do Pedido:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
-        <p><strong>Status:</strong> ${Status}</p>
+        <p class="order-status"><strong>Status:</strong> ${Status}</p>
         <p><strong>CEP de Entrega:</strong> ${order.deliveryZipCode}</p>
         <p><strong>Endereço de Entrega:</strong> ${order.deliveryAddress}</p>
         <p><strong>Id Do Cliente:</strong> ${order.customerId}</p>
@@ -121,6 +137,7 @@ async function updateOrderStatus(orderId, status) {
         }
     }
 }
+
 
 
 document.addEventListener('DOMContentLoaded', loadOrders);

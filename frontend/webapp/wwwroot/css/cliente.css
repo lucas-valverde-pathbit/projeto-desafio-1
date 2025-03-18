@@ -92,10 +92,38 @@ button[type="submit"]:hover {
 }
 
 /* Lista de produtos e pedidos */
-#productListContainer, #orderCardContainer {
+.main-container {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+    justify-content: space-between; /* Distribui os itens com espaço entre eles */
+    width: 100%; /* Garante que o contêiner ocupe toda a largura */
+}
+
+/* Ajusta a largura da lista de produtos para 70% */
+#productListContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Ajusta para que os produtos se agrupem corretamente */
+    gap: 20px; /* Adiciona espaço entre os itens */
+    width: 70%; /* Ajusta para 70% da largura da página */
+}
+
+/* Ajusta a largura da área de resumo do pedido para 30% */
+#orderSummary {
+    border: 2px solid #ddd;
+    max-height: 300px;
+    overflow-y: auto;
+    width: 30%; /* Ajusta para 30% da largura da página */
+    margin-left: 0;
+}
+
+/* Ajusta o espaço entre os elementos dentro do .main-container */
+.main-container > * {
+    margin: 0 5%; /* Adiciona 5% de margem em cada lado dos elementos dentro do container */
+}
+
+.products-list {
+    max-height: 450px; /* Aumenta a altura máxima para 450px */
+    overflow-y: auto; /* Adiciona scroll vertical */
+    margin-bottom: 10px; /* Reduz a margem inferior para 10px */
 }
 
 .product-item, .order-card {
@@ -103,7 +131,7 @@ button[type="submit"]:hover {
     border: 1px solid #ddd;
     border-radius: 8px;
     width: 100%;
-    max-width: 300px;
+    max-width: 95%; /* Aumenta a largura máxima para 95% */
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s;
@@ -178,11 +206,11 @@ button:hover {
 }
 
 .product-field button {
-    background-color: #f44336; /* Vermelho para Remover */
+    background-color: #c362ff; /* Vermelho para Remover */
 }
 
 .product-field button:hover {
-    background-color: #d32f2f;
+    background-color: #c362ff;
 }
 
 /* Responsividade */
@@ -197,6 +225,7 @@ button:hover {
         max-width: none;
     }
 }
+
 /* Estilos para o modal flutuante */
 .order-modal {
     display: none; /* Começa escondido */
@@ -221,19 +250,21 @@ button:hover {
 button {
     padding: 10px;
     margin-top: 10px;
-    background-color: #28a745;
+    background-color: #9e01ff;
     color: white;
     border: none;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #218838;
+    background-color: #9e01ff;
 }
+
 button.active {
-    background-color: #4CAF50;
+    background-color: #9e01ff;
     color: white;
 }
+
 .tab-content {
     display: none; /* Por padrão, todas as abas estão ocultas */
     opacity: 0;
