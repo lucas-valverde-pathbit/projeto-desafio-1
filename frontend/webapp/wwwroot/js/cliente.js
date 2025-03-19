@@ -155,7 +155,14 @@ function submitOrder(event) {
 
     // Obtendo as informações do usuário
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    
+    // Obtendo os valores dos campos
     const deliveryAddress = document.getElementById('deliveryAddress').value;
+    const houseNumber = document.getElementById('houseNumber').value;
+    
+    // Combina o endereço com o número da casa
+    const fullAddress = `${deliveryAddress}, Número ${houseNumber}`;
+
     const deliveryZipCode = document.getElementById('cep').value;
     const status = "Pendente";
 
@@ -177,7 +184,7 @@ function submitOrder(event) {
     const orderStatus = statusMapping[status];
 
     // Verificando se os campos obrigatórios foram preenchidos
-    if (!deliveryAddress || !status) {
+    if (!fullAddress || !status) {
         alert('Por favor, preencha todos os campos obrigatórios!');
         return;
     }
@@ -217,7 +224,7 @@ function submitOrder(event) {
 
     const orderData = {
         CustomerId: userInfo.nameId,
-        DeliveryAddress: deliveryAddress,
+        DeliveryAddress: fullAddress,  // Usando o endereço completo aqui
         DeliveryZipCode: deliveryZipCode,
         Status: orderStatus,
         TotalAmount: totalAmount,
@@ -250,6 +257,7 @@ function submitOrder(event) {
         alert('Erro ao criar pedido: ' + error.message);
     });
 }
+
 function fetchAddress() {
     const cep = document.getElementById('cep').value;
     fetch(`${apiBaseUrl}/api/cep/${cep}`)
@@ -307,7 +315,6 @@ function loadOrders() {
         return;
     }
 
-  
     fetch(`${apiBaseUrl}/api/orders/customer/${customerId}`) // Adicionando o filtro de CustomerId
         .then(response => response.json())
         .then(response => {
@@ -416,6 +423,7 @@ function deleteOrder(orderId) {
 
         if (response.status === 204) {
             console.log("Pedido excluído com sucesso");
+            loadOrders();
             return;
         }
 
