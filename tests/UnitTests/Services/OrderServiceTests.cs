@@ -1,131 +1,200 @@
-using Xunit;
-using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Moq;
+using Xunit;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Infrastructure.Services;
-using Infrastructure.Data;
-
 using Domain.Models;
-using Domain.DTOs;
+using Infrastructure.Data;
 using Domain.Services;
+using Domain.DTOs;
 
 namespace UnitTests.Services
 {
     public class OrderServiceTests
     {
-        private readonly Mock<IOrderItemService> _mockOrderItemService;
+        private readonly Mock<AppDbContext> _mockDbContext;
         private readonly Mock<ICustomerService> _mockCustomerService;
         private readonly Mock<IProductService> _mockProductService;
+        private readonly Mock<ILogger<OrderService>> _mockLogger;
+        private readonly Mock<HttpClient> _mockHttpClient;
         private readonly OrderService _orderService;
 
         public OrderServiceTests()
         {
-            _mockOrderItemService = new Mock<IOrderItemService>();
+            _mockDbContext = new Mock<AppDbContext>();
             _mockCustomerService = new Mock<ICustomerService>();
             _mockProductService = new Mock<IProductService>();
-            var mockContext = new Mock<AppDbContext>(); // Mock do contexto do banco de dados
-            _orderService = new OrderService(mockContext.Object, _mockOrderItemService.Object, _mockCustomerService.Object, _mockProductService.Object);
+            _mockLogger = new Mock<ILogger<OrderService>>();
+            _mockHttpClient = new Mock<HttpClient>();
+
+            _orderService = new OrderService(
+                _mockDbContext.Object,
+                _mockCustomerService.Object,
+                _mockProductService.Object,
+                _mockLogger.Object,
+                _mockHttpClient.Object
+            );
         }
 
-        [Theory]
-        [InlineData("123 Main St", true)]
-        [InlineData("", false)]
-        [InlineData(null, false)]
-        public async Task CreateOrder_ShouldReturnOrder_WhenValidDataProvided(string deliveryAddress, bool expected)
+        [Fact]
+        public async Task CreateOrder_ShouldThrowException_WhenCustomerNotFound()
         {
             // Arrange
             var customerId = Guid.NewGuid();
-            var items = new List<OrderItemDTO>();
-            _mockCustomerService.Setup(s => s.GetById(customerId)).ReturnsAsync(new Customer());
+            var productId = Guid.NewGuid();
+            var quantity = 1;
+            var deliveryAddress = "12345678"; // Exemplo de endereço
 
-            // Act
-            var result = await _orderService.CreateOrder(customerId, items, deliveryAddress);
+            _mockCustomerService.Setup(s => s.GetById(customerId)).ReturnsAsync((Customer?)null);
 
-            // Assert
-            Assert.Equal(expected, result != null);
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<Exception>(() => 
+                _orderService.CreateOrder(customerId, productId, quantity, deliveryAddress));
+            Assert.Equal("Cliente não encontrado ou não autorizado.", exception.Message);
         }
 
         [Fact]
-        public async Task UpdateOrder_ShouldReturnUpdatedOrder_WhenValidDataProvided()
+        public async Task CreateOrder_ShouldThrowException_WhenInvalidAddress()
         {
             // Arrange
-            var orderId = Guid.NewGuid();
-            var orderUpdateDTO = new OrderUpdateDTO { Status = "Enviado", DeliveryAddress = "456 Another St" };
-            var existingOrder = new Order { Id = orderId, Status = OrderStatus.Pendente, DeliveryAddress = "123 Main St" };
+            var customerId = Guid.NewGuid();
+            var productId = Guid.NewGuid();
+            var quantity = 1;
+            var deliveryAddress = "12345678"; // Exemplo de endereço
 
-            _mockOrderItemService.Setup(s => s.GetById(orderId)).ReturnsAsync(existingOrder);
+            var customer = new Customer { User = new User { Role = UserRole.CLIENTE } };
+            _mockCustomerService.Setup(s => s.GetById(customerId)).ReturnsAsync(customer);
+
+            _mockHttpClient.Setup(c => c.GetAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage { StatusCode = System.Net.HttpStatusCode.BadRequest });
+
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<Exception>(() => 
+                _orderService.CreateOrder(customerId, productId, quantity, deliveryAddress));
+            Assert.Equal("Endereço de entrega inválido.", exception.Message);
+        }
+
+        [Fact]
+        public async Task CreateOrder_ShouldThrowException_WhenProductStockIsInsufficient()
+        {
+            // Arrange
+            var customerId = Guid.NewGuid();
+            var productId = Guid.NewGuid();
+            var quantity = 10;
+            var deliveryAddress = "12345678"; // Exemplo de endereço
+
+            var customer = new Customer { User = new User { Role = UserRole.CLIENTE } };
+            var product = new Product { ProductStockQuantity = 5 };
+            
+            _mockCustomerService.Setup(s => s.GetById(customerId)).ReturnsAsync(customer);
+            _mockHttpClient.Setup(c => c.GetAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage { StatusCode = System.Net.HttpStatusCode.OK });
+            _mockProductService.Setup(s => s.GetById(productId)).ReturnsAsync(product);
+
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<Exception>(() => 
+                _orderService.CreateOrder(customerId, productId, quantity, deliveryAddress));
+            Assert.Equal($"Estoque insuficiente para o produto {productId}.", exception.Message);
+        }
+
+        [Fact]
+        public async Task CreateOrder_ShouldCreateOrderSuccessfully()
+        {
+            // Arrange
+            var customerId = Guid.NewGuid();
+            var productId = Guid.NewGuid();
+            var quantity = 2;
+            var deliveryAddress = "12345678"; // Exemplo de endereço
+
+            var customer = new Customer { User = new User { Role = UserRole.CLIENTE } };
+            var product = new Product { ProductPrice = 100, ProductStockQuantity = 10 };
+            var order = new Order
+            {
+                CustomerId = customerId,
+                DeliveryAddress = deliveryAddress,
+                OrderItems = new List<OrderItem>()
+            };
+
+            var orderItem = new OrderItem
+            {
+                ProductId = productId,
+                Quantity = quantity,
+                ProductPrice = product.ProductPrice,
+                Order = order
+            };
+
+            _mockCustomerService.Setup(s => s.GetById(customerId)).ReturnsAsync(customer);
+            _mockHttpClient.Setup(c => c.GetAsync(It.IsAny<string>())).ReturnsAsync(new HttpResponseMessage { StatusCode = System.Net.HttpStatusCode.OK });
+            _mockProductService.Setup(s => s.GetById(productId)).ReturnsAsync(product);
+            _mockProductService.Setup(s => s.GetPriceById(productId)).ReturnsAsync(product.ProductPrice);
+
+            _mockDbContext.Setup(c => c.Orders.AddAsync(It.IsAny<Order>(), default)).Returns(Task.CompletedTask);
+            _mockDbContext.Setup(c => c.SaveChangesAsync(default)).ReturnsAsync(1);
 
             // Act
-            var result = await _orderService.UpdateOrder(orderId, orderUpdateDTO);
+            var result = await _orderService.CreateOrder(customerId, productId, quantity, deliveryAddress);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(orderUpdateDTO.Status, result.Status);
-            Assert.Equal(orderUpdateDTO.DeliveryAddress, result.DeliveryAddress);
+            Assert.Equal(2, result.OrderItems.Count);
+            Assert.Equal(200, result.TotalAmount);
         }
 
         [Fact]
-        public async Task CalculateTotalPrice_ShouldReturnTotal_WhenOrderExists()
+        public async Task UpdateOrderStatus_ShouldReturnNull_WhenOrderNotFound()
         {
             // Arrange
             var orderId = Guid.NewGuid();
-            var orderItemDTO = new OrderItemDTO { ProductId = Guid.NewGuid(), Quantity = 2 };
-            var orderItems = new List<OrderItemDTO> { orderItemDTO };
-            var totalPrice = 100m;
+            _mockDbContext.Setup(c => c.Orders.FindAsync(orderId)).ReturnsAsync((Order?)null);
 
-            _mockOrderItemService.Setup(s => s.CalculateTotalPrice(orderId)).ReturnsAsync(totalPrice);
+            // Act
+            var result = await _orderService.UpdateOrderStatus(orderId, (int)OrderStatus.Entregue);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task UpdateOrderStatus_ShouldUpdateStatusSuccessfully()
+        {
+            // Arrange
+            var orderId = Guid.NewGuid();
+            var order = new Order { Status = OrderStatus.Pendente };
+            _mockDbContext.Setup(c => c.Orders.FindAsync(orderId)).ReturnsAsync(order);
+            _mockDbContext.Setup(c => c.SaveChangesAsync(default)).ReturnsAsync(1);
+
+            // Act
+            var result = await _orderService.UpdateOrderStatus(orderId, (int)OrderStatus.Entregue);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(OrderStatus.Entregue, result.Status);
+        }
+
+        [Fact]
+        public async Task CalculateTotalPrice_ShouldReturnCorrectTotal()
+        {
+            // Arrange
+            var orderId = Guid.NewGuid();
+            var order = new Order
+            {
+                OrderItems = new List<OrderItem>
+                {
+                    new OrderItem { ProductPrice = 100, Quantity = 2 },
+                    new OrderItem { ProductPrice = 50, Quantity = 1 }
+                }
+            };
+
+            _mockDbContext.Setup(c => c.Orders.FindAsync(orderId)).ReturnsAsync(order);
 
             // Act
             var result = await _orderService.CalculateTotalPrice(orderId);
 
             // Assert
-            Assert.Equal(totalPrice, result);
+            Assert.Equal(250, result);
         }
-
-        [Fact]
-        public async Task ValidateOrder_ShouldReturnFalse_WhenOrderDoesNotExist()
-        {
-            // Arrange
-            var orderId = Guid.NewGuid();
-
-            _mockOrderItemService.Setup(s => s.GetById(orderId)).ReturnsAsync((Order)null);
-
-            // Act
-            var result = await _orderService.ValidateOrder(orderId);
-
-            // Assert
-            Assert.False(result);
-        }
-
-        [Fact]
-        public async Task ValidateProductStock_ShouldReturnFalse_WhenStockIsInsufficient()
-        {
-            // Arrange
-            var productId = Guid.NewGuid();
-            var quantity = 5;
-
-            _mockProductService.Setup(s => s.ValidateProductStock(productId, quantity)).ReturnsAsync(false);
-
-            // Act
-            var result = await _orderService.ValidateProductStock(productId, quantity);
-
-            // Assert
-            Assert.False(result);
-        }
-
-        [Fact]
-        public async Task ValidateDeliveryAddress_ShouldReturnTrue_WhenAddressIsValid()
-        {
-            // Arrange
-            var deliveryAddress = "123 Main St";
-
-            // Act
-            var result = await _orderService.ValidateDeliveryAddress(deliveryAddress);
-
-            // Assert
-            Assert.True(result);
-        }
-
     }
 }
