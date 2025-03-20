@@ -1,4 +1,5 @@
 using System;
+using Domain.Models;
 
 namespace Domain.DTOs
 {
@@ -7,6 +8,6 @@ namespace Domain.DTOs
         public string SignupName { get; set; }
         public string SignupEmail { get; set; }
         public string SignupPassword { get; set; }
-        public string SignupRole { get; set; }
+        public UserRole SignupRole { get; set; }
     }
 }

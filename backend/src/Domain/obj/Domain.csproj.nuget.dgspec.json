@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/api/Domain/Domain.csproj": {}
+    "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj": {}
   },
   "projects": {
-    "/api/Domain/Domain.csproj": {
+    "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/api/Domain/Domain.csproj",
+        "projectUniqueName": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "/api/Domain/Domain.csproj",
-        "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/api/Domain/obj/",
+        "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj",
+        "packagesPath": "C:\\Users\\Lucas\\.nuget\\packages\\",
+        "outputPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/root/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Lucas\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -38,7 +38,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.200"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net9.0": {
@@ -59,7 +59,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

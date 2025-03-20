@@ -2,18 +2,19 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Domain.Services;
 
 namespace Api.Controllers
 {
     [ApiController]
     [Route("api/cep")]
-    public class CepController : ControllerBase  // Agora herda de ControllerBase
+    public class CepController : ControllerBase
     {
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientWrapper _httpClientWrapper;
 
-        public CepController(HttpClient httpClient)
+        public CepController(IHttpClientWrapper httpClientWrapper)
         {
-            _httpClient = httpClient;
+            _httpClientWrapper = httpClientWrapper;
         }
 
         [HttpGet("{cep}")]
@@ -26,7 +27,8 @@ namespace Api.Controllers
 
             try
             {
-                var response = await _httpClient.GetAsync($"https://ceprapido.com.br/api/addresses/{cep}");
+                var response = await _httpClientWrapper.GetAsync($"https://ceprapido.com.br/api/addresses/{cep}");
+
                 response.EnsureSuccessStatusCode();
                 
                 var content = await response.Content.ReadAsStringAsync();

@@ -300,8 +300,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>try76s6a13</Fingerprint>
-      <Integrity>yUHfqYBWbq91v0jlh6GJU0t/8/Us6sUG+KimG1CintQ=</Integrity>
+      <Fingerprint>hsr093msjy</Fingerprint>
+      <Integrity>sYEshFhgro85zaOzDr7naeS0j4ycHtxBwYOoKg33vp8=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\cliente.js'))</OriginalItemSpec>
@@ -336,13 +336,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-<<<<<<< HEAD
       <Fingerprint>6twkhphbgh</Fingerprint>
       <Integrity>GmitvcydqolGHyPHtfjXWte1ejmxCt+IuT5pCVC5TtY=</Integrity>
-=======
-      <Fingerprint>e5iekdb9jg</Fingerprint>
-      <Integrity>ntQBTITjcCXWsXc32X8gpDg+H7E8JZCxaJgST2uNtVw=</Integrity>
->>>>>>> testes/unitarios
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\order.js'))</OriginalItemSpec>

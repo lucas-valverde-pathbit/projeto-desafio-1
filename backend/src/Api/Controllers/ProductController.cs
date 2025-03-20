@@ -53,10 +53,6 @@ namespace Api.Controllers
    [HttpPut("update/{id}")]
 public async Task<IActionResult> UpdateProductById(string id, [FromBody] Product product)
 {
-    // Log para verificar os dados recebidos
-    Console.WriteLine($"ID recebido: {id}");
-    Console.WriteLine($"Dados do produto recebido: {product.ProductName}, {product.ProductDescription}, {product.ProductPrice}, {product.ProductStockQuantity}");
-
     if (!Guid.TryParse(id, out Guid parsedId))
     {
         return BadRequest("ID fornecido não é válido.");

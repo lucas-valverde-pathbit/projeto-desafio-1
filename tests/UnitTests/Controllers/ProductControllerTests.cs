@@ -1,72 +1,187 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 using Moq;
 using Api.Controllers;
-using Domain.Services;
 using Domain.Models;
+using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging; // Adicionando a diretiva para ILogger
+using System;
+using System.Threading.Tasks;
 
 namespace UnitTests.Controllers
 {
     public class ProductControllerTests
     {
-        private readonly ProductController _controller;
-        private readonly Mock<IProductService> _mockProductService;
-        private readonly Mock<ILogger<ProductController>> _mockLogger;
+        private readonly Mock<IProductService> _productServiceMock;
+        private readonly ProductController _productController;
 
         public ProductControllerTests()
         {
-            _mockProductService = new Mock<IProductService>();
-            _controller = new ProductController(_mockProductService.Object); // Ajustando para usar apenas um argumento
+            _productServiceMock = new Mock<IProductService>();
+            _productController = new ProductController(_productServiceMock.Object);
         }
 
+        // Teste 1: Criar um produto com sucesso
         [Fact]
-        public async Task CreateProduct_ReturnsOk_WhenProductIsCreated()
+        public async Task CriacaoDeProdutoTemQueRetornarCreatedQuandoProdutoCriadoEhValido()
         {
             // Arrange
             var product = new Product
             {
-                Id = Guid.NewGuid(),
-                ProductName = "Test Product",
-                ProductPrice = 100.00M,
-                ProductStockQuantity = 10
+                ProductName = "Produto A",
+                ProductDescription = "Descrição do Produto A",
+                ProductPrice = 10.0M,
+                ProductStockQuantity = 100
             };
 
-            _mockProductService.Setup(service => service.CreateProduct(product))
-                .ReturnsAsync(product);
+            var createdProduct = new Product
+            {
+                Id = Guid.NewGuid(),
+                ProductName = "Produto A",
+                ProductDescription = "Descrição do Produto A",
+                ProductPrice = 10.0M,
+                ProductStockQuantity = 100
+            };
+
+            // Simula o serviço criando o produto
+            _productServiceMock.Setup(service => service.CreateProduct(It.IsAny<Product>()))
+                               .ReturnsAsync(createdProduct);
 
             // Act
-            var result = await _controller.CreateProduct(product);
+            var result = await _productController.CreateProduct(product);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<Product>(okResult.Value);
+            var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result);
+            var returnValue = Assert.IsType<Product>(createdAtActionResult.Value);
+            Assert.Equal(createdProduct.Id, returnValue.Id);
+            Assert.Equal("Produto A", returnValue.ProductName);
         }
 
+        // Teste 2: Criar um produto com dados nulos
         [Fact]
-        public async Task CreateProduct_ReturnsBadRequest_WhenProductIsInvalid()
+        public async Task CriacaoDeProdutoTemQueRetornarBadRequestQuandoProdutoEhNulo()
         {
-            // Arrange
-            var product = new Product
-            {
-                Id = Guid.NewGuid(),
-                ProductName = "Test Product",
-                ProductPrice = 100.00M,
-                ProductStockQuantity = 10
-            };
-
-            _mockProductService.Setup(service => service.CreateProduct(product))
-                .ThrowsAsync(new Exception("Invalid product request"));
-
             // Act
-            var result = await _controller.CreateProduct(product);
+            var result = await _productController.CreateProduct(null);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Invalid product request", ((dynamic)badRequestResult.Value).message);
+            Assert.Equal("Produto não pode ser nulo.", badRequestResult.Value);
+        }
+
+        [Fact]
+        public async Task GetByIdTemQueRetornarProdutoQuandoEleExiste()
+        {
+            // Arrange
+            var productId = Guid.NewGuid();
+            var product = new Product { Id = productId, ProductName = "Test Product", ProductDescription = "Description", ProductPrice = 100, ProductStockQuantity = 50 };
+            _productServiceMock.Setup(service => service.GetById(productId)).ReturnsAsync(product); // Produto encontrado
+
+            // Act
+            var result = await _productController.GetById(productId);
+
+            // Assert
+            var actionResult = Assert.IsType<ActionResult<Product>>(result);  // Verifica se é ActionResult<Product>
+            var okResult = actionResult.Result as OkObjectResult;  // Verifica se é um OkObjectResult
+            Assert.NotNull(okResult);  // Verifica se o resultado é Ok
+            var returnValue = Assert.IsType<Product>(okResult.Value);  // Verifica se o valor retornado é um produto
+            Assert.Equal(product.ProductName, returnValue.ProductName); // Verifica se o nome do produto está correto
+            Assert.Equal(product.ProductPrice, returnValue.ProductPrice); // Verifica se o preço do produto está correto
+        }
+
+
+        // Teste 4: Obter um produto por ID que não existe
+        [Fact]
+        public async Task GetByIdTemQueRetornarNotFoundQuandoProdutoNaoEhEncontrado()
+        {
+            // Arrange
+            var productId = Guid.NewGuid();
+            _productServiceMock.Setup(service => service.GetById(productId)).ReturnsAsync((Product)null); // Produto não encontrado
+
+            // Act
+            var result = await _productController.GetById(productId);
+
+            // Assert
+            var actionResult = Assert.IsType<ActionResult<Product>>(result);  // Verifica se é ActionResult<Product>
+            var notFoundResult = actionResult.Result as NotFoundObjectResult;  // Verifica se é um NotFoundObjectResult
+            Assert.NotNull(notFoundResult);  // Verifica se o resultado é NotFound
+            Assert.Equal("Produto não encontrado.", notFoundResult.Value);  // Verifica a mensagem de erro
+        }
+
+
+        // Teste 5: Atualizar um produto com sucesso
+        [Fact]
+        public async Task UpdateProductByIdTemQueRetornarOkQuandoProdutoEhAtualizado()
+        {
+            // Arrange
+            var productId = Guid.NewGuid().ToString();
+            var updatedProduct = new Product
+            {
+                Id = Guid.NewGuid(),
+                ProductName = "Produto Atualizado",
+                ProductDescription = "Descrição Atualizada",
+                ProductPrice = 20.0M,
+                ProductStockQuantity = 50
+            };
+
+            var existingProduct = new Product
+            {
+                Id = Guid.NewGuid(),
+                ProductName = "Produto Antigo",
+                ProductDescription = "Descrição Antiga",
+                ProductPrice = 10.0M,
+                ProductStockQuantity = 100
+            };
+
+            _productServiceMock.Setup(service => service.GetById(It.IsAny<Guid>()))
+                               .ReturnsAsync(existingProduct);
+            _productServiceMock.Setup(service => service.SaveChangesAsync())
+                               .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _productController.UpdateProductById(productId, updatedProduct);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<Product>(okResult.Value);
+            Assert.Equal(updatedProduct.ProductName, returnValue.ProductName);
+            Assert.Equal(updatedProduct.ProductPrice, returnValue.ProductPrice);
+        }
+
+        // Teste 6: Atualizar um produto com ID inválido
+        [Fact]
+        public async Task UpdateProductByIdDeveRetornarBadRequestQuandoIdEhInvalido()
+        {
+            // Act
+            var result = await _productController.UpdateProductById("invalid-id", new Product());
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("ID fornecido não é válido.", badRequestResult.Value);
+        }
+
+        // Teste 7: Atualizar um produto que não existe
+        [Fact]
+        public async Task UpdateProductByIdTemQueRetornarNotFoundQuandoProdutoNaoExiste()
+        {
+            // Arrange
+            var productId = Guid.NewGuid().ToString();
+            var updatedProduct = new Product
+            {
+                ProductName = "Produto Atualizado",
+                ProductDescription = "Descrição Atualizada",
+                ProductPrice = 20.0M,
+                ProductStockQuantity = 50
+            };
+
+            _productServiceMock.Setup(service => service.GetById(It.IsAny<Guid>()))
+                               .ReturnsAsync((Product)null);
+
+            // Act
+            var result = await _productController.UpdateProductById(productId, updatedProduct);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal("Produto não encontrado.", notFoundResult.Value);
         }
     }
 }

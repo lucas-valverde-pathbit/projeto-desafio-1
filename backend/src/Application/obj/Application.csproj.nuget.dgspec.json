@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/api/Application/Application.csproj": {}
+    "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Application\\Application.csproj": {}
   },
   "projects": {
-    "/api/Application/Application.csproj": {
+    "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Application\\Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/api/Application/Application.csproj",
+        "projectUniqueName": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Application\\Application.csproj",
         "projectName": "Application",
-        "projectPath": "/api/Application/Application.csproj",
-        "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/api/Application/obj/",
+        "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Application\\Application.csproj",
+        "packagesPath": "C:\\Users\\Lucas\\.nuget\\packages\\",
+        "outputPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Application\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/root/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Lucas\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -26,11 +26,11 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "/api/Domain/Domain.csproj": {
-                "projectPath": "/api/Domain/Domain.csproj"
+              "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj": {
+                "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj"
               },
-              "/api/Infrastructure/Infrastructure.csproj": {
-                "projectPath": "/api/Infrastructure/Infrastructure.csproj"
+              "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\Infrastructure.csproj"
               }
             }
           }
@@ -45,7 +45,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.200"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net9.0": {
@@ -76,21 +76,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "/api/Domain/Domain.csproj": {
+    "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/api/Domain/Domain.csproj",
+        "projectUniqueName": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "/api/Domain/Domain.csproj",
-        "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/api/Domain/obj/",
+        "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj",
+        "packagesPath": "C:\\Users\\Lucas\\.nuget\\packages\\",
+        "outputPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/root/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Lucas\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -114,7 +114,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.200"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net9.0": {
@@ -135,21 +135,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "/api/Infrastructure/Infrastructure.csproj": {
+    "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/api/Infrastructure/Infrastructure.csproj",
+        "projectUniqueName": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\Infrastructure.csproj",
         "projectName": "Infrastructure",
-        "projectPath": "/api/Infrastructure/Infrastructure.csproj",
-        "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/api/Infrastructure/obj/",
+        "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\Lucas\\.nuget\\packages\\",
+        "outputPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/root/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Lucas\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -161,8 +161,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "/api/Domain/Domain.csproj": {
-                "projectPath": "/api/Domain/Domain.csproj"
+              "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj": {
+                "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj"
               }
             }
           }
@@ -177,7 +177,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.200"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net9.0": {
@@ -208,7 +208,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

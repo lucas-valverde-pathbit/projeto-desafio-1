@@ -1,228 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/api/api/Api.csproj": {}
+    "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Api\\Api.csproj": {}
   },
   "projects": {
-    "/api/Application/Application.csproj": {
+    "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Api\\Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/api/Application/Application.csproj",
-        "projectName": "Application",
-        "projectPath": "/api/Application/Application.csproj",
-        "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/api/Application/obj/",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "/root/.nuget/NuGet/NuGet.Config"
-        ],
-        "originalTargetFrameworks": [
-          "net9.0"
-        ],
-        "sources": {
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "net9.0": {
-            "targetAlias": "net9.0",
-            "projectReferences": {
-              "/api/Domain/Domain.csproj": {
-                "projectPath": "/api/Domain/Domain.csproj"
-              },
-              "/api/Infrastructure/Infrastructure.csproj": {
-                "projectPath": "/api/Infrastructure/Infrastructure.csproj"
-              }
-            }
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.200"
-      },
-      "frameworks": {
-        "net9.0": {
-          "targetAlias": "net9.0",
-          "dependencies": {
-            "Microsoft.EntityFrameworkCore": {
-              "target": "Package",
-              "version": "[9.0.1, )"
-            },
-            "Npgsql.EntityFrameworkCore.PostgreSQL": {
-              "target": "Package",
-              "version": "[9.0.3, )"
-            }
-          },
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.201/PortableRuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "/api/Domain/Domain.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "/api/Domain/Domain.csproj",
-        "projectName": "Domain",
-        "projectPath": "/api/Domain/Domain.csproj",
-        "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/api/Domain/obj/",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "/root/.nuget/NuGet/NuGet.Config"
-        ],
-        "originalTargetFrameworks": [
-          "net9.0"
-        ],
-        "sources": {
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "net9.0": {
-            "targetAlias": "net9.0",
-            "projectReferences": {}
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.200"
-      },
-      "frameworks": {
-        "net9.0": {
-          "targetAlias": "net9.0",
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.201/PortableRuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "/api/Infrastructure/Infrastructure.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "/api/Infrastructure/Infrastructure.csproj",
-        "projectName": "Infrastructure",
-        "projectPath": "/api/Infrastructure/Infrastructure.csproj",
-        "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/api/Infrastructure/obj/",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "/root/.nuget/NuGet/NuGet.Config"
-        ],
-        "originalTargetFrameworks": [
-          "net9.0"
-        ],
-        "sources": {
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "net9.0": {
-            "targetAlias": "net9.0",
-            "projectReferences": {
-              "/api/Domain/Domain.csproj": {
-                "projectPath": "/api/Domain/Domain.csproj"
-              }
-            }
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.200"
-      },
-      "frameworks": {
-        "net9.0": {
-          "targetAlias": "net9.0",
-          "dependencies": {
-            "Microsoft.EntityFrameworkCore": {
-              "target": "Package",
-              "version": "[9.0.1, )"
-            },
-            "Npgsql.EntityFrameworkCore.PostgreSQL": {
-              "target": "Package",
-              "version": "[9.0.3, )"
-            }
-          },
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.201/PortableRuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "/api/api/Api.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "/api/api/Api.csproj",
+        "projectUniqueName": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Api\\Api.csproj",
         "projectName": "Api",
-        "projectPath": "/api/api/Api.csproj",
-        "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/api/api/obj/",
+        "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Api\\Api.csproj",
+        "packagesPath": "C:\\Users\\Lucas\\.nuget\\packages\\",
+        "outputPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/root/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Lucas\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -234,14 +26,14 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "/api/Application/Application.csproj": {
-                "projectPath": "/api/Application/Application.csproj"
+              "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Application\\Application.csproj": {
+                "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Application\\Application.csproj"
               },
-              "/api/Domain/Domain.csproj": {
-                "projectPath": "/api/Domain/Domain.csproj"
+              "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj": {
+                "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj"
               },
-              "/api/Infrastructure/Infrastructure.csproj": {
-                "projectPath": "/api/Infrastructure/Infrastructure.csproj"
+              "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\Infrastructure.csproj"
               }
             }
           }
@@ -256,7 +48,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.200"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net9.0": {
@@ -320,7 +112,215 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Application\\Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Application\\Application.csproj",
+        "projectName": "Application",
+        "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Application\\Application.csproj",
+        "packagesPath": "C:\\Users\\Lucas\\.nuget\\packages\\",
+        "outputPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Application\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Lucas\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj": {
+                "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj"
+              },
+              "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.1, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[9.0.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj",
+        "projectName": "Domain",
+        "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj",
+        "packagesPath": "C:\\Users\\Lucas\\.nuget\\packages\\",
+        "outputPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Lucas\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\Infrastructure.csproj",
+        "projectName": "Infrastructure",
+        "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\Lucas\\.nuget\\packages\\",
+        "outputPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Lucas\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj": {
+                "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.1, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[9.0.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

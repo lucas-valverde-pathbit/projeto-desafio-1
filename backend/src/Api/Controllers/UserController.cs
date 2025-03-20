@@ -28,61 +28,61 @@ namespace Api.Controllers
         }
 
        [HttpPost("login")]
-public async Task<IActionResult> Login([FromBody] LoginRequest request)
-{
-    Console.WriteLine($"Tentativa de login para: {request.LoginEmail}");
-    
-    // Recupera o usuário pelo email
-    var user = await _service.GetByEmail(request.LoginEmail);
-    
-    // Se o usuário não existir ou não for encontrado
-    if (user == null)
-    {
-        Console.WriteLine("Autenticação falhou - usuário não encontrado ou credenciais inválidas");
-        return Unauthorized(new { message = "Erro ao fazer login. Verifique suas credenciais." });
-    }
-
-    // Verifica se a senha fornecida corresponde ao hash armazenado
-    var isPasswordValid = _passwordHasher.VerifyPassword(request.LoginPassword, user.UserPassword);
-    
-    // Se a senha for inválida
-    if (!isPasswordValid)
-    {
-        Console.WriteLine("Autenticação falhou - senha inválida");
-        return Unauthorized(new { message = "Erro ao fazer login. Verifique suas credenciais." });
-    }
-
-    Console.WriteLine($"Login bem-sucedido para: {user.UserEmail}");
-
-    // Geração do token JWT
-    var tokenHandler = new JwtSecurityTokenHandler();
-    var key = Encoding.ASCII.GetBytes("your_secure_long_key_here_256_bits"); // Alterar para chave segura real
-
-    var tokenDescriptor = new SecurityTokenDescriptor
-    {
-        Subject = new ClaimsIdentity(new[] 
+        public async Task<IActionResult> Login([FromBody] LoginRequestDTO request)
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.UserEmail),
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
-        }),
-        Expires = DateTime.UtcNow.AddHours(1),
-        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-    };
+        Console.WriteLine($"Tentativa de login para: {request.LoginEmail}");
+    
+        // Recupera o usuário pelo email
+        var user = await _service.GetByEmail(request.LoginEmail);
+    
+        // Se o usuário não existir ou não for encontrado
+        if (user == null)
+        {
+            Console.WriteLine("Autenticação falhou - usuário não encontrado ou credenciais inválidas");
+            return Unauthorized(new { message = "Erro ao fazer login. Verifique suas credenciais." });
+        }
 
-    var token = tokenHandler.CreateToken(tokenDescriptor);
-    var tokenString = tokenHandler.WriteToken(token);
+        // Verifica se a senha fornecida corresponde ao hash armazenado
+        var isPasswordValid = _passwordHasher.VerifyPassword(request.LoginPassword, user.UserPassword);
+    
+        // Se a senha for inválida
+        if (!isPasswordValid)
+        {
+            Console.WriteLine("Autenticação falhou - senha inválida");
+            return Unauthorized(new { message = "Erro ao fazer login. Verifique suas credenciais." });
+        }
 
-    return Ok(new { 
-        user.Id,
-        user.UserName,
-        user.UserEmail,
-        Token = tokenString
-    });
-}
+        Console.WriteLine($"Login bem-sucedido para: {user.UserEmail}");
+
+        // Geração do token JWT
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes("your_secure_long_key_here_256_bits"); // Alterar para chave segura real
+
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new[] 
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.UserEmail),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
+            }),
+            Expires = DateTime.UtcNow.AddHours(1),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        };
+
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        var tokenString = tokenHandler.WriteToken(token);
+
+        return Ok(new { 
+            user.Id,
+            user.UserName,
+            user.UserEmail,
+            Token = tokenString
+        });
+    }
         [HttpPost("signup")]
-        public async Task<IActionResult> Signup([FromBody] SignupRequest request)
+        public async Task<IActionResult> Signup([FromBody] SignupRequestDTO request)
         {
          // Verifica se já existe um usuário com o email informado
          var existingUser = await _service.GetByEmail(request.SignupEmail);
@@ -133,51 +133,38 @@ public async Task<IActionResult> Login([FromBody] LoginRequest request)
             return Ok(new { message = "Usuário e Cliente cadastrados com sucesso!" });
         }
 
- [HttpPut("update/{userId}")]
-public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] EditProfileDto editProfileDto)
-{
-    try
-    {
-        var user = await _service.GetById(userId);
-
-        if (user == null)
+        [HttpPut("update/{userId}")]
+        public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] EditProfileDto editProfileDto)
         {
-            return NotFound(new { message = "Usuário não encontrado." });
-        }
+            try
+            {
+            var user = await _service.GetById(userId);
+
+             if (user == null)
+            {
+              return NotFound(new { message = "Usuário não encontrado." });
+             }
 
         
-        if (!_passwordHasher.VerifyPassword(editProfileDto.CurrentPassword, user.UserPassword))
-        {
+            if (!_passwordHasher.VerifyPassword(editProfileDto.CurrentPassword, user.UserPassword))
+          {
             return BadRequest(new { message = "Senha atual inválida." });
-        }
+            }
 
   
-        if (!string.IsNullOrEmpty(editProfileDto.NewPassword))
-        {
-            user.UserPassword = _passwordHasher.HashPassword(editProfileDto.NewPassword);
-            await _service.UpdateUserAsync(userId, editProfileDto, user.Role);
-        }
+            if (!string.IsNullOrEmpty(editProfileDto.NewPassword))
+            {
+                user.UserPassword = _passwordHasher.HashPassword(editProfileDto.NewPassword);
+                await _service.UpdateUserAsync(userId, editProfileDto, user.Role);
+            }
 
-        return Ok(new { message = "Perfil atualizado com sucesso." });
-    }
-    catch (Exception ex)
-    {
-        return BadRequest(new { message = ex.Message });
-    }
-}
-
-        public class LoginRequest
-        {
-            public required string LoginEmail { get; set; }
-            public required string LoginPassword { get; set; }
+            return Ok(new { message = "Perfil atualizado com sucesso." });
         }
-
-        public class SignupRequest
+        catch (Exception ex)
         {
-            public required string SignupName { get; set; }
-            public required string SignupEmail { get; set; }
-            public required string SignupPassword { get; set; }
-            public required UserRole SignupRole { get; set; }
+            return BadRequest(new { message = ex.Message });
         }
-    }
+    }   
+    
+  }
 }

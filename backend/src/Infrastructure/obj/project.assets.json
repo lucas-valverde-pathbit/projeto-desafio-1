@@ -11,10 +11,14 @@
           "Microsoft.Extensions.Logging": "9.0.1"
         },
         "compile": {
-          "lib/net8.0/Microsoft.EntityFrameworkCore.dll": {}
+          "lib/net8.0/Microsoft.EntityFrameworkCore.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/net8.0/Microsoft.EntityFrameworkCore.dll": {}
+          "lib/net8.0/Microsoft.EntityFrameworkCore.dll": {
+            "related": ".xml"
+          }
         },
         "build": {
           "buildTransitive/net8.0/Microsoft.EntityFrameworkCore.props": {}
@@ -233,14 +237,10 @@
           "Microsoft.Extensions.Logging.Abstractions": "8.0.2"
         },
         "compile": {
-          "lib/net8.0/Npgsql.dll": {
-            "related": ".xml"
-          }
+          "lib/net8.0/Npgsql.dll": {}
         },
         "runtime": {
-          "lib/net8.0/Npgsql.dll": {
-            "related": ".xml"
-          }
+          "lib/net8.0/Npgsql.dll": {}
         }
       },
       "Npgsql.EntityFrameworkCore.PostgreSQL/9.0.3": {
@@ -251,14 +251,10 @@
           "Npgsql": "9.0.2"
         },
         "compile": {
-          "lib/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {
-            "related": ".xml"
-          }
+          "lib/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {}
         },
         "runtime": {
-          "lib/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {
-            "related": ".xml"
-          }
+          "lib/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {}
         }
       },
       "Domain/1.0.0": {
@@ -698,19 +694,19 @@
     ]
   },
   "packageFolders": {
-    "/root/.nuget/packages/": {}
+    "C:\\Users\\Lucas\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/api/Infrastructure/Infrastructure.csproj",
+      "projectUniqueName": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\Infrastructure.csproj",
       "projectName": "Infrastructure",
-      "projectPath": "/api/Infrastructure/Infrastructure.csproj",
-      "packagesPath": "/root/.nuget/packages/",
-      "outputPath": "/api/Infrastructure/obj/",
+      "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\Infrastructure.csproj",
+      "packagesPath": "C:\\Users\\Lucas\\.nuget\\packages\\",
+      "outputPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/root/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\Lucas\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
@@ -722,8 +718,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "/api/Domain/Domain.csproj": {
-              "projectPath": "/api/Domain/Domain.csproj"
+            "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj": {
+              "projectPath": "c:\\Users\\Lucas\\Desktop\\projeto-final\\backend\\src\\Domain\\Domain.csproj"
             }
           }
         }
@@ -738,7 +734,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.200"
+      "SdkAnalysisLevel": "9.0.100"
     },
     "frameworks": {
       "net9.0": {
@@ -769,7 +765,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.201/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
