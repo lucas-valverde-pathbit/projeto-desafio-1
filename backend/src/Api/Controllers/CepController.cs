@@ -22,7 +22,13 @@ namespace Api.Controllers
         {
             if (string.IsNullOrWhiteSpace(cep))
             {
-                return BadRequest("CEP não pode ser vazio.");
+                var errorResponse = new ErrorResponseDTO
+                {
+                    Message = "CEP não pode ser vazio.",
+                    StatusCode = 400,
+                    Details = "O CEP fornecido não pode ser vazio ou nulo."
+                };
+                return BadRequest(errorResponse);
             }
 
             try
@@ -30,7 +36,7 @@ namespace Api.Controllers
                 var response = await _httpClientWrapper.GetAsync($"https://ceprapido.com.br/api/addresses/{cep}");
 
                 response.EnsureSuccessStatusCode();
-                
+
                 var content = await response.Content.ReadAsStringAsync();
                 var addressData = JsonConvert.DeserializeObject<List<dynamic>>(content);
                 var firstAddress = addressData[0];
@@ -41,12 +47,25 @@ namespace Api.Controllers
             }
             catch (HttpRequestException ex)
             {
-                return StatusCode(500, new { error = $"Erro ao buscar CEP: {ex.Message}. Please check the provided CEP." });
+                var errorResponse = new ErrorResponseDTO
+                {
+                    Message = "Erro ao buscar CEP.",
+                    StatusCode = 500,
+                    Details = $"Erro de requisição ao buscar o CEP: {ex.Message}. Por favor, verifique o CEP fornecido."
+                };
+                return StatusCode(500, errorResponse);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { error = $"Erro inesperado: {ex.Message}" });
+                var errorResponse = new ErrorResponseDTO
+                {
+                    Message = "Erro inesperado.",
+                    StatusCode = 500,
+                    Details = $"Erro inesperado ao processar a solicitação: {ex.Message}"
+                };
+                return StatusCode(500, errorResponse);
             }
         }
     }
 }
+

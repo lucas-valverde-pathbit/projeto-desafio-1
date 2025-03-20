@@ -1,14 +1,17 @@
-using Moq;
-using Xunit;
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Api.Controllers;
+using Domain.DTOs;
 using Domain.Models;
 using Domain.Services;
-using Domain.DTOs;
-using Api.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using Xunit;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using Infrastructure.Data;
 
 namespace UnitTests.Controllers
 {
@@ -18,165 +21,188 @@ namespace UnitTests.Controllers
         private readonly Mock<IProductService> _productServiceMock;
         private readonly Mock<ICustomerService> _customerServiceMock;
         private readonly Mock<ILogger<OrderController>> _loggerMock;
-        private readonly OrderController _orderController;
+        private readonly AppDbContext _context;
+
+        private readonly OrderController _controller;
 
         public OrderControllerTests()
         {
-            // Mocks para os serviços
             _orderServiceMock = new Mock<IOrderService>();
             _productServiceMock = new Mock<IProductService>();
             _customerServiceMock = new Mock<ICustomerService>();
             _loggerMock = new Mock<ILogger<OrderController>>();
 
-            // Criando o controlador
-            _orderController = new OrderController(
+          
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                            .UseInMemoryDatabase("TestDb")
+                            .Options;
+            _context = new AppDbContext(options);
+
+            _controller = new OrderController(
                 _orderServiceMock.Object,
                 _productServiceMock.Object,
                 _customerServiceMock.Object,
-                null,  // Não estamos testando o contexto de banco de dados aqui
+                _context,
                 _loggerMock.Object
             );
         }
 
-        #region Testes para CreateOrder
-
-        // Teste 1: Criar Pedido com Sucesso
         [Fact]
-        public async Task CreateOrder_DeveRetornarCreated()
+        public async Task CreateOrderComRequestInválidaRetornaBadRequest()
         {
             // Arrange
-            var customerId = Guid.NewGuid();
-            var productId = Guid.NewGuid();
             var orderRequest = new OrderRequestDTO
             {
-                DeliveryAddress = "Endereço de Entrega",
-                DeliveryZipCode = "12345-678",
-                Status = OrderStatus.Pendente,
-                TotalAmount = 100.0M,
-                OrderItems = new List<OrderItemDTO>
-                {
-                    new OrderItemDTO { ProductId = productId, Quantity = 1 }
-                }
+                OrderItems = null // Itens de pedido nulos
             };
 
-            _customerServiceMock.Setup(s => s.GetByUserId(It.IsAny<Guid>())).ReturnsAsync(new Customer());
-            _productServiceMock.Setup(s => s.GetById(It.IsAny<Guid>())).ReturnsAsync(new Product());
-            _orderServiceMock.Setup(s => s.CreateOrder(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string>()))
-                .ReturnsAsync(new Order { Id = Guid.NewGuid(), Status = OrderStatus.Pendente });
+            // Act
+            var result = await _controller.CreateOrder(orderRequest);
+
+            // Assert
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            var errorResponse = Assert.IsType<ErrorResponseDTO>(badRequestResult.Value);
+            Assert.Equal(400, errorResponse.StatusCode);
+        }
+
+        [Fact]
+        public async Task CreateOrder_ValidRequest_ReturnsCreatedAtAction()
+        {
+            // Arrange
+            var orderRequest = new OrderRequestDTO
+            {
+                OrderItems = new List<OrderItemDTO>
+                {
+                    new OrderItemDTO { ProductId = Guid.NewGuid(), Quantity = 1 }
+                },
+                DeliveryAddress = "123 Street",
+                DeliveryZipCode = "12345",
+                Status = 1,
+                TotalAmount = 100.00m
+            };
+
+            var customer = new Customer { Id = Guid.NewGuid() };
+            _customerServiceMock.Setup(service => service.GetByUserId(It.IsAny<Guid>())).ReturnsAsync(customer);
+            var product = new Product { Id = orderRequest.OrderItems[0].ProductId, ProductStockQuantity = 10 };
+            _productServiceMock.Setup(service => service.GetById(It.IsAny<Guid>())).ReturnsAsync(product);
 
             // Act
-            var result = await _orderController.CreateOrder(orderRequest);
+            var result = await _controller.CreateOrder(orderRequest);
 
             // Assert
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            Assert.NotNull(createdResult.Value);
+            var order = Assert.IsType<Order>(createdResult.Value);
+            Assert.Equal(orderRequest.DeliveryAddress, order.DeliveryAddress);
+            Assert.Equal(orderRequest.TotalAmount, order.TotalAmount);
         }
 
-        #endregion
-
-        #region Testes para GetById
-
-        // Teste 2: Obter Pedido por ID com Sucesso
         [Fact]
-        public async Task GetById_DeveRetornarOk()
+        public async Task GetById_OrderNotFound_ReturnsNotFound()
         {
             // Arrange
             var orderId = Guid.NewGuid();
-            _orderServiceMock.Setup(s => s.GetById(orderId)).ReturnsAsync(new Order { Id = orderId });
 
             // Act
-            var result = await _orderController.GetById(orderId);
+            var result = await _controller.GetById(orderId);
 
             // Assert
-            var actionResult = Assert.IsType<ActionResult<Order>>(result);
-            var okResult = actionResult.Result as OkObjectResult;
-            Assert.NotNull(okResult);
-            var returnValue = Assert.IsType<Order>(okResult.Value);
-            Assert.Equal(orderId, returnValue.Id);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            var errorResponse = Assert.IsType<ErrorResponseDTO>(notFoundResult.Value);
+            Assert.Equal(404, errorResponse.StatusCode);
         }
 
-        // Teste 3: Obter Pedido por ID quando não Encontrado
         [Fact]
-        public async Task GetById_DeveRetornarNotFound()
+        public async Task GetById_OrderFound_ReturnsOk()
         {
-            // Arrange
+            Arrange
             var orderId = Guid.NewGuid();
-            _orderServiceMock.Setup(s => s.GetById(orderId)).ReturnsAsync((Order)null);
+            var order = new Order
+            {
+                Id = orderId,
+                OrderItems = new List<OrderItem>
+                {
+                    new OrderItem { ProductName = "Test Product", Quantity = 1, ProductPrice = 100.00m }
+                }
+            };
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
 
-            // Act
-            var result = await _orderController.GetById(orderId);
+            Act
+            var result = await _controller.GetById(orderId);
 
-            // Assert
-            var actionResult = Assert.IsType<ActionResult<Order>>(result);
-            var notFoundResult = actionResult.Result as NotFoundResult;
-            Assert.NotNull(notFoundResult);
+            Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var orderResult = Assert.IsType<Order>(okResult.Value);
+            Assert.Equal(orderId, orderResult.Id);
         }
 
-        #endregion
-
-        #region Testes para GetByCustomerId
-
-        // Teste 4: Obter Ordens por CustomerId
         [Fact]
-        public async Task GetByCustomerId_DeveRetornarOk()
+        public async Task GetByCustomerId_NoOrdersFound_ReturnsNotFound()
         {
             // Arrange
             var customerId = Guid.NewGuid();
-            _orderServiceMock.Setup(s => s.GetByCustomerId(customerId)).ReturnsAsync(new List<Order> { new Order { Id = Guid.NewGuid() } });
 
             // Act
-            var result = await _orderController.GetByCustomerId(customerId);
+            var result = await _controller.GetByCustomerId(customerId);
 
             // Assert
-            var actionResult = Assert.IsType<ActionResult<IEnumerable<Order>>>(result);
-            var okResult = actionResult.Result as OkObjectResult;
-            Assert.NotNull(okResult);
-            var returnValue = Assert.IsType<List<Order>>(okResult.Value);
-            Assert.NotEmpty(returnValue);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            var errorResponse = Assert.IsType<ErrorResponseDTO>(notFoundResult.Value);
+            Assert.Equal(404, errorResponse.StatusCode);
         }
 
-        #endregion
-
-        #region Testes para UpdateOrderStatus
-
-        // Teste 5: Atualizar Status do Pedido com Sucesso
         [Fact]
-        public async Task UpdateOrderStatus_DeveRetornarOk()
+        public async Task GetByCustomerId_OrdersFound_ReturnsOk()
+        {
+            // Arrange
+            var customerId = Guid.NewGuid();
+            var order = new Order { Id = Guid.NewGuid(), CustomerId = customerId };
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _controller.GetByCustomerId(customerId);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var orders = Assert.IsType<List<Order>>(okResult.Value);
+            Assert.Single(orders);
+        }
+
+        [Fact]
+        public async Task UpdateOrderStatus_OrderNotFound_ReturnsNotFound()
+        {
+            Arrange
+            var orderId = Guid.NewGuid();
+            var status = 2;
+
+            Act
+            var result = await _controller.UpdateOrderStatus(orderId, status);
+
+            Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            var errorResponse = Assert.IsType<ErrorResponseDTO>(notFoundResult.Value);
+            Assert.Equal(404, errorResponse.StatusCode);
+        }
+
+        [Fact]
+        public async Task UpdateOrderStatus_OrderFound_ReturnsOk()
         {
             // Arrange
             var orderId = Guid.NewGuid();
-            var status = (int)OrderStatus.Pendente;
-            _orderServiceMock.Setup(s => s.UpdateOrderStatus(orderId, status)).ReturnsAsync(new Order { Id = orderId, Status = OrderStatus.Pendente });
+            var order = new Order { Id = orderId };
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            var status = 2;
 
             // Act
-            var result = await _orderController.UpdateOrderStatus(orderId, status);
+            var result = await _controller.UpdateOrderStatus(orderId, status);
 
             // Assert
-            var actionResult = Assert.IsType<ActionResult<Order>>(result);
-            var okResult = actionResult.Result as OkObjectResult;
-            Assert.NotNull(okResult);
-            var returnValue = Assert.IsType<Order>(okResult.Value);
-            Assert.Equal(OrderStatus.Pendente, returnValue.Status);
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var updatedOrder = Assert.IsType<Order>(okResult.Value);
+            Assert.Equal(status, updatedOrder.Status);
         }
-
-        // Teste 6: Atualizar Status do Pedido quando Pedido não Existir
-        [Fact]
-        public async Task UpdateOrderStatus_DeveRetornarNotFound()
-        {
-            // Arrange
-            var orderId = Guid.NewGuid();
-            _orderServiceMock.Setup(s => s.UpdateOrderStatus(orderId, 2)).ReturnsAsync((Order)null);
-
-            // Act
-            var result = await _orderController.UpdateOrderStatus(orderId, 2);
-
-            // Assert
-            var actionResult = Assert.IsType<ActionResult<Order>>(result);
-            var notFoundResult = actionResult.Result as NotFoundObjectResult;
-            Assert.NotNull(notFoundResult);
-            Assert.Equal("Pedido não encontrado.", notFoundResult.Value);
-        }
-
-        #endregion
     }
 }

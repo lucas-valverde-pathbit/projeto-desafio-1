@@ -6,6 +6,7 @@ using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using Domain.DTOs; // Adicionando a referência para o ErrorResponseDTO
 
 namespace UnitTests.Controllers
 {
@@ -65,9 +66,12 @@ namespace UnitTests.Controllers
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Produto não pode ser nulo.", badRequestResult.Value);
+            var errorResponse = Assert.IsType<ErrorResponseDTO>(badRequestResult.Value);
+            Assert.Equal(400, errorResponse.StatusCode);
+            Assert.Equal("Produto não pode ser nulo.", errorResponse.Message);
         }
 
+        // Teste 3: Obter um produto por ID que existe
         [Fact]
         public async Task GetByIdTemQueRetornarProdutoQuandoEleExiste()
         {
@@ -88,7 +92,6 @@ namespace UnitTests.Controllers
             Assert.Equal(product.ProductPrice, returnValue.ProductPrice); // Verifica se o preço do produto está correto
         }
 
-
         // Teste 4: Obter um produto por ID que não existe
         [Fact]
         public async Task GetByIdTemQueRetornarNotFoundQuandoProdutoNaoEhEncontrado()
@@ -104,9 +107,10 @@ namespace UnitTests.Controllers
             var actionResult = Assert.IsType<ActionResult<Product>>(result);  // Verifica se é ActionResult<Product>
             var notFoundResult = actionResult.Result as NotFoundObjectResult;  // Verifica se é um NotFoundObjectResult
             Assert.NotNull(notFoundResult);  // Verifica se o resultado é NotFound
-            Assert.Equal("Produto não encontrado.", notFoundResult.Value);  // Verifica a mensagem de erro
+            var errorResponse = Assert.IsType<ErrorResponseDTO>(notFoundResult.Value);  // Verifica se é um ErrorResponseDTO
+            Assert.Equal(404, errorResponse.StatusCode);  // Verifica o StatusCode
+            Assert.Equal("Produto não encontrado.", errorResponse.Message);  // Verifica a mensagem de erro
         }
-
 
         // Teste 5: Atualizar um produto com sucesso
         [Fact]
@@ -156,7 +160,9 @@ namespace UnitTests.Controllers
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("ID fornecido não é válido.", badRequestResult.Value);
+            var errorResponse = Assert.IsType<ErrorResponseDTO>(badRequestResult.Value);
+            Assert.Equal(400, errorResponse.StatusCode);
+            Assert.Equal("ID fornecido não é válido.", errorResponse.Message);
         }
 
         // Teste 7: Atualizar um produto que não existe
@@ -181,7 +187,9 @@ namespace UnitTests.Controllers
 
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-            Assert.Equal("Produto não encontrado.", notFoundResult.Value);
+            var errorResponse = Assert.IsType<ErrorResponseDTO>(notFoundResult.Value);
+            Assert.Equal(404, errorResponse.StatusCode);
+            Assert.Equal("Produto não encontrado.", errorResponse.Message);
         }
     }
 }
